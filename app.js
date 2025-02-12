@@ -1,6 +1,3 @@
-/****************************************************
- * Historical Stock Prices (2012-2023) + S&P 500 Growth Rate
- ****************************************************/
 const historicalData = [
   { year: 2012, price: 4.46 },
   { year: 2013, price: 6.52 },
@@ -15,31 +12,24 @@ const historicalData = [
   { year: 2022, price: 43.72 },
   { year: 2023, price: 51.02 }
 ];
-const sp500GrowthRate = 0.07; // 7% annual growth
-const MATCH_RATE = 0.25;
 
-// Initialize Investment Storage
+const sp500GrowthRate = 0.07;
+const MATCH_RATE = 0.25;
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
-/****************************************************
- * Build UI for Investment Input
- ****************************************************/
 const sliderTable = document.getElementById("sliderTable");
 
 historicalData.forEach((item, index) => {
   const row = document.createElement("tr");
 
-  // Year
   const yearCell = document.createElement("td");
   yearCell.textContent = item.year;
   row.appendChild(yearCell);
 
-  // Stock Price
   const priceCell = document.createElement("td");
   priceCell.textContent = `$${item.price.toFixed(2)}`;
   row.appendChild(priceCell);
 
-  // Investment Slider
   const sliderCell = document.createElement("td");
   const sliderInput = document.createElement("input");
   sliderInput.type = "range";
@@ -51,7 +41,6 @@ historicalData.forEach((item, index) => {
   sliderCell.appendChild(sliderInput);
   row.appendChild(sliderCell);
 
-  // Investment Input Box (Formatted)
   const numberCell = document.createElement("td");
   const numberInput = document.createElement("input");
   numberInput.type = "text";
@@ -60,7 +49,6 @@ historicalData.forEach((item, index) => {
   numberCell.appendChild(numberInput);
   row.appendChild(numberCell);
 
-  // Apply Button
   const applyCell = document.createElement("td");
   const applyBtn = document.createElement("button");
   applyBtn.textContent = "Apply →";
@@ -71,7 +59,6 @@ historicalData.forEach((item, index) => {
   applyCell.appendChild(applyBtn);
   row.appendChild(applyCell);
 
-  // Sync Slider and Number Input
   sliderInput.addEventListener("input", () => {
     numberInput.value = formatCurrency(sliderInput.value);
     investmentAmounts[index] = parseFloat(sliderInput.value);
@@ -87,9 +74,6 @@ historicalData.forEach((item, index) => {
   sliderTable.appendChild(row);
 });
 
-/****************************************************
- * Helper Functions
- ****************************************************/
 function applyToSubsequentYears(startIndex, value) {
   for (let i = startIndex; i < historicalData.length; i++) {
     investmentAmounts[i] = value;
@@ -102,29 +86,18 @@ function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
 }
 
-/****************************************************
- * Calculate and Plot Investment Growth
- ****************************************************/
 document.getElementById("calculateBtn").addEventListener("click", () => {
-  let years = [];
-  let userValue = [];
-  let userPlusMatchValue = [];
-  let sp500Value = [];
-
-  let cumulativeShares = 0;
-  let cumulativeMatchShares = 0;
-  let sp500Investment = 0;
+  let years = [], userValue = [], userPlusMatchValue = [], sp500Value = [], totalInvested = 0;
+  let sp500Investment = 0, cumulativeShares = 0, cumulativeMatchShares = 0;
 
   historicalData.forEach((item, index) => {
-    let investDollars = investmentAmounts[index];
-    let sharesBought = investDollars / item.price;
+    totalInvested += investmentAmounts[index];
+    let sharesBought = investmentAmounts[index] / item.price;
     let matchShares = MATCH_RATE * sharesBought;
-
     cumulativeShares += sharesBought;
     cumulativeMatchShares += matchShares;
-    sp500Investment += investDollars;
+    sp500Investment += investmentAmounts[index];
     sp500Investment *= (1 + sp500GrowthRate);
-
     years.push(item.year);
     userValue.push(cumulativeShares * item.price);
     userPlusMatchValue.push((cumulativeShares + cumulativeMatchShares) * item.price);
