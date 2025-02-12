@@ -94,13 +94,13 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   // Initialize cumulative variables.
   let cumulativeEmployeeShares = 0;
   let cumulativeEmployeeInvested = 0;
-  let cumulativeMatchingAwarded = 0;  // Sum of matching dollars awarded at vesting.
-  let cumulativeMatchingShares = 0;     // Sum of matching shares (awarded at vesting).
+  let cumulativeMatchingAwarded = 0;  // Cumulative matching dollars awarded.
+  let cumulativeMatchingShares = 0;     // Cumulative matching shares (awarded at vesting).
   let sp500Value = 0;
   
   // Loop over each simulation year.
   simYears.forEach(simYear => {
-    // Get the current stock price (if available; otherwise use last available price).
+    // Get current stock price (if available; otherwise use last available price).
     let dataEntry = historicalData.find(item => item.year === simYear);
     let currentStockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
     
@@ -108,40 +108,43 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     let invIndex = historicalData.findIndex(item => item.year === simYear);
     let invested = (invIndex !== -1) ? investmentAmounts[invIndex] : 0;
     if (invIndex !== -1) {
-      // Employee shares are purchased at that year's price.
+      // Employee shares purchased at that year's price.
       let purchasePrice = historicalData[invIndex].price;
       let employeeShares = invested / purchasePrice;
       cumulativeEmployeeShares += employeeShares;
       cumulativeEmployeeInvested += invested;
     }
     
-    // Process vesting events: for each prior investment where (investment year + VESTING_PERIOD === simYear)
+    // Calculate vesting for THIS year.
+    let vestThisYear = 0;
     historicalData.forEach((entry, idx) => {
       if (simYear === entry.year + VESTING_PERIOD) {
         let matchingAwarded = investmentAmounts[idx] * MATCH_RATE;
-        // Matching shares are awarded using the current (vesting) year's price.
+        vestThisYear += matchingAwarded;
+        // Matching shares are awarded using the vesting year's current stock price.
         let matchingShares = matchingAwarded / currentStockPrice;
         cumulativeMatchingAwarded += matchingAwarded;
         cumulativeMatchingShares += matchingShares;
       }
     });
     
-    // Current values (employee shares and matching shares are revalued at current stock price).
+    // Revalue employee and matching shares at current price.
     let currentValueEmployee = cumulativeEmployeeShares * currentStockPrice;
     let currentValueMatching = cumulativeMatchingShares * currentStockPrice;
     let totalCurrentValue = currentValueEmployee + currentValueMatching;
     
-    // S&P500 simulation: apply the year’s return to previous balance, then add this year’s invested amount.
+    // S&P500 simulation: apply year’s return only to previous balance, then add this year’s invested amount.
     let spReturnObj = sp500Returns.find(item => item.year === simYear);
     let spReturn = spReturnObj ? spReturnObj.return : 0;
     sp500Value = sp500Value * (1 + spReturn) + invested;
     
-    // Build the summary table row.
+    // Build summary table row.
     summaryBody.innerHTML += `<tr>
       <td>${simYear}</td>
       <td>${formatPrice(currentStockPrice)}</td>
       <td>${formatCurrency(invested)}</td>
       <td>${formatCurrency(cumulativeEmployeeInvested)}</td>
+      <td>${formatCurrency(vestThisYear)}</td>
       <td>${formatCurrency(cumulativeMatchingAwarded)}</td>
       <td>${formatCurrency(currentValueMatching)}</td>
       <td>${formatCurrency(currentValueEmployee)}</td>
@@ -150,7 +153,7 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     </tr>`;
   });
   
-  // For plotting, we also create arrays for the three lines.
+  // For plotting, create arrays for three lines.
   const employeeValueArray = [];
   const totalValueArray = [];
   const sp500ValueArray = [];
@@ -197,7 +200,7 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   
   Plotly.newPlot("chart", [
     { x: simYears, y: employeeValueArray, name: "Current Value Purchases", fill: "tozeroy", line: { color: "blue" } },
-    { x: simYears, y: totalValueArray, name: "Total Current Value (Emp + Matching)", fill: "tozeroy", line: { color: "green" } },
+    { x: simYears, y: totalValueArray, name: "Total Current Value (Emp+Match)", fill: "tozeroy", line: { color: "green" } },
     { x: simYears, y: sp500ValueArray, name: "Current Value S&P500", fill: "tozeroy", line: { color: "orange" } }
   ], {
     xaxis: { dtick: 1 }
