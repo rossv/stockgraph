@@ -32,6 +32,7 @@ const sp500Returns = [
 ];
 
 const MATCH_RATE = 0.25;
+const VESTING_PERIOD = 5; // years
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
@@ -73,57 +74,70 @@ function applyToSubsequentYears(startIndex) {
   }
 }
 
+// Formats dollars without decimals (for invested amounts, etc.)
 function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
 }
 
+// Formats stock prices with 2 decimals.
+function formatPrice(value) {
+  return `$${Number(value).toFixed(2)}`;
+}
+
 // Calculate and plot when the Calculate button is clicked.
 document.getElementById("calculateBtn").addEventListener("click", () => {
-  // Use the S&P500 years (which now include 2024) for simulation.
   const simYears = sp500Returns.map(item => item.year);
   const summaryBody = document.getElementById("summaryBody");
   summaryBody.innerHTML = "";
   
-  let cumulativeShares = 0, cumulativeMatchShares = 0, sp500Value = 0;
+  let cumulativeShares = 0;
+  let sp500Value = 0;
+  
   let userPurchaseValue = [];
   let userPurchasePlusMatchValue = [];
   let sp500ValueArray = [];
   
-  simYears.forEach(year => {
-    // For stock price and invested amount, use historicalData if available.
-    let dataEntry = historicalData.find(item => item.year === year);
+  simYears.forEach(simYear => {
+    // Get stock price: if available from historicalData, else use last available price.
+    let dataEntry = historicalData.find(item => item.year === simYear);
     let stockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
-    let invested = dataEntry ? investmentAmounts[historicalData.indexOf(dataEntry)] : 0;
     
-    // Calculate shares bought and matching shares.
+    // Get invested amount for the simulation year (only for years with inputs).
+    let invIndex = historicalData.findIndex(item => item.year === simYear);
+    let invested = invIndex !== -1 ? investmentAmounts[invIndex] : 0;
+    
+    // Calculate shares bought this year.
     let sharesBought = invested / stockPrice;
-    let matchShares = MATCH_RATE * sharesBought;
-    
     cumulativeShares += sharesBought;
-    cumulativeMatchShares += matchShares;
     
     let currentValuePurchases = cumulativeShares * stockPrice;
-    let currentValueTotal = (cumulativeShares + cumulativeMatchShares) * stockPrice;
-    let vestedMatchValue = cumulativeMatchShares * stockPrice;
+    
+    // Calculate vested match: only include investments that are at least VESTING_PERIOD years old.
+    let vestedMatch = 0;
+    historicalData.forEach((entry, idx) => {
+      if (simYear >= entry.year + VESTING_PERIOD) {
+        vestedMatch += investmentAmounts[idx] * MATCH_RATE;
+      }
+    });
+    
+    let currentValuePurchasedPlusMatch = currentValuePurchases + vestedMatch;
     
     // S&P500 simulation using actual annual return.
-    let spReturnObj = sp500Returns.find(item => item.year === year);
+    let spReturnObj = sp500Returns.find(item => item.year === simYear);
     let spReturn = spReturnObj ? spReturnObj.return : 0;
     sp500Value = (sp500Value + invested) * (1 + spReturn);
     
-    // Save values for plotting.
     userPurchaseValue.push(currentValuePurchases);
-    userPurchasePlusMatchValue.push(currentValueTotal);
+    userPurchasePlusMatchValue.push(currentValuePurchasedPlusMatch);
     sp500ValueArray.push(sp500Value);
     
-    // Build the summary table row.
     summaryBody.innerHTML += `<tr>
-      <td>${year}</td>
-      <td>${formatCurrency(stockPrice)}</td>
+      <td>${simYear}</td>
+      <td>${formatPrice(stockPrice)}</td>
       <td>${formatCurrency(invested)}</td>
-      <td>${formatCurrency(vestedMatchValue)}</td>
+      <td>${formatCurrency(vestedMatch)}</td>
       <td>${formatCurrency(currentValuePurchases)}</td>
-      <td>${formatCurrency(currentValueTotal)}</td>
+      <td>${formatCurrency(currentValuePurchasedPlusMatch)}</td>
       <td>${formatCurrency(sp500Value)}</td>
     </tr>`;
   });
@@ -131,7 +145,7 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   // Plot three lines and force the x-axis to show every year.
   Plotly.newPlot("chart", [
     { x: simYears, y: userPurchaseValue, name: "Current Value Purchases", fill: "tozeroy", line: { color: "blue" } },
-    { x: simYears, y: userPurchasePlusMatchValue, name: "Current Value Purchased + Matching Shares", fill: "tozeroy", line: { color: "green" } },
+    { x: simYears, y: userPurchasePlusMatchValue, name: "Current Value Purchased + Matching", fill: "tozeroy", line: { color: "green" } },
     { x: simYears, y: sp500ValueArray, name: "Current Value S&P500", fill: "tozeroy", line: { color: "orange" } }
   ], {
     xaxis: { dtick: 1 }
@@ -141,7 +155,7 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
 // Clear All Values button resets inputs, summary table, and chart.
 document.getElementById("clearBtn").addEventListener("click", () => {
   investmentAmounts = new Array(historicalData.length).fill(0);
-  historicalData.forEach((item, index) => {
+  historicalData.forEach((item) => {
     document.getElementById(`slider-${item.year}`).value = 0;
     document.getElementById(`number-${item.year}`).value = formatCurrency(0);
   });
