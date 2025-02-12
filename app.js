@@ -1,5 +1,5 @@
 /****************************************************
- * Historical Stock Prices (2012-2023)
+ * Historical Stock Prices (2012-2023) + S&P 500 Growth Rate
  ****************************************************/
 const historicalData = [
   { year: 2012, price: 4.46 },
@@ -15,146 +15,125 @@ const historicalData = [
   { year: 2022, price: 43.72 },
   { year: 2023, price: 51.02 }
 ];
-
-// Company match rate
+const sp500GrowthRate = 0.07; // 7% annual growth
 const MATCH_RATE = 0.25;
 
-// Initialize an array to store each year's investment (default 0)
+// Initialize Investment Storage
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 /****************************************************
- * Dynamically Build the Slider Rows
+ * Build UI for Investment Input
  ****************************************************/
 const sliderTable = document.getElementById("sliderTable");
 
 historicalData.forEach((item, index) => {
-  // Create table row
   const row = document.createElement("tr");
 
-  // Year label
+  // Year
   const yearCell = document.createElement("td");
   yearCell.textContent = item.year;
   row.appendChild(yearCell);
 
-  // Slider cell
+  // Stock Price
+  const priceCell = document.createElement("td");
+  priceCell.textContent = `$${item.price.toFixed(2)}`;
+  row.appendChild(priceCell);
+
+  // Investment Slider
   const sliderCell = document.createElement("td");
   const sliderInput = document.createElement("input");
   sliderInput.type = "range";
   sliderInput.min = "0";
-  sliderInput.max = "20000";  // adjust range as needed
-  sliderInput.step = "100";   // adjust step as needed
+  sliderInput.max = "20000";
+  sliderInput.step = "100";
   sliderInput.value = "0";
   sliderInput.id = `slider-${item.year}`;
   sliderCell.appendChild(sliderInput);
   row.appendChild(sliderCell);
 
-  // Number input cell
+  // Investment Input Box (Formatted)
   const numberCell = document.createElement("td");
   const numberInput = document.createElement("input");
-  numberInput.type = "number";
-  numberInput.min = "0";
-  numberInput.step = "100";
-  numberInput.value = "0";
+  numberInput.type = "text";
   numberInput.id = `number-${item.year}`;
+  numberInput.value = "$0";
   numberCell.appendChild(numberInput);
   row.appendChild(numberCell);
 
-  // "Apply to Subsequent Years" button cell
+  // Apply Button
   const applyCell = document.createElement("td");
   const applyBtn = document.createElement("button");
   applyBtn.textContent = "Apply →";
   applyBtn.className = "applyBtn";
   applyBtn.addEventListener("click", () => {
-    applyToSubsequentYears(index, parseFloat(numberInput.value));
+    applyToSubsequentYears(index, investmentAmounts[index]);
   });
   applyCell.appendChild(applyBtn);
   row.appendChild(applyCell);
 
-  // Keep slider and number input synchronized
+  // Sync Slider and Number Input
   sliderInput.addEventListener("input", () => {
-    numberInput.value = sliderInput.value;
+    numberInput.value = formatCurrency(sliderInput.value);
     investmentAmounts[index] = parseFloat(sliderInput.value);
   });
+
   numberInput.addEventListener("input", () => {
-    sliderInput.value = numberInput.value;
-    investmentAmounts[index] = parseFloat(numberInput.value);
+    let rawValue = parseFloat(numberInput.value.replace(/[^0-9]/g, ""));
+    sliderInput.value = rawValue;
+    investmentAmounts[index] = rawValue;
+    numberInput.value = formatCurrency(rawValue);
   });
 
-  // Append the row to the table
   sliderTable.appendChild(row);
 });
 
 /****************************************************
- * Function to Apply a Value to All Subsequent Years
+ * Helper Functions
  ****************************************************/
 function applyToSubsequentYears(startIndex, value) {
   for (let i = startIndex; i < historicalData.length; i++) {
     investmentAmounts[i] = value;
-    const year = historicalData[i].year;
-    const slider = document.getElementById(`slider-${year}`);
-    const number = document.getElementById(`number-${year}`);
-    if (slider && number) {
-      slider.value = value;
-      number.value = value;
-    }
+    document.getElementById(`slider-${historicalData[i].year}`).value = value;
+    document.getElementById(`number-${historicalData[i].year}`).value = formatCurrency(value);
   }
 }
 
+function formatCurrency(value) {
+  return `$${parseInt(value).toLocaleString()}`;
+}
+
 /****************************************************
- * Calculate and Plot the Investment Growth
+ * Calculate and Plot Investment Growth
  ****************************************************/
 document.getElementById("calculateBtn").addEventListener("click", () => {
-  let cumulativeUserShares = 0;
-  let cumulativeMatchShares = 0;
+  let years = [];
+  let userValue = [];
+  let userPlusMatchValue = [];
+  let sp500Value = [];
 
-  const years = [];
-  const userValue = [];
-  const userPlusMatchValue = [];
+  let cumulativeShares = 0;
+  let cumulativeMatchShares = 0;
+  let sp500Investment = 0;
 
   historicalData.forEach((item, index) => {
-    // Retrieve the investment for this year
-    const investDollars = investmentAmounts[index];
-    const sharesBought = investDollars / item.price;
-    const matchShares = MATCH_RATE * sharesBought;
+    let investDollars = investmentAmounts[index];
+    let sharesBought = investDollars / item.price;
+    let matchShares = MATCH_RATE * sharesBought;
 
-    // Accumulate shares over the years
-    cumulativeUserShares += sharesBought;
+    cumulativeShares += sharesBought;
     cumulativeMatchShares += matchShares;
-
-    // Calculate the end-of-year values at the current year's price
-    const totalUserValue = cumulativeUserShares * item.price;
-    const totalUserPlusMatch = (cumulativeUserShares + cumulativeMatchShares) * item.price;
+    sp500Investment += investDollars;
+    sp500Investment *= (1 + sp500GrowthRate);
 
     years.push(item.year);
-    userValue.push(totalUserValue);
-    userPlusMatchValue.push(totalUserPlusMatch);
+    userValue.push(cumulativeShares * item.price);
+    userPlusMatchValue.push((cumulativeShares + cumulativeMatchShares) * item.price);
+    sp500Value.push(sp500Investment);
   });
 
-  // Prepare Plotly traces
-  const traceUser = {
-    x: years,
-    y: userValue,
-    mode: "lines+markers",
-    name: "Your Shares Only",
-    line: { color: "blue" }
-  };
-
-  const traceUserMatch = {
-    x: years,
-    y: userPlusMatchValue,
-    mode: "lines+markers",
-    name: "Your Shares + 25% Match",
-    line: { color: "green" }
-  };
-
-  // Chart layout settings
-  const layout = {
-    title: "Value of Your Investments Over Time",
-    xaxis: { title: "Year" },
-    yaxis: { title: "Value (USD)" },
-    margin: { t: 50, b: 50, l: 60, r: 20 }
-  };
-
-  // Render the chart in the "chart" div
-  Plotly.newPlot("chart", [traceUser, traceUserMatch], layout, { responsive: true });
+  Plotly.newPlot("chart", [
+    { x: years, y: userValue, fill: "tozeroy", name: "Your Shares", line: { color: "blue" } },
+    { x: years, y: userPlusMatchValue, fill: "tozeroy", name: "Your + Match", line: { color: "green" } },
+    { x: years, y: sp500Value, fill: "tozeroy", name: "S&P 500", line: { color: "orange" } }
+  ]);
 });
