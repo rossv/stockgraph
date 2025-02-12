@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stock Investment Calculator</title>
+  <!-- Load Plotly before our script -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     body {
@@ -18,7 +19,7 @@
     }
     .container {
       display: flex;
-      flex-direction: row; /* Landscape layout: inputs on the left, chart on the right */
+      flex-direction: row; /* Landscape layout: inputs on left, chart on right */
       gap: 1rem;
       margin: 1rem;
     }
@@ -46,11 +47,6 @@
     #chart {
       width: 100%;
       height: 100%;
-    }
-    .slider-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
     }
     .applyBtn {
       padding: 0.3rem 0.6rem;
@@ -80,6 +76,7 @@
     </div>
   </div>
 
+  <!-- Our app's JavaScript -->
   <script src="app.js"></script>
 </body>
 </html>
