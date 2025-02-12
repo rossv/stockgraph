@@ -19,6 +19,7 @@ let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
 
+// Build UI Table
 historicalData.forEach((item, index) => {
   const row = document.createElement("tr");
 
@@ -87,20 +88,68 @@ function formatCurrency(value) {
 }
 
 document.getElementById("calculateBtn").addEventListener("click", () => {
+  let years = [], userValue = [], userPlusMatchValue = [], sp500Value = [];
+  let totalInvested = 0, sp500Investment = 0, cumulativeShares = 0, cumulativeMatchShares = 0;
+
   let summaryBody = document.getElementById("summaryBody");
   summaryBody.innerHTML = "";
+
   historicalData.forEach((item, index) => {
+    totalInvested += investmentAmounts[index];
+    let sharesBought = investmentAmounts[index] / item.price;
+    let matchShares = MATCH_RATE * sharesBought;
+    cumulativeShares += sharesBought;
+    cumulativeMatchShares += matchShares;
+    sp500Investment += investmentAmounts[index];
+    sp500Investment *= (1 + sp500GrowthRate);
+
+    years.push(item.year);
+    userValue.push(cumulativeShares * item.price);
+    userPlusMatchValue.push((cumulativeShares + cumulativeMatchShares) * item.price);
+    sp500Value.push(sp500Investment);
+
+    // Update Summary Table
     let row = `<tr>
       <td>${item.year}</td>
       <td>${formatCurrency(investmentAmounts[index])}</td>
-      <td>${formatCurrency(investmentAmounts[index] * item.price)}</td>
+      <td>${formatCurrency(userPlusMatchValue[index])}</td>
     </tr>`;
     summaryBody.innerHTML += row;
   });
+
+  // Update Graph
+  Plotly.newPlot("chart", [
+    {
+      x: years, y: userValue,
+      fill: "tozeroy",
+      name: "Purchased Shares",
+      line: { color: "blue" }
+    },
+    {
+      x: years, y: userPlusMatchValue,
+      fill: "tozeroy",
+      name: "Purchased Shares + Matching Shares",
+      line: { color: "green" }
+    },
+    {
+      x: years, y: sp500Value,
+      fill: "tozeroy",
+      name: "S&P 500",
+      line: { color: "orange" }
+    }
+  ], {
+    title: "Investment Growth Over Time",
+    xaxis: { title: "Year" },
+    yaxis: { title: "Value ($)" },
+    margin: { t: 50, b: 50, l: 60, r: 20 }
+  });
 });
 
+// Reset All Inputs
 document.getElementById("clearBtn").addEventListener("click", () => {
   investmentAmounts.fill(0);
   document.querySelectorAll("input[type='range']").forEach(el => el.value = 0);
   document.querySelectorAll("input[type='text']").forEach(el => el.value = "$0");
+  document.getElementById("summaryBody").innerHTML = "";
+  Plotly.newPlot("chart", [], {});
 });
