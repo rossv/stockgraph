@@ -25,7 +25,7 @@
     }
     #inputPanel {
       flex: 1;
-      max-width: 500px;
+      max-width: 550px; /* widened a bit */
       background: #f5f5f5;
       padding: 1.5rem;
       border-radius: 8px;
@@ -58,6 +58,7 @@
       color: white;
       border: none;
       border-radius: 6px;
+      box-sizing: border-box;
     }
     .applyBtn:hover {
       background: #0056b3;
@@ -76,17 +77,24 @@
     #calculateBtn { background: #28a745; }
     #clearBtn { background: #dc3545; }
     input[type="text"] {
-      width: 120px;
+      width: 150px; /* increased width */
       text-align: right;
       font-weight: bold;
       padding: 6px;
       border-radius: 4px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
+    /* Force summary table to have equal-width columns and wrap headers */
     #summaryTable {
       width: 100%;
       margin-top: 20px;
       border-collapse: collapse;
+      table-layout: fixed;
+      word-wrap: break-word;
+    }
+    #summaryTable th, #summaryTable td {
+      width: calc(100% / 7);
     }
     #summaryTable th {
       background-color: #007bff;
@@ -125,12 +133,12 @@
         <thead>
           <tr>
             <th>Year</th>
-            <th>Stock Price</th>
-            <th>Invested ($)</th>
-            <th>Vested Match ($)</th>
-            <th>Current Value Purchases ($)</th>
-            <th>Current Value Purchased + Matching Shares ($)</th>
-            <th>Current Value S&P500</th>
+            <th>Stock<br>Price</th>
+            <th>Invested<br>($)</th>
+            <th>Vested<br>Match<br>($)</th>
+            <th>Current Value<br>Purchases<br>($)</th>
+            <th>Current Value<br>Purchased +<br>Matching Shares<br>($)</th>
+            <th>Current Value<br>S&P500</th>
           </tr>
         </thead>
         <tbody id="summaryBody">
