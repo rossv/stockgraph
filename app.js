@@ -18,23 +18,26 @@ function calculateGrowth(investment, type) {
   for (let i = 0; i <= years; i++) {
     yearsArray.push(i);
 
+    // For annual contributions, add new investment each year (after year 0)
     if (type === 'annual' && i > 0) {
       totalInvested += investment;
       matchContribution = investment * companyMatchRate;
     }
 
+    // Vesting logic: add match only after vesting period
     if (i >= vestingPeriod) {
       vestedMatch += matchContribution;
     }
 
+    // Compute growth values
     privateStock.push((totalInvested + vestedMatch) * Math.pow(1 + privateStockGrowthRate, i));
     sp500.push(totalInvested * Math.pow(1 + sp500GrowthRate, i));
   }
   
-  return { yearsArray, privateStock, sp500 };
+  return { yearsArray, privateStock, sp500, totalInvested, vestedMatch };
 }
 
-// Render or Update the Chart using Plotly
+// Render or update the chart using Plotly and update debug info
 function updateChart() {
   const investmentAmount = parseFloat(document.getElementById('investmentAmount').value);
   const investmentType = document.getElementById('investmentType').value;
@@ -65,8 +68,18 @@ function updateChart() {
     margin: { t: 50, b: 50 }
   };
   
-  // Use Plotly.react to update the chart smoothly
+  // Use Plotly.react to smoothly update the chart
   Plotly.react('investmentChart', chartData, layout, {responsive: true});
+  
+  // Update debug information so you can verify updates are coming through
+  const debugInfo = document.getElementById('debugInfo');
+  debugInfo.innerHTML = `
+    <p>Chart updated at: ${new Date().toLocaleTimeString()}</p>
+    <p>Investment Type: ${investmentType}</p>
+    <p>Investment Amount: $${investmentAmount.toFixed(2)}</p>
+    <p>Total Invested after 30 years: $${data.totalInvested.toFixed(2)}</p>
+    <p>Vested Match after 30 years: $${data.vestedMatch.toFixed(2)}</p>
+  `;
 }
 
 // Set up event listener for the Calculate button
