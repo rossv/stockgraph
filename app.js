@@ -1,103 +1,92 @@
 // Investment Parameters
 const years = 30;
 const privateStockGrowthRate = 0.08; // 8% annually
-const sp500GrowthRate = 0.07; // 7% annually
-const companyMatchRate = 0.25; // 25% match
-const vestingPeriod = 5; // 5-year vesting
+const sp500GrowthRate = 0.07;          // 7% annually
+const companyMatchRate = 0.25;         // 25% match
+const vestingPeriod = 5;               // 5-year vesting
 
-// Declare Chart Variable (Global)
-let investmentChart = null;
-
-// Function to Calculate Investment Growth
-function calculateGrowth(investment, type) {
-    let privateStock = [];
-    let sp500 = [];
-    let yearsArray = [];
-
-    let vestedMatch = 0; // Track vested match
-    let totalInvested = investment; // Initial investment
-    let matchContribution = investment * companyMatchRate; // 25% match
-
-    for (let i = 0; i <= years; i++) {
-        yearsArray.push(i);
-
-        // If using annual contributions, add investment yearly
-        if (type === 'annual' && i > 0) {
-            totalInvested += investment;
-            matchContribution = investment * companyMatchRate;
-        }
-
-        // Vesting logic (only count match after 5 years)
-        if (i >= vestingPeriod) {
-            vestedMatch += matchContribution;
-        }
-
-        // Calculate growth
-        privateStock.push((totalInvested + vestedMatch) * Math.pow(1 + privateStockGrowthRate, i));
-        sp500.push(totalInvested * Math.pow(1 + sp500GrowthRate, i));
+// Initialize Chart (create once)
+const ctx = document.getElementById('investmentChart').getContext('2d');
+let investmentChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: []
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 300 }, // Adjust duration or set to 0 to disable animation
+    plugins: {
+      tooltip: { mode: 'index', intersect: false }
+    },
+    interaction: {
+      mode: 'nearest',
+      axis: 'x',
+      intersect: false
     }
-
-    return { yearsArray, privateStock, sp500 };
-}
-
-// Function to Initialize or Update the Chart
-function updateChart() {
-    let investmentAmount = parseFloat(document.getElementById('investmentAmount').value) || 10000; // Default to 10K
-    let investmentType = document.getElementById('investmentType').value;
-
-    let data = calculateGrowth(investmentAmount, investmentType);
-
-    let ctx = document.getElementById('investmentChart').getContext('2d');
-
-    if (!investmentChart) {
-        // Create Chart (Only Once)
-        investmentChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.yearsArray,
-                datasets: [
-                    {
-                        label: 'Private Stock Investment',
-                        data: data.privateStock,
-                        borderColor: 'blue',
-                        borderWidth: 2,
-                        fill: false,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'S&P 500',
-                        data: data.sp500,
-                        borderColor: 'green',
-                        borderWidth: 2,
-                        fill: false,
-                        pointRadius: 0
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: { duration: 500 },
-                scales: {
-                    x: { title: { display: true, text: 'Years' } },
-                    y: { title: { display: true, text: 'Investment Value ($)' }, beginAtZero: true }
-                }
-            }
-        });
-    } else {
-        // Update Existing Chart Data
-        investmentChart.data.labels = data.yearsArray;
-        investmentChart.data.datasets[0].data = data.privateStock;
-        investmentChart.data.datasets[1].data = data.sp500;
-        investmentChart.update();
-    }
-}
-
-// Wait until the page fully loads before running the script
-document.addEventListener("DOMContentLoaded", function () {
-    updateChart(); // Initial Chart Render
-
-    // Event Listeners for User Inputs
-    document.getElementById('investmentAmount').addEventListener('input', updateChart);
-    document.getElementById('investmentType').addEventListener('change', updateChart);
+  }
 });
+
+// Calculate Investment Growth Data
+function calculateGrowth(investment, type) {
+  const privateStock = [];
+  const sp500 = [];
+  const yearsArray = [];
+  
+  let vestedMatch = 0;
+  let totalInvested = investment;
+  let matchContribution = investment * companyMatchRate;
+
+  for (let i = 0; i <= years; i++) {
+    yearsArray.push(i);
+
+    if (type === 'annual' && i > 0) {
+      totalInvested += investment;
+      matchContribution = investment * companyMatchRate;
+    }
+
+    if (i >= vestingPeriod) {
+      vestedMatch += matchContribution;
+    }
+
+    privateStock.push((totalInvested + vestedMatch) * Math.pow(1 + privateStockGrowthRate, i));
+    sp500.push(totalInvested * Math.pow(1 + sp500GrowthRate, i));
+  }
+  
+  return { yearsArray, privateStock, sp500 };
+}
+
+// Update Chart Data
+function updateChart() {
+  const investmentAmount = parseFloat(document.getElementById('investmentAmount').value);
+  const investmentType = document.getElementById('investmentType').value;
+  const data = calculateGrowth(investmentAmount, investmentType);
+  
+  // Update chart labels and datasets
+  investmentChart.data.labels = data.yearsArray;
+  investmentChart.data.datasets = [
+    {
+      label: 'Private Stock Investment',
+      data: data.privateStock,
+      borderColor: 'blue',
+      fill: false,
+      tension: 0.2 // smooths out the line curve
+    },
+    {
+      label: 'S&P 500',
+      data: data.sp500,
+      borderColor: 'green',
+      fill: false,
+      tension: 0.2
+    }
+  ];
+
+  investmentChart.update();
+}
+
+// Set up event listener for button click
+document.getElementById('calculateBtn').addEventListener('click', updateChart);
+
+// Initial chart rendering
+updateChart();
