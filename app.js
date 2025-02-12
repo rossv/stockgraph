@@ -19,51 +19,42 @@ let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
 
-// Build Input Table
+// Build Table Rows with Apply Buttons
 historicalData.forEach((item, index) => {
   const row = document.createElement("tr");
 
-  const yearCell = document.createElement("td");
-  yearCell.textContent = item.year;
-  row.appendChild(yearCell);
-
-  const priceCell = document.createElement("td");
-  priceCell.textContent = `$${item.price.toFixed(2)}`;
-  row.appendChild(priceCell);
-
-  const sliderCell = document.createElement("td");
-  const sliderInput = document.createElement("input");
-  sliderInput.type = "range";
-  sliderInput.min = "0";
-  sliderInput.max = "20000";
-  sliderInput.step = "100";
-  sliderInput.value = "0";
-  sliderInput.id = `slider-${item.year}`;
-  sliderCell.appendChild(sliderInput);
-  row.appendChild(sliderCell);
-
-  const numberCell = document.createElement("td");
-  const numberInput = document.createElement("input");
-  numberInput.type = "text";
-  numberInput.id = `number-${item.year}`;
-  numberInput.value = "$0";
-  numberCell.appendChild(numberInput);
-  row.appendChild(numberCell);
-
-  sliderInput.addEventListener("input", () => {
-    numberInput.value = formatCurrency(sliderInput.value);
-    investmentAmounts[index] = parseFloat(sliderInput.value);
-  });
-
-  numberInput.addEventListener("input", () => {
-    let rawValue = parseFloat(numberInput.value.replace(/[^0-9]/g, ""));
-    sliderInput.value = rawValue;
-    investmentAmounts[index] = rawValue;
-    numberInput.value = formatCurrency(rawValue);
-  });
+  row.innerHTML = `
+    <td>${item.year}</td>
+    <td>$${item.price.toFixed(2)}</td>
+    <td><input type="range" min="0" max="20000" step="100" value="0" id="slider-${item.year}"></td>
+    <td><input type="text" id="number-${item.year}" value="$0"></td>
+    <td><button class="applyBtn" onclick="applyToSubsequentYears(${index})">Apply →</button></td>
+  `;
 
   sliderTable.appendChild(row);
+
+  document.getElementById(`slider-${item.year}`).addEventListener("input", (event) => {
+    let value = event.target.value;
+    investmentAmounts[index] = parseFloat(value);
+    document.getElementById(`number-${item.year}`).value = formatCurrency(value);
+  });
+
+  document.getElementById(`number-${item.year}`).addEventListener("input", (event) => {
+    let value = parseFloat(event.target.value.replace(/[^0-9]/g, ""));
+    investmentAmounts[index] = value;
+    document.getElementById(`slider-${item.year}`).value = value;
+    event.target.value = formatCurrency(value);
+  });
 });
+
+function applyToSubsequentYears(startIndex) {
+  let value = investmentAmounts[startIndex];
+  for (let i = startIndex; i < historicalData.length; i++) {
+    investmentAmounts[i] = value;
+    document.getElementById(`slider-${historicalData[i].year}`).value = value;
+    document.getElementById(`number-${historicalData[i].year}`).value = formatCurrency(value);
+  }
+}
 
 function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
@@ -82,8 +73,7 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     let matchShares = MATCH_RATE * sharesBought;
     cumulativeShares += sharesBought;
     cumulativeMatchShares += matchShares;
-    sp500Investment += investDollars;
-    sp500Investment *= (1 + sp500GrowthRate);
+    sp500Investment = (sp500Investment + investDollars) * (1 + sp500GrowthRate);
 
     years.push(item.year);
     userValue.push(cumulativeShares * item.price);
@@ -98,8 +88,8 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   });
 
   Plotly.newPlot("chart", [
-    { x: years, y: userValue, fill: "tozeroy", name: "Purchased Shares", line: { color: "blue" } },
-    { x: years, y: userPlusMatchValue, fill: "tozeroy", name: "Purchased Shares + Matching Shares", line: { color: "green" } },
-    { x: years, y: sp500Value, fill: "tozeroy", name: "S&P 500", line: { color: "orange" } }
+    { x: years, y: userValue, name: "Purchased Shares", fill: "tozeroy", line: { color: "blue" } },
+    { x: years, y: userPlusMatchValue, name: "Purchased Shares + Matching Shares", fill: "tozeroy", line: { color: "green" } },
+    { x: years, y: sp500Value, name: "S&P 500", fill: "tozeroy", line: { color: "orange" } }
   ]);
 });
