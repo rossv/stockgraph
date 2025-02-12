@@ -57,15 +57,20 @@
       border: none;
       border-radius: 4px;
     }
-    #calculateBtn {
+    .actionButton {
       margin-top: 1rem;
       padding: 0.5rem 1rem;
       cursor: pointer;
-      background: #28a745;
-      color: white;
+      width: 100%;
       border: none;
       border-radius: 4px;
-      width: 100%;
+      color: white;
+    }
+    #calculateBtn {
+      background: #28a745;
+    }
+    #clearBtn {
+      background: #dc3545;
     }
     input[type="text"] {
       width: 100px;
@@ -105,7 +110,8 @@
           <!-- Rows inserted dynamically -->
         </tbody>
       </table>
-      <button id="calculateBtn">Calculate & Plot</button>
+      <button id="calculateBtn" class="actionButton">Calculate & Plot</button>
+      <button id="clearBtn" class="actionButton">Clear All Values</button>
     </div>
 
     <div id="chartPanel">
