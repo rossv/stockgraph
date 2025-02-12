@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Growth Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 80%; margin: auto; }
+        canvas { max-width: 800px; margin: 20px auto; }
+    </style>
+</head>
+<body>
+
+    <h2>Investment Growth Calculator</h2>
+    
+    <label for="investmentType">Investment Type:</label>
+    <select id="investmentType">
+        <option value="lumpSum">Lump Sum</option>
+        <option value="annual">Annual Contributions</option>
+    </select>
+
+    <label for="investmentAmount">Investment Amount ($):</label>
+    <input type="number" id="investmentAmount" value="10000">
+
+    <button onclick="updateChart()">Calculate</button>
+
+    <div class="container">
+        <canvas id="investmentChart"></canvas>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
