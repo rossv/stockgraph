@@ -25,7 +25,7 @@
     }
     #inputPanel {
       flex: 1;
-      max-width: 550px; /* widened a bit */
+      max-width: 550px;
       background: #f5f5f5;
       padding: 1.5rem;
       border-radius: 8px;
@@ -47,9 +47,6 @@
       padding: 12px;
       text-align: left;
       border-bottom: 1px solid #ddd;
-    }
-    th[colspan="2"] {
-      text-align: center;
     }
     .applyBtn {
       padding: 6px 10px;
@@ -77,7 +74,7 @@
     #calculateBtn { background: #28a745; }
     #clearBtn { background: #dc3545; }
     input[type="text"] {
-      width: 150px; /* increased width */
+      width: 150px;
       text-align: right;
       font-weight: bold;
       padding: 6px;
@@ -85,7 +82,7 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
-    /* Force summary table to have equal-width columns and wrap headers */
+    /* Fixed layout for summary table (9 columns) */
     #summaryTable {
       width: 100%;
       margin-top: 20px;
@@ -94,11 +91,20 @@
       word-wrap: break-word;
     }
     #summaryTable th, #summaryTable td {
-      width: calc(100% / 8);
+      width: calc(100% / 9);
     }
     #summaryTable th {
       background-color: #007bff;
       color: white;
+    }
+    /* Disclosures styling */
+    #disclosures {
+      max-width: 800px;
+      margin: 20px auto;
+      font-size: 0.9rem;
+      color: #555;
+      padding: 10px;
+      text-align: center;
     }
   </style>
 </head>
@@ -136,9 +142,10 @@
             <th>Stock<br>Price</th>
             <th>Invested<br>($)</th>
             <th>Total<br>Invested<br>($)</th>
-            <th>Vested<br>Match<br>($)</th>
-            <th>Current Value<br>Purchases<br>($)</th>
-            <th>Current Value<br>Purchased +<br>Matching Shares<br>($)</th>
+            <th>Cumulative<br>Vested Match<br>Awarded ($)</th>
+            <th>Current Value<br>Vested Matching<br>Shares ($)</th>
+            <th>Current Value<br>Purchases ($)</th>
+            <th>Total Current<br>Value (Emp + Match) ($)</th>
             <th>Current Value<br>S&amp;P500</th>
           </tr>
         </thead>
@@ -147,6 +154,11 @@
         </tbody>
       </table>
     </div>
+  </div>
+
+  <div id="disclosures">
+    <p>Past performance is not a guarantee of future results</p>
+    <p>Does not include considerations on taxes owed for matching shares or capital gains taxes when shares are sold</p>
   </div>
 
   <script src="app.js"></script>
