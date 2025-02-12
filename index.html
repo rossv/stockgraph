@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stock Investment Calculator</title>
-  <!-- Load Plotly before our script -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     body {
@@ -19,13 +18,14 @@
     }
     .container {
       display: flex;
-      flex-direction: row; /* Landscape layout: inputs on left, chart on right */
+      flex-direction: row; 
       gap: 1rem;
       margin: 1rem;
+      align-items: flex-start; /* Prevents overlap */
     }
     #inputPanel {
       flex: 1;
-      max-width: 400px;
+      max-width: 450px;
       background: #f5f5f5;
       padding: 1rem;
       border-radius: 4px;
@@ -38,6 +38,7 @@
       padding: 0.5rem;
       text-align: left;
       vertical-align: middle;
+      border-bottom: 1px solid #ddd;
     }
     #chartPanel {
       flex: 2;
@@ -51,32 +52,55 @@
     .applyBtn {
       padding: 0.3rem 0.6rem;
       cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
     }
     #calculateBtn {
       margin-top: 1rem;
       padding: 0.5rem 1rem;
       cursor: pointer;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      width: 100%;
+    }
+    input[type="number"] {
+      width: 100px;
+      text-align: right;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <h1>Stock Investment Calculator</h1>
   <div class="container">
-    <!-- Left side: Input Panel -->
+    <!-- Left: Input Panel -->
     <div id="inputPanel">
-      <table id="sliderTable">
-        <!-- Rows inserted dynamically via JavaScript -->
+      <table>
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Stock Price</th>
+            <th>Investment ($)</th>
+            <th>Apply</th>
+          </tr>
+        </thead>
+        <tbody id="sliderTable">
+          <!-- Rows inserted dynamically -->
+        </tbody>
       </table>
       <button id="calculateBtn">Calculate & Plot</button>
     </div>
 
-    <!-- Right side: Chart Panel -->
+    <!-- Right: Chart Panel -->
     <div id="chartPanel">
       <div id="chart"></div>
     </div>
   </div>
 
-  <!-- Our app's JavaScript -->
   <script src="app.js"></script>
 </body>
 </html>
