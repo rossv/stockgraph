@@ -1,7 +1,6 @@
 /****************************************************
  * Historical Stock Prices (2012-2023)
  ****************************************************/
-
 const historicalData = [
   { year: 2012, price: 4.46 },
   { year: 2013, price: 6.52 },
@@ -20,17 +19,16 @@ const historicalData = [
 // Company match rate
 const MATCH_RATE = 0.25;
 
-// Will hold the investment amounts for each year
-// (defaults to 0 for each year initially)
+// Initialize an array to store each year's investment (default 0)
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 /****************************************************
- * Build the slider rows dynamically
+ * Dynamically Build the Slider Rows
  ****************************************************/
 const sliderTable = document.getElementById("sliderTable");
 
 historicalData.forEach((item, index) => {
-  // Create a table row
+  // Create table row
   const row = document.createElement("tr");
 
   // Year label
@@ -38,19 +36,19 @@ historicalData.forEach((item, index) => {
   yearCell.textContent = item.year;
   row.appendChild(yearCell);
 
-  // Slider
+  // Slider cell
   const sliderCell = document.createElement("td");
   const sliderInput = document.createElement("input");
   sliderInput.type = "range";
   sliderInput.min = "0";
-  sliderInput.max = "20000";  // adjust as needed
-  sliderInput.step = "100";   // adjust as needed
+  sliderInput.max = "20000";  // adjust range as needed
+  sliderInput.step = "100";   // adjust step as needed
   sliderInput.value = "0";
   sliderInput.id = `slider-${item.year}`;
   sliderCell.appendChild(sliderInput);
   row.appendChild(sliderCell);
 
-  // Numeric input
+  // Number input cell
   const numberCell = document.createElement("td");
   const numberInput = document.createElement("input");
   numberInput.type = "number";
@@ -61,7 +59,7 @@ historicalData.forEach((item, index) => {
   numberCell.appendChild(numberInput);
   row.appendChild(numberCell);
 
-  // Button: apply to subsequent years
+  // "Apply to Subsequent Years" button cell
   const applyCell = document.createElement("td");
   const applyBtn = document.createElement("button");
   applyBtn.textContent = "Apply →";
@@ -72,7 +70,7 @@ historicalData.forEach((item, index) => {
   applyCell.appendChild(applyBtn);
   row.appendChild(applyCell);
 
-  // Keep the slider and number input in sync
+  // Keep slider and number input synchronized
   sliderInput.addEventListener("input", () => {
     numberInput.value = sliderInput.value;
     investmentAmounts[index] = parseFloat(sliderInput.value);
@@ -82,12 +80,12 @@ historicalData.forEach((item, index) => {
     investmentAmounts[index] = parseFloat(numberInput.value);
   });
 
-  // Add the row to the table
+  // Append the row to the table
   sliderTable.appendChild(row);
 });
 
 /****************************************************
- * Apply a given value to all subsequent years
+ * Function to Apply a Value to All Subsequent Years
  ****************************************************/
 function applyToSubsequentYears(startIndex, value) {
   for (let i = startIndex; i < historicalData.length; i++) {
@@ -95,39 +93,36 @@ function applyToSubsequentYears(startIndex, value) {
     const year = historicalData[i].year;
     const slider = document.getElementById(`slider-${year}`);
     const number = document.getElementById(`number-${year}`);
-    slider.value = value;
-    number.value = value;
+    if (slider && number) {
+      slider.value = value;
+      number.value = value;
+    }
   }
 }
 
 /****************************************************
- * Calculate & Plot
+ * Calculate and Plot the Investment Growth
  ****************************************************/
 document.getElementById("calculateBtn").addEventListener("click", () => {
-  // Calculate the total shares for each year, and
-  // then the total value of those shares at that year's price
-
   let cumulativeUserShares = 0;
   let cumulativeMatchShares = 0;
 
-  // Arrays for the plot
   const years = [];
-  const userValue = [];         // Value of user-purchased shares
-  const userPlusMatchValue = []; // Value of user + match
+  const userValue = [];
+  const userPlusMatchValue = [];
 
   historicalData.forEach((item, index) => {
+    // Retrieve the investment for this year
     const investDollars = investmentAmounts[index];
     const sharesBought = investDollars / item.price;
     const matchShares = MATCH_RATE * sharesBought;
 
-    // Accumulate total shares
+    // Accumulate shares over the years
     cumulativeUserShares += sharesBought;
     cumulativeMatchShares += matchShares;
 
-    // End-of-year total value (just user shares)
+    // Calculate the end-of-year values at the current year's price
     const totalUserValue = cumulativeUserShares * item.price;
-
-    // End-of-year total value (user + match)
     const totalUserPlusMatch = (cumulativeUserShares + cumulativeMatchShares) * item.price;
 
     years.push(item.year);
@@ -135,7 +130,7 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     userPlusMatchValue.push(totalUserPlusMatch);
   });
 
-  // Build Plotly traces
+  // Prepare Plotly traces
   const traceUser = {
     x: years,
     y: userValue,
@@ -152,6 +147,7 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     line: { color: "green" }
   };
 
+  // Chart layout settings
   const layout = {
     title: "Value of Your Investments Over Time",
     xaxis: { title: "Year" },
@@ -159,5 +155,6 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     margin: { t: 50, b: 50, l: 60, r: 20 }
   };
 
+  // Render the chart in the "chart" div
   Plotly.newPlot("chart", [traceUser, traceUserMatch], layout, { responsive: true });
 });
