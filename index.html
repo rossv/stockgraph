@@ -6,6 +6,16 @@
   <title>Stock Investment Calculator</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
+    :root {
+      /* Provided colors */
+      --main-green: #43B02A;
+      --main-gray: #63666A;
+      --main-blue: #0082BA;
+      /* Light variants for subtle highlights */
+      --light-green: #E6F4EA; /* for Total Invested */
+      --light-blue: #E6F7FB;  /* for Total Current Value */
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -48,39 +58,10 @@
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
-    .applyBtn {
-      padding: 6px 10px;
-      cursor: pointer;
-      background: #007bff;
+    /* Table header: use provided blue */
+    #summaryTable th {
+      background-color: var(--main-blue);
       color: white;
-      border: none;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
-    .applyBtn:hover {
-      background: #0056b3;
-    }
-    .actionButton {
-      margin-top: 1.5rem;
-      padding: 12px;
-      cursor: pointer;
-      width: 100%;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
-      color: white;
-    }
-    #calculateBtn { background: #28a745; }
-    #clearBtn { background: #dc3545; }
-    input[type="text"] {
-      width: 150px;
-      text-align: right;
-      font-weight: bold;
-      padding: 6px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
     }
     /* Fixed layout for summary table (10 columns) */
     #summaryTable {
@@ -93,9 +74,52 @@
     #summaryTable th, #summaryTable td {
       width: calc(100% / 10);
     }
-    #summaryTable th {
-      background-color: #007bff;
+    /* Subtle highlights for specific columns */
+    #summaryTable th:nth-child(4),
+    #summaryTable td:nth-child(4) {
+      background-color: var(--light-green);
+    }
+    #summaryTable th:nth-child(9),
+    #summaryTable td:nth-child(9) {
+      background-color: var(--light-blue);
+    }
+    .applyBtn {
+      padding: 6px 10px;
+      cursor: pointer;
+      background: var(--main-blue);
       color: white;
+      border: none;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    .applyBtn:hover {
+      background: #006494;
+    }
+    .actionButton {
+      margin-top: 1.5rem;
+      padding: 12px;
+      cursor: pointer;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+    }
+    #calculateBtn {
+      background: var(--main-green);
+    }
+    #clearBtn {
+      background: var(--main-gray);
+    }
+    input[type="text"] {
+      width: 150px;
+      text-align: right;
+      font-weight: bold;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
     /* Disclosures styling */
     #disclosures {
@@ -128,8 +152,7 @@
           <!-- Rows inserted dynamically -->
         </tbody>
       </table>
-      <!-- You can still have a Calculate button if you want a manual trigger,
-           but it's optional now -->
+      <!-- The Calculate button remains if you want a manual trigger -->
       <button id="calculateBtn" class="actionButton">Calculate &amp; Plot</button>
       <button id="clearBtn" class="actionButton">Clear All Values</button>
     </div>
