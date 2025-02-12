@@ -5,7 +5,7 @@ const sp500GrowthRate = 0.07; // 7% annually
 const companyMatchRate = 0.25; // 25% match
 const vestingPeriod = 5; // 5-year vesting
 
-// Chart Variable (Global to Prevent Re-Creation)
+// Declare Chart Variable (Global)
 let investmentChart = null;
 
 // Function to Calculate Investment Growth
@@ -13,7 +13,7 @@ function calculateGrowth(investment, type) {
     let privateStock = [];
     let sp500 = [];
     let yearsArray = [];
-    
+
     let vestedMatch = 0; // Track vested match
     let totalInvested = investment; // Initial investment
     let matchContribution = investment * companyMatchRate; // 25% match
@@ -40,16 +40,17 @@ function calculateGrowth(investment, type) {
     return { yearsArray, privateStock, sp500 };
 }
 
-// Function to Initialize or Update Chart
+// Function to Initialize or Update the Chart
 function updateChart() {
-    let investmentAmount = parseFloat(document.getElementById('investmentAmount').value);
+    let investmentAmount = parseFloat(document.getElementById('investmentAmount').value) || 10000; // Default to 10K
     let investmentType = document.getElementById('investmentType').value;
 
     let data = calculateGrowth(investmentAmount, investmentType);
 
+    let ctx = document.getElementById('investmentChart').getContext('2d');
+
     if (!investmentChart) {
-        // Create the Chart ONLY ONCE
-        let ctx = document.getElementById('investmentChart').getContext('2d');
+        // Create Chart (Only Once)
         investmentChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -84,7 +85,7 @@ function updateChart() {
             }
         });
     } else {
-        // UPDATE EXISTING CHART (No re-creation)
+        // Update Existing Chart Data
         investmentChart.data.labels = data.yearsArray;
         investmentChart.data.datasets[0].data = data.privateStock;
         investmentChart.data.datasets[1].data = data.sp500;
@@ -92,5 +93,11 @@ function updateChart() {
     }
 }
 
-// Ensure the chart initializes once, then updates only
-updateChart();
+// Wait until the page fully loads before running the script
+document.addEventListener("DOMContentLoaded", function () {
+    updateChart(); // Initial Chart Render
+
+    // Event Listeners for User Inputs
+    document.getElementById('investmentAmount').addEventListener('input', updateChart);
+    document.getElementById('investmentType').addEventListener('change', updateChart);
+});
