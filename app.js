@@ -20,6 +20,8 @@ let investmentAmounts = new Array(historicalData.length).fill(0);
 
 document.getElementById("calculateBtn").addEventListener("click", () => {
   let cumulativeShares = 0, cumulativeMatchShares = 0, sp500Investment = 0;
+  let years = [], userValue = [], userPlusMatchValue = [], sp500Value = [];
+  
   let summaryBody = document.getElementById("summaryBody");
   summaryBody.innerHTML = "";
 
@@ -31,20 +33,30 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     cumulativeMatchShares += vestedMatch / item.price;
     sp500Investment = (sp500Investment + invested) * (1 + item.sp500Return / 100);
 
+    years.push(item.year);
+    userValue.push(cumulativeShares * item.price);
+    userPlusMatchValue.push((cumulativeShares + cumulativeMatchShares) * item.price);
+    sp500Value.push(sp500Investment);
+
     summaryBody.innerHTML += `<tr>
       <td>${item.year}</td>
       <td>$${item.price.toFixed(2)}</td>
       <td>${formatCurrency(invested)}</td>
       <td>${formatCurrency(vestedMatch)}</td>
-      <td>${formatCurrency(cumulativeShares * item.price)}</td>
-      <td>${formatCurrency((cumulativeShares + cumulativeMatchShares) * item.price)}</td>
-      <td>${formatCurrency(sp500Investment)}</td>
+      <td>${formatCurrency(userValue[index])}</td>
+      <td>${formatCurrency(userPlusMatchValue[index])}</td>
+      <td>${formatCurrency(sp500Value[index])}</td>
     </tr>`;
   });
 
   Plotly.newPlot("chart", [
-    { x: historicalData.map(d => d.year), y: historicalData.map((_, i) => sp500Investment), name: "S&P 500", fill: "tozeroy", line: { color: "orange" } }
-  ]);
+    { x: years, y: userValue, name: "Purchased Shares", fill: "tozeroy", line: { color: "blue" } },
+    { x: years, y: userPlusMatchValue, name: "Purchased Shares + Matching Shares", fill: "tozeroy", line: { color: "green" } },
+    { x: years, y: sp500Value, name: "S&P 500", fill: "tozeroy", line: { color: "orange" } }
+  ], {
+    xaxis: { title: "Year", tickmode: "array", tickvals: years }, 
+    yaxis: { title: "Value ($)" }
+  });
 });
 
 document.getElementById("clearBtn").addEventListener("click", () => {
