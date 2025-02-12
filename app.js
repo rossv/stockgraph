@@ -104,7 +104,7 @@ function updateCalculation() {
   let cumulativeMatchingShares = 0;     // Cumulative matching shares awarded
   let sp500Value = 0;
   
-  // We'll also track cumulative vesting for the cumulative column.
+  // Track cumulative vesting dollars.
   let cumulativeVesting = 0;
   
   simYears.forEach(simYear => {
@@ -135,7 +135,7 @@ function updateCalculation() {
         matchingSharesThisYear += matchingShares;
       }
     });
-    cumulativeVesting += vestThisYear;  // cumulative vest dollars awarded
+    cumulativeVesting += vestThisYear;  // update cumulative vest dollars awarded
     cumulativeMatchingAwarded = cumulativeVesting;
     cumulativeMatchingShares += matchingSharesThisYear;
     
@@ -212,9 +212,9 @@ function updateCalculation() {
   });
   
   Plotly.newPlot("chart", [
-    { x: simYears, y: employeeValueArray, name: "Current Value Purchases", fill: "tozeroy", line: { color: "blue" } },
-    { x: simYears, y: totalValueArray, name: "Total Current Value (Emp+Match)", fill: "tozeroy", line: { color: "green" } },
-    { x: simYears, y: sp500ValueArray, name: "Current Value S&P500", fill: "tozeroy", line: { color: "orange" } }
+    { x: simYears, y: employeeValueArray, name: "Current Value Purchases", fill: "tozeroy", line: { color: "#0082BA" } },
+    { x: simYears, y: totalValueArray, name: "Total Current Value (Emp+Match)", fill: "tozeroy", line: { color: "#43B02A" } },
+    { x: simYears, y: sp500ValueArray, name: "Current Value S&P500", fill: "tozeroy", line: { color: "#63666A" } }
   ], {
     xaxis: { dtick: 1 }
   });
@@ -223,7 +223,7 @@ function updateCalculation() {
 // If you still want the Calculate button, attach updateCalculation() to it.
 document.getElementById("calculateBtn").addEventListener("click", updateCalculation);
 
-// Clear All Values button.
+// Clear All Values button resets inputs, summary table, and chart.
 document.getElementById("clearBtn").addEventListener("click", () => {
   investmentAmounts = new Array(historicalData.length).fill(0);
   historicalData.forEach((item) => {
