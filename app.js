@@ -5,39 +5,16 @@ const sp500GrowthRate = 0.07;          // 7% annually
 const companyMatchRate = 0.25;         // 25% match
 const vestingPeriod = 5;               // 5-year vesting
 
-// Initialize Chart (create once)
-const ctx = document.getElementById('investmentChart').getContext('2d');
-let investmentChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: [],
-    datasets: []
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: { duration: 300 }, // Adjust duration or set to 0 to disable animation
-    plugins: {
-      tooltip: { mode: 'index', intersect: false }
-    },
-    interaction: {
-      mode: 'nearest',
-      axis: 'x',
-      intersect: false
-    }
-  }
-});
-
 // Calculate Investment Growth Data
 function calculateGrowth(investment, type) {
+  const yearsArray = [];
   const privateStock = [];
   const sp500 = [];
-  const yearsArray = [];
   
-  let vestedMatch = 0;
   let totalInvested = investment;
+  let vestedMatch = 0;
   let matchContribution = investment * companyMatchRate;
-
+  
   for (let i = 0; i <= years; i++) {
     yearsArray.push(i);
 
@@ -57,35 +34,42 @@ function calculateGrowth(investment, type) {
   return { yearsArray, privateStock, sp500 };
 }
 
-// Update Chart Data
+// Render or Update the Chart using Plotly
 function updateChart() {
   const investmentAmount = parseFloat(document.getElementById('investmentAmount').value);
   const investmentType = document.getElementById('investmentType').value;
   const data = calculateGrowth(investmentAmount, investmentType);
   
-  // Update chart labels and datasets
-  investmentChart.data.labels = data.yearsArray;
-  investmentChart.data.datasets = [
-    {
-      label: 'Private Stock Investment',
-      data: data.privateStock,
-      borderColor: 'blue',
-      fill: false,
-      tension: 0.2 // smooths out the line curve
-    },
-    {
-      label: 'S&P 500',
-      data: data.sp500,
-      borderColor: 'green',
-      fill: false,
-      tension: 0.2
-    }
-  ];
-
-  investmentChart.update();
+  const trace1 = {
+    x: data.yearsArray,
+    y: data.privateStock,
+    mode: 'lines+markers',
+    name: 'Private Stock Investment',
+    line: { color: 'blue' }
+  };
+  
+  const trace2 = {
+    x: data.yearsArray,
+    y: data.sp500,
+    mode: 'lines+markers',
+    name: 'S&P 500',
+    line: { color: 'green' }
+  };
+  
+  const chartData = [trace1, trace2];
+  
+  const layout = {
+    title: 'Investment Growth Over Time',
+    xaxis: { title: 'Years' },
+    yaxis: { title: 'Value ($)' },
+    margin: { t: 50, b: 50 }
+  };
+  
+  // Use Plotly.react to update the chart smoothly
+  Plotly.react('investmentChart', chartData, layout, {responsive: true});
 }
 
-// Set up event listener for button click
+// Set up event listener for the Calculate button
 document.getElementById('calculateBtn').addEventListener('click', updateChart);
 
 // Initial chart rendering
