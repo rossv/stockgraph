@@ -32,7 +32,7 @@ const sp500Returns = [
 ];
 
 const MATCH_RATE = 0.25;
-const VESTING_PERIOD = 5; // years
+const VESTING_PERIOD = 5; // vesting happens after 5 years
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
@@ -74,7 +74,7 @@ function applyToSubsequentYears(startIndex) {
   }
 }
 
-// Formats dollars without decimals (for invested amounts, etc.)
+// Formats dollars (no decimals for contributions)
 function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
 }
@@ -91,58 +91,64 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   summaryBody.innerHTML = "";
   
   let cumulativeShares = 0;
+  let cumulativeInvested = 0;
+  let cumulativeVestedMatch = 0;
   let sp500Value = 0;
   
-  let userPurchaseValue = [];
-  let userPurchasePlusMatchValue = [];
-  let sp500ValueArray = [];
+  const userPurchaseValue = [];
+  const userPurchasePlusMatchValue = [];
+  const sp500ValueArray = [];
   
   simYears.forEach(simYear => {
-    // Get stock price: if available from historicalData, else use last available price.
+    // Get stock price: if available from historicalData, else use the last available price.
     let dataEntry = historicalData.find(item => item.year === simYear);
     let stockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
     
-    // Get invested amount for the simulation year (only for years with inputs).
+    // Get invested amount for this year (only if there's an input for it).
     let invIndex = historicalData.findIndex(item => item.year === simYear);
     let invested = invIndex !== -1 ? investmentAmounts[invIndex] : 0;
+    cumulativeInvested += invested;
     
     // Calculate shares bought this year.
     let sharesBought = invested / stockPrice;
     cumulativeShares += sharesBought;
-    
     let currentValuePurchases = cumulativeShares * stockPrice;
     
-    // Calculate vested match: only include investments that are at least VESTING_PERIOD years old.
-    let vestedMatch = 0;
+    // Calculate vested match _this year_ (only contributions that are exactly 5 years old vest now).
+    let vestedThisYear = 0;
     historicalData.forEach((entry, idx) => {
-      if (simYear >= entry.year + VESTING_PERIOD) {
-        vestedMatch += investmentAmounts[idx] * MATCH_RATE;
+      if (simYear === entry.year + VESTING_PERIOD) {
+        vestedThisYear += investmentAmounts[idx] * MATCH_RATE;
       }
     });
+    cumulativeVestedMatch += vestedThisYear;
     
-    let currentValuePurchasedPlusMatch = currentValuePurchases + vestedMatch;
+    let currentValuePurchasedPlusMatch = currentValuePurchases + cumulativeVestedMatch;
     
-    // S&P500 simulation using actual annual return.
+    // S&P500 simulation: apply this year's return only to the previous balance, then add this year's invested amount.
     let spReturnObj = sp500Returns.find(item => item.year === simYear);
     let spReturn = spReturnObj ? spReturnObj.return : 0;
-    sp500Value = (sp500Value + invested) * (1 + spReturn);
+    sp500Value = sp500Value * (1 + spReturn) + invested;
     
+    // Save values for plotting.
     userPurchaseValue.push(currentValuePurchases);
     userPurchasePlusMatchValue.push(currentValuePurchasedPlusMatch);
     sp500ValueArray.push(sp500Value);
     
+    // Build the summary table row.
     summaryBody.innerHTML += `<tr>
       <td>${simYear}</td>
       <td>${formatPrice(stockPrice)}</td>
       <td>${formatCurrency(invested)}</td>
-      <td>${formatCurrency(vestedMatch)}</td>
+      <td>${formatCurrency(cumulativeInvested)}</td>
+      <td>${formatCurrency(vestedThisYear)}</td>
       <td>${formatCurrency(currentValuePurchases)}</td>
       <td>${formatCurrency(currentValuePurchasedPlusMatch)}</td>
       <td>${formatCurrency(sp500Value)}</td>
     </tr>`;
   });
   
-  // Plot three lines and force the x-axis to show every year.
+  // Plot three lines with x-axis showing every year.
   Plotly.newPlot("chart", [
     { x: simYears, y: userPurchaseValue, name: "Current Value Purchases", fill: "tozeroy", line: { color: "blue" } },
     { x: simYears, y: userPurchasePlusMatchValue, name: "Current Value Purchased + Matching", fill: "tozeroy", line: { color: "green" } },
