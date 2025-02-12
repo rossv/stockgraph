@@ -24,17 +24,17 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   summaryBody.innerHTML = "";
 
   historicalData.forEach((item, index) => {
-    let investDollars = investmentAmounts[index];
-    let vestedMatch = index >= VESTING_PERIOD ? investDollars * MATCH_RATE : 0;
-    let sharesBought = investDollars / item.price;
+    let invested = investmentAmounts[index];
+    let vestedMatch = index >= VESTING_PERIOD ? invested * MATCH_RATE : 0;
+    let sharesBought = invested / item.price;
     cumulativeShares += sharesBought;
     cumulativeMatchShares += vestedMatch / item.price;
-    sp500Investment = (sp500Investment + investDollars) * (1 + item.sp500Return / 100);
+    sp500Investment = (sp500Investment + invested) * (1 + item.sp500Return / 100);
 
     summaryBody.innerHTML += `<tr>
       <td>${item.year}</td>
       <td>$${item.price.toFixed(2)}</td>
-      <td>${formatCurrency(investDollars)}</td>
+      <td>${formatCurrency(invested)}</td>
       <td>${formatCurrency(vestedMatch)}</td>
       <td>${formatCurrency(cumulativeShares * item.price)}</td>
       <td>${formatCurrency((cumulativeShares + cumulativeMatchShares) * item.price)}</td>
@@ -45,6 +45,14 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   Plotly.newPlot("chart", [
     { x: historicalData.map(d => d.year), y: historicalData.map((_, i) => sp500Investment), name: "S&P 500", fill: "tozeroy", line: { color: "orange" } }
   ]);
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  investmentAmounts.fill(0);
+  document.querySelectorAll("input[type='range']").forEach(el => el.value = 0);
+  document.querySelectorAll("input[type='text']").forEach(el => el.value = "$0");
+  document.getElementById("summaryBody").innerHTML = "";
+  Plotly.newPlot("chart", [], {});
 });
 
 function formatCurrency(value) {
