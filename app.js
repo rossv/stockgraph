@@ -14,7 +14,7 @@ const historicalData = [
   { year: 2023, price: 51.02 }
 ];
 
-// Actual S&P500 annual returns (2012–2023); 2024 defined but excluded.
+// Actual S&P500 annual returns (2012–2023); 2024 is defined but will be excluded.
 const sp500Returns = [
   { year: 2012, return: 0.16 },
   { year: 2013, return: 0.3239 },
@@ -34,7 +34,7 @@ const sp500Returns = [
 const MATCH_RATE = 0.25;
 const VESTING_PERIOD = 5; // Vesting occurs after 5 years
 
-// Array to store investment amounts (order corresponding to historicalData)
+// Array to store investment amounts per year (order corresponds to historicalData)
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
@@ -78,7 +78,7 @@ function applyToSubsequentYears(startIndex) {
   updateCalculation();
 }
 
-// Helper: formats dollars without decimals.
+// Helper: formats dollars without decimals but with commas.
 function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
 }
@@ -194,7 +194,6 @@ function updateCalculation() {
     let currentValueEmployee = cumEmployeeShares * currentStockPrice;
     let currentValueMatching = cumMatchingShares * currentStockPrice;
     let totalCurrentValue = currentValueEmployee + currentValueMatching;
-    
     employeeValueArray.push(currentValueEmployee);
     totalValueArray.push(totalCurrentValue);
     
@@ -204,7 +203,7 @@ function updateCalculation() {
     sp500ValueArray.push(sp500Val);
   });
   
-  // Plot traces in desired order with non-transparent fills and hover formatting.
+  // Plot traces in desired order with non-transparent fills and formatted hover labels.
   Plotly.newPlot("chart", [
     {
       x: simYears,
@@ -214,7 +213,7 @@ function updateCalculation() {
       fillcolor: "rgba(67,176,42,1)",
       opacity: 1,
       line: { color: "rgba(67,176,42,1)" },
-      hovertemplate: '$%{y:.2f}<extra></extra>'
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
     {
       x: simYears,
@@ -224,7 +223,7 @@ function updateCalculation() {
       fillcolor: "rgba(0,130,186,1)",
       opacity: 1,
       line: { color: "rgba(0,130,186,1)" },
-      hovertemplate: '$%{y:.2f}<extra></extra>'
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
     {
       x: simYears,
@@ -234,7 +233,7 @@ function updateCalculation() {
       fillcolor: "rgba(99,102,106,1)",
       opacity: 1,
       line: { color: "rgba(99,102,106,1)" },
-      hovertemplate: '$%{y:.2f}<extra></extra>'
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
     {
       x: simYears,
@@ -244,7 +243,7 @@ function updateCalculation() {
       fillcolor: "rgba(198,54,99,1)",
       opacity: 1,
       line: { color: "rgba(198,54,99,1)" },
-      hovertemplate: '$%{y:.2f}<extra></extra>'
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
     }
   ], {
     xaxis: { dtick: 1 },
@@ -254,7 +253,7 @@ function updateCalculation() {
       xanchor: "left",
       y: -0.2
     }
-  });
+  }, { responsive: true });
 }
 
 // Clear All Values button.
