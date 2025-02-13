@@ -12,7 +12,7 @@
       --main-gray: rgb(99,102,106);     /* Current Value S&P500 */
       --main-blue: rgb(0,130,186);       /* Current Value Purchases */
       --invested-color: rgb(198,54,99);  /* Employee Total Invested */
-      /* New variable for light magenta highlight */
+      /* New variable for light magenta highlight (for Employee Total Invested table column) */
       --light-magenta-col: #FAD0EC;
       /* For table header, use a uniform blue */
       --header-blue: #0082BA;
@@ -138,6 +138,23 @@
       color: #555;
       padding: 10px;
       text-align: center;
+    }
+    /* Responsive design: stack panels on narrow screens */
+    @media screen and (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        margin: 1rem;
+      }
+      #inputPanel, #chartPanel {
+        max-width: 100%;
+        width: 100%;
+      }
+      table, th, td {
+        font-size: 0.8rem;
+      }
+      #chart {
+        height: 300px;
+      }
     }
   </style>
 </head>
