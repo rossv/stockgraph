@@ -135,7 +135,7 @@ function updateCalculation() {
         matchingSharesThisYear += matchingShares;
       }
     });
-    cumulativeVesting += vestThisYear;  // update cumulative vest dollars awarded
+    cumulativeVesting += vestThisYear;
     cumulativeMatchingAwarded = cumulativeVesting;
     cumulativeMatchingShares += matchingSharesThisYear;
     
@@ -212,13 +212,37 @@ function updateCalculation() {
   });
   
   // Plot traces in the desired order:
-  // 1. Total Current Value (Emp+Match) (plotted first, in the back)
-  // 2. Current Value Purchases (Employee) (plotted next)
-  // 3. Current Value S&P500 (plotted on top)
+  // 1. Total Current Value (Emp+Match) in the back
+  // 2. Current Value Purchases
+  // 3. Current Value S&P500 on top
   Plotly.newPlot("chart", [
-    { x: simYears, y: totalValueArray, name: "Total Current Value (Emp+Match)", fill: "tozeroy", line: { color: "#43B02A" } },
-    { x: simYears, y: employeeValueArray, name: "Current Value Purchases", fill: "tozeroy", line: { color: "#0082BA" } },
-    { x: simYears, y: sp500ValueArray, name: "Current Value S&P500", fill: "tozeroy", line: { color: "#63666A" } }
+    {
+      x: simYears,
+      y: totalValueArray,
+      name: "Total Current Value (Emp+Match)",
+      fill: "tozeroy",
+      fillcolor: "#43B02A",
+      opacity: 1,
+      line: { color: "#43B02A" }
+    },
+    {
+      x: simYears,
+      y: employeeValueArray,
+      name: "Current Value Purchases",
+      fill: "tozeroy",
+      fillcolor: "#0082BA",
+      opacity: 1,
+      line: { color: "#0082BA" }
+    },
+    {
+      x: simYears,
+      y: sp500ValueArray,
+      name: "Current Value S&P500",
+      fill: "tozeroy",
+      fillcolor: "#63666A",
+      opacity: 1,
+      line: { color: "#63666A" }
+    }
   ], {
     xaxis: { dtick: 1 },
     legend: {
