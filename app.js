@@ -211,12 +211,22 @@ function updateCalculation() {
     sp500ValueArray.push(sp500Val);
   });
   
+  // Plot traces in the desired order:
+  // 1. Total Current Value (Emp+Match) (plotted first, in the back)
+  // 2. Current Value Purchases (Employee) (plotted next)
+  // 3. Current Value S&P500 (plotted on top)
   Plotly.newPlot("chart", [
-    { x: simYears, y: employeeValueArray, name: "Current Value Purchases", fill: "tozeroy", line: { color: "#0082BA" } },
     { x: simYears, y: totalValueArray, name: "Total Current Value (Emp+Match)", fill: "tozeroy", line: { color: "#43B02A" } },
+    { x: simYears, y: employeeValueArray, name: "Current Value Purchases", fill: "tozeroy", line: { color: "#0082BA" } },
     { x: simYears, y: sp500ValueArray, name: "Current Value S&P500", fill: "tozeroy", line: { color: "#63666A" } }
   ], {
-    xaxis: { dtick: 1 }
+    xaxis: { dtick: 1 },
+    legend: {
+      orientation: "h",
+      x: 0,
+      xanchor: "left",
+      y: -0.2
+    }
   });
 }
 
