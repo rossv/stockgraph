@@ -11,9 +11,10 @@
       --main-green: #43B02A;
       --main-gray: #63666A;
       --main-blue: #0082BA;
-      /* Light variants for subtle highlights */
-      --light-green: #E6F4EA; /* for Total Invested */
-      --light-blue: #E6F7FB;  /* for Total Current Value */
+      /* New light color variants for column highlights */
+      --light-blue-col: #B3D7F2;
+      --light-green-col: #C3E7C9;
+      --light-grey-col: #D3D3D3;
     }
 
     body {
@@ -74,15 +75,22 @@
     #summaryTable th, #summaryTable td {
       width: calc(100% / 10);
     }
-    /* Subtle highlight for the 4th and 9th columns (header and cells) */
-    #summaryTable th:nth-child(4),
-    #summaryTable td:nth-child(4) {
-      background-color: var(--light-green);
+    /* Column highlights:
+       - Column 8: Current Value Employee Purchases -> light blue
+       - Column 9: Total Current Value (Emp+Match) -> light green
+       - Column 10: Current Value S&P500 -> light grey
+    */
+    #summaryTable th:nth-child(8),
+    #summaryTable td:nth-child(8) {
+      background-color: var(--light-blue-col);
     }
-    
     #summaryTable th:nth-child(9),
     #summaryTable td:nth-child(9) {
-      background-color: var(--light-blue);
+      background-color: var(--light-green-col);
+    }
+    #summaryTable th:nth-child(10),
+    #summaryTable td:nth-child(10) {
+      background-color: var(--light-grey-col);
     }
     .applyBtn {
       padding: 6px 10px;
