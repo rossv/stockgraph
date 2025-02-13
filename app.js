@@ -14,7 +14,7 @@ const historicalData = [
   { year: 2023, price: 51.02 }
 ];
 
-// Actual S&P500 annual returns (2012–2023); 2024 is defined but excluded.
+// Actual S&P500 annual returns (2012–2023); 2024 defined but excluded.
 const sp500Returns = [
   { year: 2012, return: 0.16 },
   { year: 2013, return: 0.3239 },
@@ -34,7 +34,7 @@ const sp500Returns = [
 const MATCH_RATE = 0.25;
 const VESTING_PERIOD = 5; // Vesting occurs after 5 years
 
-// Array to store investment amounts per year (matching historicalData order)
+// Array to store investment amounts (order corresponding to historicalData)
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
@@ -116,7 +116,6 @@ function updateCalculation() {
       cumulativeEmployeeInvested += invested;
     }
     
-    // Calculate vesting for this year.
     let vestThisYear = 0;
     let matchingSharesThisYear = 0;
     historicalData.forEach((entry, idx) => {
@@ -157,13 +156,14 @@ function updateCalculation() {
   const employeeValueArray = [];
   const totalValueArray = [];
   const sp500ValueArray = [];
-  const investedValueArray = []; // Cumulative Employee Invested
+  const investedValueArray = [];
   
   let cumEmployeeShares = 0;
   let cumEmployeeInvested = 0;
   let cumMatchingAwarded = 0;
   let cumMatchingShares = 0;
   let sp500Val = 0;
+  
   simYears.forEach(simYear => {
     let dataEntry = historicalData.find(item => item.year === simYear);
     let currentStockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
@@ -194,6 +194,7 @@ function updateCalculation() {
     let currentValueEmployee = cumEmployeeShares * currentStockPrice;
     let currentValueMatching = cumMatchingShares * currentStockPrice;
     let totalCurrentValue = currentValueEmployee + currentValueMatching;
+    
     employeeValueArray.push(currentValueEmployee);
     totalValueArray.push(totalCurrentValue);
     
@@ -203,11 +204,7 @@ function updateCalculation() {
     sp500ValueArray.push(sp500Val);
   });
   
-  // Plot traces in desired order:
-  // 1. Total Current Value (Emp+Match) – back (green)
-  // 2. Current Value Purchases – next (blue)
-  // 3. Current Value S&P500 – next (grey)
-  // 4. Employee Total Invested – on top (invested-color)
+  // Plot traces in desired order with non-transparent fills and hover formatting.
   Plotly.newPlot("chart", [
     {
       x: simYears,
@@ -216,7 +213,8 @@ function updateCalculation() {
       fill: "tozeroy",
       fillcolor: "rgba(67,176,42,1)",
       opacity: 1,
-      line: { color: "rgba(67,176,42,1)" }
+      line: { color: "rgba(67,176,42,1)" },
+      hovertemplate: '$%{y:.2f}<extra></extra>'
     },
     {
       x: simYears,
@@ -225,7 +223,8 @@ function updateCalculation() {
       fill: "tozeroy",
       fillcolor: "rgba(0,130,186,1)",
       opacity: 1,
-      line: { color: "rgba(0,130,186,1)" }
+      line: { color: "rgba(0,130,186,1)" },
+      hovertemplate: '$%{y:.2f}<extra></extra>'
     },
     {
       x: simYears,
@@ -234,7 +233,8 @@ function updateCalculation() {
       fill: "tozeroy",
       fillcolor: "rgba(99,102,106,1)",
       opacity: 1,
-      line: { color: "rgba(99,102,106,1)" }
+      line: { color: "rgba(99,102,106,1)" },
+      hovertemplate: '$%{y:.2f}<extra></extra>'
     },
     {
       x: simYears,
@@ -243,7 +243,8 @@ function updateCalculation() {
       fill: "tozeroy",
       fillcolor: "rgba(198,54,99,1)",
       opacity: 1,
-      line: { color: "rgba(198,54,99,1)" }
+      line: { color: "rgba(198,54,99,1)" },
+      hovertemplate: '$%{y:.2f}<extra></extra>'
     }
   ], {
     xaxis: { dtick: 1 },
@@ -256,8 +257,7 @@ function updateCalculation() {
   });
 }
 
-// Remove the Calculate button (live updating only).
-// Clear All Values button remains.
+// Clear All Values button.
 document.getElementById("clearBtn").addEventListener("click", () => {
   investmentAmounts = new Array(historicalData.length).fill(0);
   historicalData.forEach((item) => {
