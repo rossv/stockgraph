@@ -11,7 +11,7 @@
       --main-green: #43B02A;
       --main-gray: #63666A;
       --main-blue: #0082BA;
-      /* New light color variants for column highlights */
+      /* New light color variants for column highlights in table body */
       --light-blue-col: #B3D7F2;
       --light-green-col: #C3E7C9;
       --light-grey-col: #D3D3D3;
@@ -59,10 +59,11 @@
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
-    /* Table header: use provided blue */
-    #summaryTable th {
-      background-color: var(--main-blue);
+    /* Uniform header row styling */
+    #summaryTable thead th {
+      background-color: var(--main-blue) !important;
       color: white;
+      font-size: 0.85rem;
     }
     /* Fixed layout for summary table (10 columns) */
     #summaryTable {
@@ -75,21 +76,14 @@
     #summaryTable th, #summaryTable td {
       width: calc(100% / 10);
     }
-    /* Column highlights:
-       - Column 8: Current Value Employee Purchases -> light blue
-       - Column 9: Total Current Value (Emp+Match) -> light green
-       - Column 10: Current Value S&P500 -> light grey
-    */
-    #summaryTable th:nth-child(8),
-    #summaryTable td:nth-child(8) {
+    /* Highlight table body cells in specific columns */
+    #summaryTable tbody td:nth-child(8) {
       background-color: var(--light-blue-col);
     }
-    #summaryTable th:nth-child(9),
-    #summaryTable td:nth-child(9) {
+    #summaryTable tbody td:nth-child(9) {
       background-color: var(--light-green-col);
     }
-    #summaryTable th:nth-child(10),
-    #summaryTable td:nth-child(10) {
+    #summaryTable tbody td:nth-child(10) {
       background-color: var(--light-grey-col);
     }
     .applyBtn {
