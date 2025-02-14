@@ -7,15 +7,19 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     :root {
-      /* Provided colors (RGB) */
-      --main-green: rgb(67,176,42);    /* Will be used for Current Value Purchases (green) */
-      --main-gray: rgb(99,102,106);     /* Will be used for Employee Total Invested (grey) */
-      --main-blue: rgb(0,130,186);       /* Will be used for Total Current Value (Emp+Match) (blue) */
-      --invested-color: rgb(198,54,99);  /* Will be used for S&P500 (magenta) */
+      /* Colors (RGB) after swapping: */
+      --main-green: rgb(67,176,42);    /* For Current Value Purchases */
+      --main-gray: rgb(99,102,106);     /* For Employee Total Invested */
+      --main-blue: rgb(0,130,186);       /* For Total Current Value (Emp+Match) */
+      --invested-color: rgb(198,54,99);  /* For Current Value S&P500 (magenta) */
       /* For table header */
       --header-blue: #0082BA;
+      /* New highlight colors for table body */
+      --table-invested-bg: #E0E0E0;      /* Column 4: Employee Total Invested */
+      --table-emp-bg: #C3E7C9;           /* Column 8: Current Value Employee Purchases (light green) */
+      --table-total-bg: #B3D7F2;         /* Column 9: Total Current Value (Emp+Match) (light blue) */
+      --table-sp500-bg: #FAD0EC;         /* Column 10: Current Value S&P500 (light magenta) */
     }
-
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -58,7 +62,7 @@
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
-    /* Uniform header row styling */
+    /* Uniform header styling */
     #summaryTable thead th {
       background-color: var(--header-blue) !important;
       color: white;
@@ -75,26 +79,22 @@
     #summaryTable th, #summaryTable td {
       width: calc(100% / 10);
     }
-    /* Table body cell font-size to avoid wrapping */
+    /* Reduce table body font size to help prevent wrapping */
     #summaryTable tbody td {
       font-size: 0.75rem;
     }
-    /* Table body highlights */
-    /* Column 4: Employee Total Invested -> light grey */
+    /* Table body column highlights */
     #summaryTable tbody td:nth-child(4) {
-      background-color: #E0E0E0;
+      background-color: var(--table-invested-bg);
     }
-    /* Column 8: Current Value Employee Purchases -> light green */
     #summaryTable tbody td:nth-child(8) {
-      background-color: #C3E7C9;
+      background-color: var(--table-emp-bg);
     }
-    /* Column 9: Total Current Value (Emp+Match) -> light blue */
     #summaryTable tbody td:nth-child(9) {
-      background-color: #B3D7F2;
+      background-color: var(--table-total-bg);
     }
-    /* Column 10: Current Value S&P500 -> light magenta */
     #summaryTable tbody td:nth-child(10) {
-      background-color: #FAD0EC;
+      background-color: var(--table-sp500-bg);
     }
     .applyBtn {
       padding: 6px 10px;
@@ -119,7 +119,7 @@
       font-weight: bold;
       color: white;
     }
-    /* Only the Clear All button remains */
+    /* Only Clear button remains (live updating; no Calculate button) */
     #clearBtn {
       background: var(--main-gray);
     }
@@ -132,6 +132,16 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
+    /* New Projection Control */
+    #projectionControl {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    #projectionControl button {
+      padding: 4px 8px;
+      margin: 0 5px;
+      font-size: 1rem;
+    }
     /* Disclosures styling */
     #disclosures {
       max-width: 800px;
@@ -141,7 +151,7 @@
       padding: 10px;
       text-align: center;
     }
-    /* Responsive design */
+    /* Responsive design for mobile */
     @media screen and (max-width: 768px) {
       .container {
         flex-direction: column;
@@ -177,9 +187,16 @@
           </tr>
         </thead>
         <tbody id="sliderTable">
-          <!-- Rows inserted dynamically -->
+          <!-- Slider rows inserted dynamically -->
         </tbody>
       </table>
+      <!-- Projection Control -->
+      <div id="projectionControl">
+        <label for="projValue">Project Additional Years:</label>
+        <button id="projMinus">–</button>
+        <span id="projValue">5</span>
+        <button id="projPlus">+</button>
+      </div>
       <button id="clearBtn" class="actionButton">Clear All Values</button>
     </div>
 
