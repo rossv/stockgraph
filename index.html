@@ -7,14 +7,12 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     :root {
-      /* Provided colors in rgb */
-      --main-green: rgb(67,176,42);    /* Total Current Value (Emp+Match) */
-      --main-gray: rgb(99,102,106);     /* Current Value S&P500 */
-      --main-blue: rgb(0,130,186);       /* Current Value Purchases */
-      --invested-color: rgb(198,54,99);  /* Employee Total Invested */
-      /* New variable for light magenta highlight (for Employee Total Invested table column) */
-      --light-magenta-col: #FAD0EC;
-      /* For table header, use a uniform blue */
+      /* Provided colors (RGB) */
+      --main-green: rgb(67,176,42);    /* Will be used for Current Value Purchases (green) */
+      --main-gray: rgb(99,102,106);     /* Will be used for Employee Total Invested (grey) */
+      --main-blue: rgb(0,130,186);       /* Will be used for Total Current Value (Emp+Match) (blue) */
+      --invested-color: rgb(198,54,99);  /* Will be used for S&P500 (magenta) */
+      /* For table header */
       --header-blue: #0082BA;
     }
 
@@ -77,22 +75,26 @@
     #summaryTable th, #summaryTable td {
       width: calc(100% / 10);
     }
-    /* Highlight table body cells in specific columns */
-    /* Column 4: Employee Total Invested – light magenta */
+    /* Table body cell font-size to avoid wrapping */
+    #summaryTable tbody td {
+      font-size: 0.75rem;
+    }
+    /* Table body highlights */
+    /* Column 4: Employee Total Invested -> light grey */
     #summaryTable tbody td:nth-child(4) {
-      background-color: var(--light-magenta-col);
+      background-color: #E0E0E0;
     }
-    /* Column 8: Current Value Employee Purchases – light blue */
+    /* Column 8: Current Value Employee Purchases -> light green */
     #summaryTable tbody td:nth-child(8) {
-      background-color: #B3D7F2;
-    }
-    /* Column 9: Total Current Value (Emp+Match) – light green */
-    #summaryTable tbody td:nth-child(9) {
       background-color: #C3E7C9;
     }
-    /* Column 10: Current Value S&P500 – light grey */
+    /* Column 9: Total Current Value (Emp+Match) -> light blue */
+    #summaryTable tbody td:nth-child(9) {
+      background-color: #B3D7F2;
+    }
+    /* Column 10: Current Value S&P500 -> light magenta */
     #summaryTable tbody td:nth-child(10) {
-      background-color: #D3D3D3;
+      background-color: #FAD0EC;
     }
     .applyBtn {
       padding: 6px 10px;
@@ -139,7 +141,7 @@
       padding: 10px;
       text-align: center;
     }
-    /* Responsive design: stack panels on narrow screens */
+    /* Responsive design */
     @media screen and (max-width: 768px) {
       .container {
         flex-direction: column;
@@ -150,7 +152,7 @@
         width: 100%;
       }
       table, th, td {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
       }
       #chart {
         height: 300px;
