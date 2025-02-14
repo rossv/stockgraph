@@ -34,7 +34,7 @@ const sp500Returns = [
 const MATCH_RATE = 0.25;
 const VESTING_PERIOD = 5; // Vesting occurs after 5 years
 
-// Array to store investment amounts per year (order corresponds to historicalData)
+// Array to store investment amounts per year (in order of historicalData)
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
@@ -78,7 +78,7 @@ function applyToSubsequentYears(startIndex) {
   updateCalculation();
 }
 
-// Helper: formats dollars without decimals but with commas.
+// Helper: formats dollars with commas, no decimals.
 function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
 }
@@ -203,22 +203,16 @@ function updateCalculation() {
     sp500ValueArray.push(sp500Val);
   });
   
-  // Plot traces in desired order with non-transparent fills and formatted hover labels.
+  // Plot traces in desired order:
+  // 1. Total Current Value (Emp+Match) – back (blue)
+  // 2. Current Value Purchases – next (green)
+  // 3. Current Value S&P500 – next (magenta)
+  // 4. Employee Total Invested – on top (grey)
   Plotly.newPlot("chart", [
     {
       x: simYears,
       y: totalValueArray,
       name: "Total Current Value (Emp+Match)",
-      fill: "tozeroy",
-      fillcolor: "rgba(67,176,42,1)",
-      opacity: 1,
-      line: { color: "rgba(67,176,42,1)" },
-      hovertemplate: '$%{y:,.0f}<extra></extra>'
-    },
-    {
-      x: simYears,
-      y: employeeValueArray,
-      name: "Current Value Purchases",
       fill: "tozeroy",
       fillcolor: "rgba(0,130,186,1)",
       opacity: 1,
@@ -227,12 +221,22 @@ function updateCalculation() {
     },
     {
       x: simYears,
+      y: employeeValueArray,
+      name: "Current Value Purchases",
+      fill: "tozeroy",
+      fillcolor: "rgba(67,176,42,1)",
+      opacity: 1,
+      line: { color: "rgba(67,176,42,1)" },
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
+    },
+    {
+      x: simYears,
       y: sp500ValueArray,
       name: "Current Value S&P500",
       fill: "tozeroy",
-      fillcolor: "rgba(99,102,106,1)",
+      fillcolor: "rgba(198,54,99,1)",
       opacity: 1,
-      line: { color: "rgba(99,102,106,1)" },
+      line: { color: "rgba(198,54,99,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
     {
@@ -240,9 +244,9 @@ function updateCalculation() {
       y: investedValueArray,
       name: "Employee Total Invested",
       fill: "tozeroy",
-      fillcolor: "rgba(198,54,99,1)",
+      fillcolor: "rgba(99,102,106,1)",
       opacity: 1,
-      line: { color: "rgba(198,54,99,1)" },
+      line: { color: "rgba(99,102,106,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     }
   ], {
