@@ -32,14 +32,14 @@ const sp500Returns = [
 ];
 
 const MATCH_RATE = 0.25;
-const VESTING_PERIOD = 5; // Vesting occurs after 5 years
+const VESTING_PERIOD = 5; // years
 
-// Array to store investment amounts per year (in order of historicalData)
+// Array to store investment amounts per year (in order)
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
 
-// Build input rows with slider, text field, and apply button.
+// Build input rows.
 historicalData.forEach((item, index) => {
   const row = document.createElement("tr");
   row.innerHTML = `
@@ -67,7 +67,7 @@ historicalData.forEach((item, index) => {
   });
 });
 
-// Update all subsequent years when "Apply" is clicked.
+// Update subsequent years when "Apply" is clicked.
 function applyToSubsequentYears(startIndex) {
   let value = investmentAmounts[startIndex];
   for (let i = startIndex; i < historicalData.length; i++) {
@@ -78,7 +78,7 @@ function applyToSubsequentYears(startIndex) {
   updateCalculation();
 }
 
-// Helper: formats dollars with commas, no decimals.
+// Helper: formats dollars with commas and no decimals.
 function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
 }
@@ -88,24 +88,29 @@ function formatPrice(value) {
   return `$${Number(value).toFixed(2)}`;
 }
 
-// Main calculation function: updates table and plot.
+// Main calculation: update table and plot.
 function updateCalculation() {
+  // Use actual simulation years: 2012–2023.
   const simYears = sp500Returns.filter(item => item.year !== 2024).map(item => item.year);
   const summaryBody = document.getElementById("summaryBody");
   summaryBody.innerHTML = "";
   
   let cumulativeEmployeeShares = 0;
   let cumulativeEmployeeInvested = 0;
-  let cumulativeMatchingAwarded = 0; // Cumulative matching dollars awarded
-  let cumulativeMatchingShares = 0;    // Cumulative matching shares awarded
+  let cumulativeMatchingAwarded = 0;
+  let cumulativeMatchingShares = 0;
   let sp500Value = 0;
+  let cumulativeVesting = 0;
   
-  let cumulativeVesting = 0; // Tracks cumulative vesting dollars
+  // Arrays for plotting.
+  let investedValueArray = [];
+  let employeeValueArray = [];
+  let totalValueArray = [];
+  let sp500ValueArray = [];
   
   simYears.forEach(simYear => {
     let dataEntry = historicalData.find(item => item.year === simYear);
     let currentStockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
-    
     let invIndex = historicalData.findIndex(item => item.year === simYear);
     let invested = (invIndex !== -1) ? investmentAmounts[invIndex] : 0;
     
@@ -134,9 +139,10 @@ function updateCalculation() {
     let currentValueMatching = cumulativeMatchingShares * currentStockPrice;
     let totalCurrentValue = currentValueEmployee + currentValueMatching;
     
+    // Updated S&P500 simulation: add the current year's invested amount, then apply growth.
     let spReturnObj = sp500Returns.find(item => item.year === simYear);
     let spReturn = spReturnObj ? spReturnObj.return : 0;
-    sp500Value = sp500Value * (1 + spReturn) + invested;
+    sp500Value = (sp500Value + invested) * (1 + spReturn);
     
     summaryBody.innerHTML += `<tr>
       <td>${simYear}</td>
@@ -150,64 +156,14 @@ function updateCalculation() {
       <td>${formatCurrency(totalCurrentValue)}</td>
       <td>${formatCurrency(sp500Value)}</td>
     </tr>`;
-  });
-  
-  // Prepare arrays for plotting.
-  const employeeValueArray = [];
-  const totalValueArray = [];
-  const sp500ValueArray = [];
-  const investedValueArray = [];
-  
-  let cumEmployeeShares = 0;
-  let cumEmployeeInvested = 0;
-  let cumMatchingAwarded = 0;
-  let cumMatchingShares = 0;
-  let sp500Val = 0;
-  
-  simYears.forEach(simYear => {
-    let dataEntry = historicalData.find(item => item.year === simYear);
-    let currentStockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
-    let invIndex = historicalData.findIndex(item => item.year === simYear);
-    let invested = (invIndex !== -1) ? investmentAmounts[invIndex] : 0;
     
-    if (invIndex !== -1) {
-      let purchasePrice = historicalData[invIndex].price;
-      let employeeShares = invested / purchasePrice;
-      cumEmployeeShares += employeeShares;
-      cumEmployeeInvested += invested;
-    }
-    investedValueArray.push(cumEmployeeInvested);
-    
-    let vestThisYearPlot = 0;
-    let matchingSharesThisYearPlot = 0;
-    historicalData.forEach((entry, idx) => {
-      if (simYear === entry.year + VESTING_PERIOD) {
-        let matchingAwarded = investmentAmounts[idx] * MATCH_RATE;
-        vestThisYearPlot += matchingAwarded;
-        let matchingShares = matchingAwarded / currentStockPrice;
-        matchingSharesThisYearPlot += matchingShares;
-      }
-    });
-    cumMatchingAwarded += vestThisYearPlot;
-    cumMatchingShares += matchingSharesThisYearPlot;
-    
-    let currentValueEmployee = cumEmployeeShares * currentStockPrice;
-    let currentValueMatching = cumMatchingShares * currentStockPrice;
-    let totalCurrentValue = currentValueEmployee + currentValueMatching;
+    investedValueArray.push(cumulativeEmployeeInvested);
     employeeValueArray.push(currentValueEmployee);
     totalValueArray.push(totalCurrentValue);
-    
-    let spReturnObj = sp500Returns.find(item => item.year === simYear);
-    let spReturn = spReturnObj ? spReturnObj.return : 0;
-    sp500Val = sp500Val * (1 + spReturn) + invested;
-    sp500ValueArray.push(sp500Val);
+    sp500ValueArray.push(sp500Value);
   });
   
-  // Plot traces in desired order:
-  // 1. Total Current Value (Emp+Match) – back (blue)
-  // 2. Current Value Purchases – next (green)
-  // 3. Current Value S&P500 – next (magenta)
-  // 4. Employee Total Invested – on top (grey)
+  // Plot actual data traces.
   Plotly.newPlot("chart", [
     {
       x: simYears,
@@ -215,7 +171,6 @@ function updateCalculation() {
       name: "Total Current Value (Emp+Match)",
       fill: "tozeroy",
       fillcolor: "rgba(0,130,186,1)",
-      opacity: 1,
       line: { color: "rgba(0,130,186,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -225,7 +180,6 @@ function updateCalculation() {
       name: "Current Value Purchases",
       fill: "tozeroy",
       fillcolor: "rgba(67,176,42,1)",
-      opacity: 1,
       line: { color: "rgba(67,176,42,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -235,7 +189,6 @@ function updateCalculation() {
       name: "Current Value S&P500",
       fill: "tozeroy",
       fillcolor: "rgba(198,54,99,1)",
-      opacity: 1,
       line: { color: "rgba(198,54,99,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -245,7 +198,6 @@ function updateCalculation() {
       name: "Employee Total Invested",
       fill: "tozeroy",
       fillcolor: "rgba(99,102,106,1)",
-      opacity: 1,
       line: { color: "rgba(99,102,106,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     }
