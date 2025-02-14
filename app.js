@@ -170,7 +170,7 @@ function updateCalculation() {
       y: totalValueArray,
       name: "Total Current Value (Emp+Match)",
       fill: "tozeroy",
-      fillcolor: "rgba(0,130,186,1)",
+      fillcolor: "rgba(0,130,186,0.9)",
       line: { color: "rgba(0,130,186,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -179,7 +179,7 @@ function updateCalculation() {
       y: employeeValueArray,
       name: "Current Value Purchases",
       fill: "tozeroy",
-      fillcolor: "rgba(67,176,42,1)",
+      fillcolor: "rgba(67,176,42,0.9)",
       line: { color: "rgba(67,176,42,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -188,7 +188,7 @@ function updateCalculation() {
       y: sp500ValueArray,
       name: "Current Value S&P500",
       fill: "tozeroy",
-      fillcolor: "rgba(198,54,99,1)",
+      fillcolor: "rgba(198,54,99,0.9)",
       line: { color: "rgba(198,54,99,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -197,7 +197,7 @@ function updateCalculation() {
       y: investedValueArray,
       name: "Employee Total Invested",
       fill: "tozeroy",
-      fillcolor: "rgba(99,102,106,1)",
+      fillcolor: "rgba(99,102,106,0.9)",
       line: { color: "rgba(99,102,106,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     }
