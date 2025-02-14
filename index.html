@@ -20,10 +20,10 @@
       /* For table header */
       --header-blue: #0082BA;
       /* Table body highlight colors */
-      --table-invested-bg: #E0E0E0;      /* Column 4: Employee Total Invested */
-      --table-emp-bg: #C3E7C9;           /* Column 8: Current Value Employee Purchases (light green) */
-      --table-total-bg: #B3D7F2;         /* Column 9: Total Current Value (Emp+Match) (light blue) */
-      --table-sp500-bg: #FAD0EC;         /* Column 10: Current Value S&P500 (light magenta) */
+      --table-invested-bg: #E0E0E0;      
+      --table-emp-bg: #C3E7C9;           
+      --table-total-bg: #B3D7F2;         
+      --table-sp500-bg: #FAD0EC;         
     }
     body {
       font-family: Arial, sans-serif;
@@ -84,7 +84,7 @@
     #summaryTable th, #summaryTable td {
       width: calc(100% / 10);
     }
-    /* Reduce table body font size to help prevent wrapping */
+    /* Reduce table body font size */
     #summaryTable tbody td {
       font-size: 0.75rem;
     }
@@ -124,7 +124,7 @@
       font-weight: bold;
       color: white;
     }
-    /* Only the Clear All button remains */
+    /* Only Clear remains */
     #clearBtn {
       background: var(--main-gray);
     }
@@ -221,4 +221,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
