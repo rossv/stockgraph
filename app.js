@@ -1,4 +1,28 @@
-// Stock data for each year (2012–2023)
+// Helper: compute average annual growth from an array (ignoring zeros).
+function computeAverageGrowth(arr) {
+  let growths = [];
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i - 1] > 0) {
+      growths.push(arr[i] / arr[i - 1] - 1);
+    }
+  }
+  if (growths.length === 0) return 0;
+  return growths.reduce((a, b) => a + b, 0) / growths.length;
+}
+
+// Helper: project future values given an array of actual values, growth rate, and number of years.
+function projectArray(arr, growth, yearsToProject) {
+  let proj = [];
+  if (arr.length === 0) return proj;
+  let lastValue = arr[arr.length - 1];
+  for (let i = 0; i < yearsToProject; i++) {
+    lastValue = lastValue * (1 + growth);
+    proj.push(lastValue);
+  }
+  return proj;
+}
+
+// Stock data for 2012–2023.
 const historicalData = [
   { year: 2012, price: 4.46 },
   { year: 2013, price: 6.52 },
@@ -14,7 +38,7 @@ const historicalData = [
   { year: 2023, price: 51.02 }
 ];
 
-// Actual S&P500 annual returns (2012–2023); 2024 defined but excluded.
+// S&P500 returns for 2012–2023 (2024 defined but excluded).
 const sp500Returns = [
   { year: 2012, return: 0.16 },
   { year: 2013, return: 0.3239 },
@@ -32,12 +56,12 @@ const sp500Returns = [
 ];
 
 const MATCH_RATE = 0.25;
-const VESTING_PERIOD = 5; // Vesting occurs after 5 years
+const VESTING_PERIOD = 5; // years
 
-// Global variable for projection years (default 5)
+// Global projection years (default 5).
 let projectionYears = 5;
 
-// Array to store investment amounts per year (in order of historicalData)
+// Array to store investment amounts.
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
@@ -70,7 +94,7 @@ historicalData.forEach((item, index) => {
   });
 });
 
-// Update all subsequent years when "Apply" is clicked.
+// When "Apply" is clicked, update all subsequent years.
 function applyToSubsequentYears(startIndex) {
   let value = investmentAmounts[startIndex];
   for (let i = startIndex; i < historicalData.length; i++) {
@@ -81,62 +105,45 @@ function applyToSubsequentYears(startIndex) {
   updateCalculation();
 }
 
-// Projection controls.
+// Projection control event listeners.
 document.getElementById("projMinus").addEventListener("click", () => {
-  if (projectionYears > 0) {
-    projectionYears--;
-    document.getElementById("projValue").innerText = projectionYears;
+  let projInput = document.getElementById("projValue");
+  let val = parseInt(projInput.value);
+  if (val > 0) {
+    projInput.value = val - 1;
+    projectionYears = val - 1;
     updateCalculation();
   }
 });
 document.getElementById("projPlus").addEventListener("click", () => {
-  projectionYears++;
-  document.getElementById("projValue").innerText = projectionYears;
+  let projInput = document.getElementById("projValue");
+  let val = parseInt(projInput.value);
+  projInput.value = val + 1;
+  projectionYears = val + 1;
+  updateCalculation();
+});
+document.getElementById("projValue").addEventListener("change", () => {
+  projectionYears = parseInt(document.getElementById("projValue").value);
   updateCalculation();
 });
 
-// Helper: format dollars with commas, no decimals.
+// Helper: format dollars with commas and no decimals.
 function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
 }
 
-// Helper: format stock prices with 2 decimals.
+// Helper: format stock prices.
 function formatPrice(value) {
   return `$${Number(value).toFixed(2)}`;
 }
 
-// Helper: compute average annual growth from an array (ignoring zero prior values).
-function computeAverageGrowth(arr) {
-  let growths = [];
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i - 1] > 0) {
-      growths.push((arr[i] / arr[i - 1]) - 1);
-    }
-  }
-  if (growths.length === 0) return 0;
-  return growths.reduce((a, b) => a + b, 0) / growths.length;
-}
-
-// Helper: project future values given an array, growth rate, and number of years.
-function projectArray(arr, growth, yearsToProject) {
-  let proj = [];
-  if (arr.length === 0) return proj;
-  let lastValue = arr[arr.length - 1];
-  for (let i = 0; i < yearsToProject; i++) {
-    lastValue = lastValue * (1 + growth);
-    proj.push(lastValue);
-  }
-  return proj;
-}
-
-// Main calculation: updates table and plot.
+// Main calculation: update table and plot.
 function updateCalculation() {
   // Actual simulation years: 2012–2023.
   const simYears = sp500Returns.filter(item => item.year !== 2024).map(item => item.year);
   const summaryBody = document.getElementById("summaryBody");
   summaryBody.innerHTML = "";
   
-  // Cumulative simulation values.
   let cumulativeEmployeeShares = 0;
   let cumulativeEmployeeInvested = 0;
   let cumulativeMatchingAwarded = 0;
@@ -144,7 +151,7 @@ function updateCalculation() {
   let sp500Value = 0;
   let cumulativeVesting = 0;
   
-  // Arrays for plotting (actual).
+  // Arrays to store actual series.
   let investedValueArray = [];
   let employeeValueArray = [];
   let totalValueArray = [];
@@ -185,7 +192,6 @@ function updateCalculation() {
     let spReturn = spReturnObj ? spReturnObj.return : 0;
     sp500Value = sp500Value * (1 + spReturn) + invested;
     
-    // Add row to table.
     summaryBody.innerHTML += `<tr>
       <td>${simYear}</td>
       <td>${formatPrice(currentStockPrice)}</td>
@@ -205,13 +211,13 @@ function updateCalculation() {
     sp500ValueArray.push(sp500Value);
   });
   
-  // Compute average growth rates for each series (using only actual values).
+  // Compute average growth rates.
   let totalGrowth = computeAverageGrowth(totalValueArray);
   let employeeGrowth = computeAverageGrowth(employeeValueArray);
   let sp500Growth = computeAverageGrowth(sp500ValueArray);
   let investedGrowth = (investedValueArray[0] > 0) ? computeAverageGrowth(investedValueArray) : 0;
   
-  // Create projected years.
+  // Create projected years array.
   const lastYear = simYears[simYears.length - 1];
   let projectedYears = [];
   for (let i = 1; i <= projectionYears; i++) {
@@ -224,7 +230,7 @@ function updateCalculation() {
   let sp500Proj = projectArray(sp500ValueArray, sp500Growth, projectionYears);
   let investedProj = projectArray(investedValueArray, investedGrowth, projectionYears);
   
-  // Plot traces.
+  // Plot traces in desired order.
   Plotly.newPlot("chart", [
     // Actual traces.
     {
