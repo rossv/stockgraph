@@ -14,7 +14,7 @@ const historicalData = [
   { year: 2023, price: 51.02 }
 ];
 
-// Actual S&P500 annual returns (2012–2023); 2024 is defined but will be excluded.
+// Actual S&P500 annual returns (2012–2023); 2024 defined but excluded.
 const sp500Returns = [
   { year: 2012, return: 0.16 },
   { year: 2013, return: 0.3239 },
@@ -34,12 +34,15 @@ const sp500Returns = [
 const MATCH_RATE = 0.25;
 const VESTING_PERIOD = 5; // Vesting occurs after 5 years
 
+// Global variable for projection years (default 5)
+let projectionYears = 5;
+
 // Array to store investment amounts per year (in order of historicalData)
 let investmentAmounts = new Array(historicalData.length).fill(0);
 
 const sliderTable = document.getElementById("sliderTable");
 
-// Build input rows with slider, text field, and apply button.
+// Build input rows.
 historicalData.forEach((item, index) => {
   const row = document.createElement("tr");
   row.innerHTML = `
@@ -78,34 +81,78 @@ function applyToSubsequentYears(startIndex) {
   updateCalculation();
 }
 
-// Helper: formats dollars with commas, no decimals.
+// Projection controls.
+document.getElementById("projMinus").addEventListener("click", () => {
+  if (projectionYears > 0) {
+    projectionYears--;
+    document.getElementById("projValue").innerText = projectionYears;
+    updateCalculation();
+  }
+});
+document.getElementById("projPlus").addEventListener("click", () => {
+  projectionYears++;
+  document.getElementById("projValue").innerText = projectionYears;
+  updateCalculation();
+});
+
+// Helper: format dollars with commas, no decimals.
 function formatCurrency(value) {
   return `$${parseInt(value).toLocaleString()}`;
 }
 
-// Helper: formats stock prices with 2 decimals.
+// Helper: format stock prices with 2 decimals.
 function formatPrice(value) {
   return `$${Number(value).toFixed(2)}`;
 }
 
-// Main calculation function: updates table and plot.
+// Helper: compute average annual growth from an array (ignoring zero prior values).
+function computeAverageGrowth(arr) {
+  let growths = [];
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i - 1] > 0) {
+      growths.push((arr[i] / arr[i - 1]) - 1);
+    }
+  }
+  if (growths.length === 0) return 0;
+  return growths.reduce((a, b) => a + b, 0) / growths.length;
+}
+
+// Helper: project future values given an array, growth rate, and number of years.
+function projectArray(arr, growth, yearsToProject) {
+  let proj = [];
+  if (arr.length === 0) return proj;
+  let lastValue = arr[arr.length - 1];
+  for (let i = 0; i < yearsToProject; i++) {
+    lastValue = lastValue * (1 + growth);
+    proj.push(lastValue);
+  }
+  return proj;
+}
+
+// Main calculation: updates table and plot.
 function updateCalculation() {
+  // Actual simulation years: 2012–2023.
   const simYears = sp500Returns.filter(item => item.year !== 2024).map(item => item.year);
   const summaryBody = document.getElementById("summaryBody");
   summaryBody.innerHTML = "";
   
+  // Cumulative simulation values.
   let cumulativeEmployeeShares = 0;
   let cumulativeEmployeeInvested = 0;
-  let cumulativeMatchingAwarded = 0; // Cumulative matching dollars awarded
-  let cumulativeMatchingShares = 0;    // Cumulative matching shares awarded
+  let cumulativeMatchingAwarded = 0;
+  let cumulativeMatchingShares = 0;
   let sp500Value = 0;
+  let cumulativeVesting = 0;
   
-  let cumulativeVesting = 0; // Tracks cumulative vesting dollars
+  // Arrays for plotting (actual).
+  let investedValueArray = [];
+  let employeeValueArray = [];
+  let totalValueArray = [];
+  let sp500ValueArray = [];
   
   simYears.forEach(simYear => {
     let dataEntry = historicalData.find(item => item.year === simYear);
     let currentStockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
-    
     let invIndex = historicalData.findIndex(item => item.year === simYear);
     let invested = (invIndex !== -1) ? investmentAmounts[invIndex] : 0;
     
@@ -138,6 +185,7 @@ function updateCalculation() {
     let spReturn = spReturnObj ? spReturnObj.return : 0;
     sp500Value = sp500Value * (1 + spReturn) + invested;
     
+    // Add row to table.
     summaryBody.innerHTML += `<tr>
       <td>${simYear}</td>
       <td>${formatPrice(currentStockPrice)}</td>
@@ -150,72 +198,41 @@ function updateCalculation() {
       <td>${formatCurrency(totalCurrentValue)}</td>
       <td>${formatCurrency(sp500Value)}</td>
     </tr>`;
-  });
-  
-  // Prepare arrays for plotting.
-  const employeeValueArray = [];
-  const totalValueArray = [];
-  const sp500ValueArray = [];
-  const investedValueArray = [];
-  
-  let cumEmployeeShares = 0;
-  let cumEmployeeInvested = 0;
-  let cumMatchingAwarded = 0;
-  let cumMatchingShares = 0;
-  let sp500Val = 0;
-  
-  simYears.forEach(simYear => {
-    let dataEntry = historicalData.find(item => item.year === simYear);
-    let currentStockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
-    let invIndex = historicalData.findIndex(item => item.year === simYear);
-    let invested = (invIndex !== -1) ? investmentAmounts[invIndex] : 0;
     
-    if (invIndex !== -1) {
-      let purchasePrice = historicalData[invIndex].price;
-      let employeeShares = invested / purchasePrice;
-      cumEmployeeShares += employeeShares;
-      cumEmployeeInvested += invested;
-    }
-    investedValueArray.push(cumEmployeeInvested);
-    
-    let vestThisYearPlot = 0;
-    let matchingSharesThisYearPlot = 0;
-    historicalData.forEach((entry, idx) => {
-      if (simYear === entry.year + VESTING_PERIOD) {
-        let matchingAwarded = investmentAmounts[idx] * MATCH_RATE;
-        vestThisYearPlot += matchingAwarded;
-        let matchingShares = matchingAwarded / currentStockPrice;
-        matchingSharesThisYearPlot += matchingShares;
-      }
-    });
-    cumMatchingAwarded += vestThisYearPlot;
-    cumMatchingShares += matchingSharesThisYearPlot;
-    
-    let currentValueEmployee = cumEmployeeShares * currentStockPrice;
-    let currentValueMatching = cumMatchingShares * currentStockPrice;
-    let totalCurrentValue = currentValueEmployee + currentValueMatching;
+    investedValueArray.push(cumulativeEmployeeInvested);
     employeeValueArray.push(currentValueEmployee);
     totalValueArray.push(totalCurrentValue);
-    
-    let spReturnObj = sp500Returns.find(item => item.year === simYear);
-    let spReturn = spReturnObj ? spReturnObj.return : 0;
-    sp500Val = sp500Val * (1 + spReturn) + invested;
-    sp500ValueArray.push(sp500Val);
+    sp500ValueArray.push(sp500Value);
   });
   
-  // Plot traces in desired order:
-  // 1. Total Current Value (Emp+Match) – back (blue)
-  // 2. Current Value Purchases – next (green)
-  // 3. Current Value S&P500 – next (magenta)
-  // 4. Employee Total Invested – on top (grey)
+  // Compute average growth rates for each series (using only actual values).
+  let totalGrowth = computeAverageGrowth(totalValueArray);
+  let employeeGrowth = computeAverageGrowth(employeeValueArray);
+  let sp500Growth = computeAverageGrowth(sp500ValueArray);
+  let investedGrowth = (investedValueArray[0] > 0) ? computeAverageGrowth(investedValueArray) : 0;
+  
+  // Create projected years.
+  const lastYear = simYears[simYears.length - 1];
+  let projectedYears = [];
+  for (let i = 1; i <= projectionYears; i++) {
+    projectedYears.push(lastYear + i);
+  }
+  
+  // Compute projected arrays.
+  let totalProj = projectArray(totalValueArray, totalGrowth, projectionYears);
+  let employeeProj = projectArray(employeeValueArray, employeeGrowth, projectionYears);
+  let sp500Proj = projectArray(sp500ValueArray, sp500Growth, projectionYears);
+  let investedProj = projectArray(investedValueArray, investedGrowth, projectionYears);
+  
+  // Plot traces.
   Plotly.newPlot("chart", [
+    // Actual traces.
     {
       x: simYears,
       y: totalValueArray,
       name: "Total Current Value (Emp+Match)",
       fill: "tozeroy",
       fillcolor: "rgba(0,130,186,1)",
-      opacity: 1,
       line: { color: "rgba(0,130,186,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -225,7 +242,6 @@ function updateCalculation() {
       name: "Current Value Purchases",
       fill: "tozeroy",
       fillcolor: "rgba(67,176,42,1)",
-      opacity: 1,
       line: { color: "rgba(67,176,42,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -235,7 +251,6 @@ function updateCalculation() {
       name: "Current Value S&P500",
       fill: "tozeroy",
       fillcolor: "rgba(198,54,99,1)",
-      opacity: 1,
       line: { color: "rgba(198,54,99,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     },
@@ -245,12 +260,44 @@ function updateCalculation() {
       name: "Employee Total Invested",
       fill: "tozeroy",
       fillcolor: "rgba(99,102,106,1)",
-      opacity: 1,
       line: { color: "rgba(99,102,106,1)" },
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
+    },
+    // Projection traces (dotted lines).
+    {
+      x: projectedYears,
+      y: totalProj,
+      name: "Projected Total Current Value (Emp+Match)",
+      mode: "lines",
+      line: { dash: "dot", color: "rgba(0,130,186,1)" },
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
+    },
+    {
+      x: projectedYears,
+      y: employeeProj,
+      name: "Projected Current Value Purchases",
+      mode: "lines",
+      line: { dash: "dot", color: "rgba(67,176,42,1)" },
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
+    },
+    {
+      x: projectedYears,
+      y: sp500Proj,
+      name: "Projected Current Value S&P500",
+      mode: "lines",
+      line: { dash: "dot", color: "rgba(198,54,99,1)" },
+      hovertemplate: '$%{y:,.0f}<extra></extra>'
+    },
+    {
+      x: projectedYears,
+      y: investedProj,
+      name: "Projected Employee Total Invested",
+      mode: "lines",
+      line: { dash: "dot", color: "rgba(99,102,106,1)" },
       hovertemplate: '$%{y:,.0f}<extra></extra>'
     }
   ], {
-    xaxis: { dtick: 1 },
+    xaxis: { dtick: 1, range: [simYears[0], projectedYears[projectedYears.length - 1]] },
     legend: {
       orientation: "h",
       x: 0,
