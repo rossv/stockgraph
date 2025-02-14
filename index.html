@@ -7,14 +7,19 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     :root {
-      /* Colors (RGB) after swapping: */
-      --main-green: rgb(67,176,42);    /* For Current Value Purchases */
-      --main-gray: rgb(99,102,106);     /* For Employee Total Invested */
-      --main-blue: rgb(0,130,186);       /* For Total Current Value (Emp+Match) */
-      --invested-color: rgb(198,54,99);  /* For Current Value S&P500 (magenta) */
+      /* Swapped colors for Plotly traces:
+         Total Current Value (Emp+Match) -> blue (0,130,186)
+         Current Value Purchases -> green (67,176,42)
+         Current Value S&P500 -> magenta (198,54,99)
+         Employee Total Invested -> grey (99,102,106)
+      */
+      --main-green: rgb(67,176,42);    /* for Current Value Purchases */
+      --main-gray: rgb(99,102,106);     /* for Employee Total Invested */
+      --main-blue: rgb(0,130,186);       /* for Total Current Value (Emp+Match) */
+      --invested-color: rgb(198,54,99);  /* for Current Value S&P500 */
       /* For table header */
       --header-blue: #0082BA;
-      /* New highlight colors for table body */
+      /* Table body highlight colors */
       --table-invested-bg: #E0E0E0;      /* Column 4: Employee Total Invested */
       --table-emp-bg: #C3E7C9;           /* Column 8: Current Value Employee Purchases (light green) */
       --table-total-bg: #B3D7F2;         /* Column 9: Total Current Value (Emp+Match) (light blue) */
@@ -83,7 +88,7 @@
     #summaryTable tbody td {
       font-size: 0.75rem;
     }
-    /* Table body column highlights */
+    /* Table body highlights */
     #summaryTable tbody td:nth-child(4) {
       background-color: var(--table-invested-bg);
     }
@@ -119,7 +124,7 @@
       font-weight: bold;
       color: white;
     }
-    /* Only Clear button remains (live updating; no Calculate button) */
+    /* Only Clear All remains (no Calculate button) */
     #clearBtn {
       background: var(--main-gray);
     }
@@ -132,7 +137,7 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
-    /* New Projection Control */
+    /* Projection control styling */
     #projectionControl {
       margin-top: 1rem;
       text-align: center;
@@ -140,6 +145,11 @@
     #projectionControl button {
       padding: 4px 8px;
       margin: 0 5px;
+      font-size: 1rem;
+    }
+    #projValue {
+      width: 50px;
+      text-align: center;
       font-size: 1rem;
     }
     /* Disclosures styling */
@@ -151,7 +161,7 @@
       padding: 10px;
       text-align: center;
     }
-    /* Responsive design for mobile */
+    /* Responsive design */
     @media screen and (max-width: 768px) {
       .container {
         flex-direction: column;
@@ -194,7 +204,7 @@
       <div id="projectionControl">
         <label for="projValue">Project Additional Years:</label>
         <button id="projMinus">–</button>
-        <span id="projValue">5</span>
+        <input type="number" id="projValue" value="5" min="0">
         <button id="projPlus">+</button>
       </div>
       <button id="clearBtn" class="actionButton">Clear All Values</button>
@@ -219,7 +229,7 @@
           </tr>
         </thead>
         <tbody id="summaryBody">
-          <!-- Rows inserted dynamically -->
+          <!-- Data rows inserted dynamically -->
         </tbody>
       </table>
     </div>
