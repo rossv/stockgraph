@@ -43,8 +43,9 @@ let finalTotalValue = 0;
 
 // Helper functions for formatting
 function formatCurrency(value) {
-  return `$${parseInt(value).toLocaleString()}`;
+  return `$${Number(value).toFixed(2)}`;
 }
+
 function formatPrice(value) {
   return `$${Number(value).toFixed(2)}`;
 }
@@ -58,7 +59,8 @@ historicalData.forEach((item, index) => {
     <td>${formatPrice(item.price)}</td>
     <td>
       <div class="slidecontainer">
-        <input type="range" min="0" max="20000" step="100" value="0" id="slider-${item.year}" class="slider">
+        <!-- Change step from 100 to "any" to allow decimals -->
+        <input type="range" min="0" max="20000" step="any" value="0" id="slider-${item.year}" class="slider">
       </div>
     </td>
     <td><input type="text" id="number-${item.year}" value="${formatCurrency(0)}"></td>
@@ -69,10 +71,11 @@ historicalData.forEach((item, index) => {
   const slider = document.getElementById(`slider-${item.year}`);
   const numberField = document.getElementById(`number-${item.year}`);
 
+  // Slider input event handler
   slider.addEventListener("input", (e) => {
     const rawVal = parseFloat(e.target.value);
-    const price = dataEntry.price;
-    // Snap the value so that it is divisible by the stock price
+    const price = item.price; // Use current year's stock price from the loop variable
+    // Snap the value to the nearest lower multiple of the stock price
     const snappedVal = Math.floor(rawVal / price) * price;
     investmentAmounts[index] = snappedVal;
     slider.value = snappedVal;
@@ -80,21 +83,22 @@ historicalData.forEach((item, index) => {
     updateCalculation();
   });
 
+  // Text input event handler
   numberField.addEventListener("input", (e) => {
     // Allow digits and decimal point only.
     let rawInput = e.target.value.replace(/[^0-9.]/g, "");
     let value = parseFloat(rawInput);
     if (isNaN(value)) value = 0;
-    const price = dataEntry.price;
-    // Snap the value to be divisible by the stock price
+    const price = item.price; // Use current year's stock price from the loop variable
+    // Snap the value so it is divisible by the stock price
     const snappedVal = Math.floor(value / price) * price;
     investmentAmounts[index] = snappedVal;
     slider.value = snappedVal;
     e.target.value = formatCurrency(snappedVal);
     updateCalculation();
   });
-
 });
+
 
 function applyToSubsequentYears(startIndex) {
   const value = investmentAmounts[startIndex];
@@ -140,7 +144,7 @@ function updateCalculation() {
     cumulativeEmployeeInvested += invested;
     
     // Matching award for this year (vesting occurs after vestingPeriod)
-    // Now calculates match shares (25% of shares purchased in the vesting year)
+    // Calculates match shares (25% of shares purchased in the vesting year)
     // and rounds them down to a whole number.
     let matchAwardedThisYear_shares = 0;
     historicalData.forEach((entry, idx2) => {
@@ -158,6 +162,7 @@ function updateCalculation() {
     let matchAwardedThisYear_dollars = matchAwardedThisYear_shares * currentStockPrice;
     cumulativeMatchingShares += matchAwardedThisYear_shares;
     let cumulativeMatchingAwarded_dollars = cumulativeMatchingShares * currentStockPrice;
+
 
 
     
