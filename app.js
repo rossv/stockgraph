@@ -70,19 +70,30 @@ historicalData.forEach((item, index) => {
   const numberField = document.getElementById(`number-${item.year}`);
 
   slider.addEventListener("input", (e) => {
-    const value = e.target.value;
-    investmentAmounts[index] = parseFloat(value);
-    numberField.value = formatCurrency(value);
+    const rawVal = parseFloat(e.target.value);
+    const price = dataEntry.price;
+    // Snap the value so that it is divisible by the stock price
+    const snappedVal = Math.floor(rawVal / price) * price;
+    investmentAmounts[index] = snappedVal;
+    slider.value = snappedVal;
+    numberField.value = formatCurrency(snappedVal);
     updateCalculation();
   });
+
   numberField.addEventListener("input", (e) => {
-    let value = parseFloat(e.target.value.replace(/[^0-9]/g, ""));
+    // Allow digits and decimal point only.
+    let rawInput = e.target.value.replace(/[^0-9.]/g, "");
+    let value = parseFloat(rawInput);
     if (isNaN(value)) value = 0;
-    investmentAmounts[index] = value;
-    slider.value = value;
-    e.target.value = formatCurrency(value);
+    const price = dataEntry.price;
+    // Snap the value to be divisible by the stock price
+    const snappedVal = Math.floor(value / price) * price;
+    investmentAmounts[index] = snappedVal;
+    slider.value = snappedVal;
+    e.target.value = formatCurrency(snappedVal);
     updateCalculation();
   });
+
 });
 
 function applyToSubsequentYears(startIndex) {
@@ -130,7 +141,7 @@ function updateCalculation() {
     
     // Matching award for this year (vesting occurs after vestingPeriod)
     // Now calculates match shares (25% of shares purchased in the vesting year)
-    // and then converts them to a dollar amount using the current stock price.
+    // and rounds them down to a whole number.
     let matchAwardedThisYear_shares = 0;
     historicalData.forEach((entry, idx2) => {
       if (simYear === entry.year + vestingPeriod) {
@@ -138,7 +149,8 @@ function updateCalculation() {
         if (purchaseAmount > 0) {
           const purchasePrice = entry.price;
           const employeeSharesPurchased = purchaseAmount / purchasePrice;
-          const matchShares = employeeSharesPurchased * matchRate;
+          // Round down the match shares to a whole number
+          const matchShares = Math.floor(employeeSharesPurchased * matchRate);
           matchAwardedThisYear_shares += matchShares;
         }
       }
@@ -146,6 +158,7 @@ function updateCalculation() {
     let matchAwardedThisYear_dollars = matchAwardedThisYear_shares * currentStockPrice;
     cumulativeMatchingShares += matchAwardedThisYear_shares;
     let cumulativeMatchingAwarded_dollars = cumulativeMatchingShares * currentStockPrice;
+
 
     
     // Current values
