@@ -176,7 +176,6 @@ function updateCalculation() {
         if (purchaseAmount > 0) {
           const purchasePrice = entry.price;
           const employeeSharesPurchased = purchaseAmount / purchasePrice;
-          // Round down the match shares to a whole number
           const matchShares = Math.floor(employeeSharesPurchased * matchRate);
           matchAwardedThisYear_shares += matchShares;
         }
@@ -184,7 +183,7 @@ function updateCalculation() {
     });
     let matchAwardedThisYear_dollars = matchAwardedThisYear_shares * currentStockPrice;
     cumulativeMatchingShares += matchAwardedThisYear_shares;
-    let cumulativeMatchingAwarded_dollars = cumulativeMatchingShares * currentStockPrice;
+
 
 
 
@@ -232,7 +231,6 @@ function updateCalculation() {
         <td>${matchAwardedThisYear_shares.toFixed(2)}</td>
         <td>${cumulativeMatchingShares.toFixed(2)}</td>
         <td>${formatCurrency(matchAwardedThisYear_dollars)}</td>
-        <td>${formatCurrency(cumulativeMatchingAwarded_dollars)}</td>
         <td>${formatCurrency(currentValueEmployee)}</td>
         <td>${formatCurrency(currentValueMatching)}</td>
         <td>${formatCurrency(totalCurrentValue)}</td>
@@ -241,6 +239,7 @@ function updateCalculation() {
         <td>${roi}</td>
       </tr>
     `;
+
     
     investedValueArray.push(cumulativeEmployeeInvested);
     employeeValueArray.push(currentValueEmployee);
