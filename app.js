@@ -59,7 +59,6 @@ historicalData.forEach((item, index) => {
     <td>${formatPrice(item.price)}</td>
     <td>
       <div class="slidecontainer">
-        <!-- Change step from 100 to "any" to allow decimals -->
         <input type="range" min="0" max="20000" step="any" value="0" id="slider-${item.year}" class="slider">
       </div>
     </td>
@@ -71,11 +70,10 @@ historicalData.forEach((item, index) => {
   const slider = document.getElementById(`slider-${item.year}`);
   const numberField = document.getElementById(`number-${item.year}`);
 
-  // Slider input event handler
+  // Slider event: snaps value immediately
   slider.addEventListener("input", (e) => {
     const rawVal = parseFloat(e.target.value);
-    const price = item.price; // Use current year's stock price from the loop variable
-    // Snap the value to the nearest lower multiple of the stock price
+    const price = item.price;
     const snappedVal = Math.floor(rawVal / price) * price;
     investmentAmounts[index] = snappedVal;
     slider.value = snappedVal;
@@ -83,44 +81,37 @@ historicalData.forEach((item, index) => {
     updateCalculation();
   });
 
-  // Text input event handler
-  // Text input: allow freehand input (no snapping on each keystroke)
+  // Text input: allow freehand typing without snapping immediately
   numberField.addEventListener("input", (e) => {
-    // Allow digits and the decimal point
     let rawInput = e.target.value.replace(/[^0-9.]/g, "");
     let value = parseFloat(rawInput);
     if (isNaN(value)) value = 0;
-    // Update the investment amount without snapping
     investmentAmounts[index] = value;
   });
-
-  // Add Snap Investments button below the slider table
-  const snapBtn = document.createElement("button");
-  snapBtn.className = "btn btn-secondary mt-2";
-  snapBtn.innerText = "Snap Investments";
-  snapBtn.addEventListener("click", () => {
-    historicalData.forEach((item, index) => {
-      const price = item.price;
-      // Get the current value from the text input
-      const numberField = document.getElementById(`number-${item.year}`);
-      let rawInput = numberField.value.replace(/[^0-9.]/g, "");
-      let value = parseFloat(rawInput);
-      if (isNaN(value)) value = 0;
-      // Snap the value so that it’s divisible by the stock price
-      const snappedVal = Math.floor(value / price) * price;
-      investmentAmounts[index] = snappedVal;
-      // Update both the slider and the text field with the snapped value
-      document.getElementById(`slider-${item.year}`).value = snappedVal;
-      numberField.value = formatCurrency(snappedVal);
-    });
-    updateCalculation();
-  });
-  // Append the button after the slider table
-  sliderTable.parentElement.appendChild(snapBtn);
-
-
-  
 });
+
+// <-- Insert Snap Investments button code here (after the loop)
+const snapBtn = document.createElement("button");
+snapBtn.id = "snapBtn";
+snapBtn.className = "btn btn-secondary mt-2";
+snapBtn.innerText = "Snap Investments";
+snapBtn.addEventListener("click", () => {
+  historicalData.forEach((item, index) => {
+    const price = item.price;
+    const numberField = document.getElementById(`number-${item.year}`);
+    let rawInput = numberField.value.replace(/[^0-9.]/g, "");
+    let value = parseFloat(rawInput);
+    if (isNaN(value)) value = 0;
+    const snappedVal = Math.floor(value / price) * price;
+    investmentAmounts[index] = snappedVal;
+    document.getElementById(`slider-${item.year}`).value = snappedVal;
+    numberField.value = formatCurrency(snappedVal);
+  });
+  updateCalculation();
+});
+
+// Append the Snap Investments button once to the input panel
+document.getElementById("inputPanel").appendChild(snapBtn);
 
 
 function applyToSubsequentYears(startIndex) {
