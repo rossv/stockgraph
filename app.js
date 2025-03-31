@@ -129,17 +129,24 @@ function updateCalculation() {
     cumulativeEmployeeInvested += invested;
     
     // Matching award for this year (vesting occurs after vestingPeriod)
-    let matchAwardedThisYear = 0;
-    let matchingSharesThisYear = 0;
+    // Now calculates match shares (25% of shares purchased in the vesting year)
+    // and then converts them to a dollar amount using the current stock price.
+    let matchAwardedThisYear_shares = 0;
     historicalData.forEach((entry, idx2) => {
       if (simYear === entry.year + vestingPeriod) {
-        const awarded = investmentAmounts[idx2] * matchRate;
-        matchAwardedThisYear += awarded;
-        matchingSharesThisYear += awarded / currentStockPrice;
+        const purchaseAmount = investmentAmounts[idx2];
+        if (purchaseAmount > 0) {
+          const purchasePrice = entry.price;
+          const employeeSharesPurchased = purchaseAmount / purchasePrice;
+          const matchShares = employeeSharesPurchased * matchRate;
+          matchAwardedThisYear_shares += matchShares;
+        }
       }
     });
-    cumulativeMatchingAwarded += matchAwardedThisYear;
-    cumulativeMatchingShares += matchingSharesThisYear;
+    let matchAwardedThisYear_dollars = matchAwardedThisYear_shares * currentStockPrice;
+    cumulativeMatchingShares += matchAwardedThisYear_shares;
+    let cumulativeMatchingAwarded_dollars = cumulativeMatchingShares * currentStockPrice;
+
     
     // Current values
     const currentValueEmployee = cumulativeEmployeeShares * currentStockPrice;
@@ -181,8 +188,10 @@ function updateCalculation() {
         <td>${formatCurrency(cumulativeEmployeeInvested)}</td>
         <td>${employeeSharesThisYear.toFixed(2)}</td>
         <td>${cumulativeEmployeeShares.toFixed(2)}</td>
-        <td>${formatCurrency(matchAwardedThisYear)}</td>
-        <td>${formatCurrency(cumulativeMatchingAwarded)}</td>
+        <td>${matchAwardedThisYear_shares.toFixed(2)}</td>
+        <td>${cumulativeMatchingShares.toFixed(2)}</td>
+        <td>${formatCurrency(matchAwardedThisYear_dollars)}</td>
+        <td>${formatCurrency(cumulativeMatchingAwarded_dollars)}</td>
         <td>${formatCurrency(currentValueEmployee)}</td>
         <td>${formatCurrency(currentValueMatching)}</td>
         <td>${formatCurrency(totalCurrentValue)}</td>
@@ -341,7 +350,7 @@ document.getElementById("aggressiveRate").addEventListener("input", updateScenar
 // Export Detailed Tabulation table to CSV
 document.getElementById("exportCSV").addEventListener("click", () => {
   let csvContent = "data:text/csv;charset=utf-8,";
-  const headers = ["Year", "Stock Price", "Invested This Year", "Cumulative Invested", "Employee Shares (Year)", "Cumulative Employee Shares", "Match Awarded This Year", "Cumulative Match Awarded", "Employee Value", "Match Value", "Total Value", "S&P500", "S&P500 Price", "ROI (%)"];
+  const headers = ["Year", "Stock Price", "Invested This Year", "Cumulative Invested", "Employee Shares (Year)", "Cumulative Employee Shares", "Match Awarded This Year (#)", "Cumulative Match Awarded (#)", "Match Awarded This Year", "Cumulative Match Awarded", "Employee Value", "Match Value", "Total Value", "S&P500", "S&P500 Price", "ROI (%)"];
   csvContent += headers.join(",") + "\r\n";
   
   const rows = document.querySelectorAll("#detailedTable tbody tr");
