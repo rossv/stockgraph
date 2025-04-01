@@ -126,6 +126,20 @@ input[type="number"] {
   color: #fff;
 }
 
+/* Go to Details Button styling (magenta) */
+#goToDetailsBtn {
+  background-color: var(--main-magenta);
+  border-color: var(--main-magenta);
+  color: #fff;
+}
+
+#goToDetailsBtn:hover {
+  background-color: var(--main-magenta);
+  border-color: var(--main-magenta);
+  color: #fff;
+}
+
+
 /* Ensure Scenario Chart fills full width */
 #scenarioChart {
   width: 100% !important;
