@@ -81,12 +81,14 @@ historicalData.forEach((item, index) => {
     updateCalculation();
   });
 
-  // Text input: allow freehand typing without snapping immediately
+  // Text input: allow freehand input and update simulation as you type.
   numberField.addEventListener("input", (e) => {
+    // Allow digits and the decimal point
     let rawInput = e.target.value.replace(/[^0-9.]/g, "");
     let value = parseFloat(rawInput);
     if (isNaN(value)) value = 0;
     investmentAmounts[index] = value;
+    updateCalculation();  // update graph/table immediately
   });
 });
 
