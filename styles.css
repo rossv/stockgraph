@@ -139,6 +139,14 @@ input[type="number"] {
   color: #fff;
 }
 
+/* Alternate row shading for data tables */
+table tbody tr:nth-child(odd) {
+  background-color: #ffffff;  /* white */
+}
+table tbody tr:nth-child(even) {
+  background-color: #f9fff9;  /* very light green */
+}
+
 
 /* Ensure Scenario Chart fills full width */
 #scenarioChart {
