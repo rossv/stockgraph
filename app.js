@@ -110,9 +110,6 @@ snapBtn.addEventListener("click", () => {
   updateCalculation();
 });
 
-// Append the Snap Investments button once to the input panel
-document.getElementById("inputPanel").appendChild(snapBtn);
-
 
 function applyToSubsequentYears(startIndex) {
   const value = investmentAmounts[startIndex];
@@ -416,12 +413,21 @@ document.getElementById("clearBtn").addEventListener("click", () => {
   updateCalculation();
 });
 
+
+// Button to jump to the Detailed Tab
+document.getElementById("goToDetailsBtn").addEventListener("click", () => {
+  const triggerEl = document.getElementById("detailed-tab");
+  const tab = new bootstrap.Tab(triggerEl);
+  tab.show();
+});
 // Button to jump to the Projected Growth tab
 document.getElementById("goToProjectionBtn").addEventListener("click", () => {
   const triggerEl = document.getElementById("projected-tab");
   const tab = new bootstrap.Tab(triggerEl);
   tab.show();
 });
+
+
 
 // Initialize simulation and scenario chart on load
 updateCalculation();
