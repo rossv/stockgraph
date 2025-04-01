@@ -139,13 +139,30 @@ input[type="number"] {
   color: #fff;
 }
 
-/* Alternate row shading for data tables */
-table tbody tr:nth-child(odd) {
-  background-color: #ffffff;  /* white */
+/* Alternating row colors for Detailed Tabulation table */
+#detailedTable tbody tr:nth-child(odd) {
+  background-color: #e6f7e6 !important; /* light green for odd rows */
 }
-table tbody tr:nth-child(even) {
-  background-color: #f9fff9;  /* very light green */
+#detailedTable tbody tr:nth-child(even) {
+  background-color: #ffffff !important; /* white for even rows */
 }
+
+/* Alternating row colors for Summary table */
+#summaryTable tbody tr:nth-child(odd) {
+  background-color: #e6f7e6 !important;
+}
+#summaryTable tbody tr:nth-child(even) {
+  background-color: #ffffff !important;
+}
+
+/* Alternating row colors for Projection table */
+#projectionTable tbody tr:nth-child(odd) {
+  background-color: #e6f7e6 !important;
+}
+#projectionTable tbody tr:nth-child(even) {
+  background-color: #ffffff !important;
+}
+
 
 
 /* Ensure Scenario Chart fills full width */
