@@ -158,7 +158,7 @@ function updateCalculation() {
     
     // Matching award for this year (vesting occurs after vestingPeriod)
     // Calculates match shares (25% of shares purchased in the vesting year)
-    // and rounds them down to a whole number.
+    // and rounds them to a whole number.
     let matchAwardedThisYear_shares = 0;
     historicalData.forEach((entry, idx2) => {
       if (simYear === entry.year + vestingPeriod) {
@@ -166,7 +166,7 @@ function updateCalculation() {
         if (purchaseAmount > 0) {
           const purchasePrice = entry.price;
           const employeeSharesPurchased = purchaseAmount / purchasePrice;
-          const matchShares = Math.floor(employeeSharesPurchased * matchRate);
+          const matchShares = Math.round(employeeSharesPurchased * matchRate);
           matchAwardedThisYear_shares += matchShares;
         }
       }
