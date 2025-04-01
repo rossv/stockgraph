@@ -139,29 +139,55 @@ input[type="number"] {
   color: #fff;
 }
 
-/* Alternating row colors for Detailed Tabulation table */
-table#detailedTable tbody tr:nth-child(odd) {
+
+
+
+
+
+/* Detailed Tabulation Table */
+#detailedTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+#detailedTable th,
+#detailedTable td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+#detailedTable tbody tr:nth-child(odd) {
   background-color: #e6f7e6 !important; /* light green for odd rows */
 }
-table#detailedTable tbody tr:nth-child(even) {
+
+#detailedTable tbody tr:nth-child(even) {
   background-color: #ffffff !important; /* white for even rows */
 }
 
-/* Alternating row colors for Summary table */
-table#summaryTable tbody tr:nth-child(odd) {
+/* Summary Table */
+#summaryTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+#summaryTable th,
+#summaryTable td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+#summaryTable tbody tr:nth-child(odd) {
   background-color: #e6f7e6 !important;
 }
-table#summaryTable tbody tr:nth-child(even) {
+
+#summaryTable tbody tr:nth-child(even) {
   background-color: #ffffff !important;
 }
 
-/* Alternating row colors for Projection table */
-table#projectionTable tbody tr:nth-child(odd) {
-  background-color: #e6f7e6 !important;
-}
-table#projectionTable tbody tr:nth-child(even) {
-  background-color: #ffffff !important;
-}
 
 
 
