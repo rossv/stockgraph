@@ -43,7 +43,7 @@ let finalTotalValue = 0;
 
 // Helper functions for formatting
 function formatCurrency(value) {
-  return `$${Number(value).toFixed(2)}`;
+  return `$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function formatPrice(value) {
