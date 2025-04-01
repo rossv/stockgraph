@@ -139,59 +139,6 @@ input[type="number"] {
   color: #fff;
 }
 
-
-
-
-
-
-/* Detailed Tabulation Table */
-#detailedTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-}
-
-#detailedTable th,
-#detailedTable td {
-  padding: 8px 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-#detailedTable tbody tr:nth-child(odd) {
-  background-color: #e6f7e6 !important; /* light green for odd rows */
-}
-
-#detailedTable tbody tr:nth-child(even) {
-  background-color: #ffffff !important; /* white for even rows */
-}
-
-/* Summary Table */
-#summaryTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-}
-
-#summaryTable th,
-#summaryTable td {
-  padding: 8px 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-#summaryTable tbody tr:nth-child(odd) {
-  background-color: #e6f7e6 !important;
-}
-
-#summaryTable tbody tr:nth-child(even) {
-  background-color: #ffffff !important;
-}
-
-
-
-
-
 /* Ensure Scenario Chart fills full width */
 #scenarioChart {
   width: 100% !important;
