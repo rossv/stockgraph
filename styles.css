@@ -140,28 +140,29 @@ input[type="number"] {
 }
 
 /* Alternating row colors for Detailed Tabulation table */
-#detailedTable tbody tr:nth-child(odd) {
+table#detailedTable tbody tr:nth-child(odd) {
   background-color: #e6f7e6 !important; /* light green for odd rows */
 }
-#detailedTable tbody tr:nth-child(even) {
+table#detailedTable tbody tr:nth-child(even) {
   background-color: #ffffff !important; /* white for even rows */
 }
 
 /* Alternating row colors for Summary table */
-#summaryTable tbody tr:nth-child(odd) {
+table#summaryTable tbody tr:nth-child(odd) {
   background-color: #e6f7e6 !important;
 }
-#summaryTable tbody tr:nth-child(even) {
+table#summaryTable tbody tr:nth-child(even) {
   background-color: #ffffff !important;
 }
 
 /* Alternating row colors for Projection table */
-#projectionTable tbody tr:nth-child(odd) {
+table#projectionTable tbody tr:nth-child(odd) {
   background-color: #e6f7e6 !important;
 }
-#projectionTable tbody tr:nth-child(even) {
+table#projectionTable tbody tr:nth-child(even) {
   background-color: #ffffff !important;
 }
+
 
 
 
