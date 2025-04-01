@@ -427,6 +427,23 @@ document.getElementById("goToProjectionBtn").addEventListener("click", () => {
   tab.show();
 });
 
+document.getElementById("snapBtn").addEventListener("click", () => {
+  historicalData.forEach((item, index) => {
+    const price = item.price;
+    const numberField = document.getElementById(`number-${item.year}`);
+    let rawInput = numberField.value.replace(/[^0-9.]/g, "");
+    let value = parseFloat(rawInput);
+    if (isNaN(value)) value = 0;
+    // Snap the entered value to the nearest lower multiple of the stock price
+    const snappedVal = Math.floor(value / price) * price;
+    investmentAmounts[index] = snappedVal;
+    // Update both slider and text field with the snapped value
+    document.getElementById(`slider-${item.year}`).value = snappedVal;
+    numberField.value = formatCurrency(snappedVal);
+  });
+  updateCalculation();
+});
+
 
 
 // Initialize simulation and scenario chart on load
