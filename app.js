@@ -92,6 +92,33 @@ historicalData.forEach((item, index) => {
   });
 });
 
+// Presets
+document.querySelectorAll('.preset-btn').forEach(button => {
+  button.addEventListener('click', (e) => {
+    // Get the comma-separated preset values from the button's data attribute
+    const valuesString = e.target.getAttribute('data-values');
+    const valuesArray = valuesString.split(',').map(val => parseFloat(val.trim()));
+    
+    if (valuesArray.length !== historicalData.length) {
+      console.error("Preset values do not match number of years");
+      return;
+    }
+    
+    // Update investment amounts, slider, and text input for each year
+    valuesArray.forEach((value, index) => {
+      investmentAmounts[index] = value;
+      const year = historicalData[index].year;
+      document.getElementById(`slider-${year}`).value = value;
+      document.getElementById(`number-${year}`).value = formatCurrency(value);
+    });
+    
+    updateCalculation();
+  });
+});
+
+
+
+
 // <-- Insert Snap Investments button code here (after the loop)
 const snapBtn = document.createElement("button");
 snapBtn.id = "snapBtn";
