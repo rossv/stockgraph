@@ -143,3 +143,16 @@ input[type="number"] {
 #scenarioChart {
   width: 100% !important;
 }
+
+/* Style preset buttons as blue */
+.preset-btn {
+  background-color: #007bff !important; /* blue background */
+  border: 1px solid #007bff !important; 
+  color: #fff !important;
+}
+
+.preset-btn:hover {
+  background-color: #0056b3 !important; /* darker blue on hover */
+  border-color: #0056b3 !important;
+  color: #fff !important;
+}
