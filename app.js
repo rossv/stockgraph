@@ -116,10 +116,7 @@ document.querySelectorAll('.preset-btn').forEach(button => {
   });
 });
 
-
-
-
-// <-- Insert Snap Investments button code here (after the loop)
+//  Snap Investments button
 const snapBtn = document.createElement("button");
 snapBtn.id = "snapBtn";
 snapBtn.className = "btn btn-secondary mt-2";
@@ -200,10 +197,6 @@ function updateCalculation() {
     });
     let matchAwardedThisYear_dollars = matchAwardedThisYear_shares * currentStockPrice;
     cumulativeMatchingShares += matchAwardedThisYear_shares;
-
-
-
-
     
     // Current values
     const currentValueEmployee = cumulativeEmployeeShares * currentStockPrice;
