@@ -121,8 +121,7 @@ input[type="number"] {
   color: #fff;
 }
 #goToProjectionBtn:hover {
-  background-color: var(--main-magenta);
-  border-color: var(--main-magenta);
+  opacity: 0.75;
   color: #fff;
 }
 
@@ -134,8 +133,7 @@ input[type="number"] {
 }
 
 #goToDetailsBtn:hover {
-  background-color: var(--main-magenta);
-  border-color: var(--main-magenta);
+  opacity: 0.75;
   color: #fff;
 }
 
@@ -146,13 +144,13 @@ input[type="number"] {
 
 /* Style preset buttons as blue */
 .preset-btn {
-  background-color: #0082BA !important; /* blue background */
-  border: 1px solid #007bff !important; 
-  color: #fff !important;
+  background-color: var(--main-blue); /* blue background */
+  border: 1px solid var(--main-blue); 
+  color: #fff;
 }
 
 .preset-btn:hover {
-  background-color: #0056b3 !important; /* darker blue on hover */
-  border-color: #0056b3 !important;
-  color: #fff !important;
+  background-color: #0056b3; /* darker blue on hover */
+  border-color: #0056b3;
+  color: #fff;
 }
