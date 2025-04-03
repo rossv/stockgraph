@@ -154,3 +154,15 @@ input[type="number"] {
   border-color: #0056b3;
   color: #fff;
 }
+
+#summaryTable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+#summaryTable th,
+#summaryTable td {
+  width: calc(100% / 5);
+  overflow: hidden;
+}
+
