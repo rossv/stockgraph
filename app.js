@@ -4,20 +4,37 @@ const vestingPeriod = 5; // 5 years
 
 // Historical data arrays (assumed closing prices)
 const historicalData = [
+  { year: 1996, price: 1.60 },
+  { year: 1997, price: 1.81 },
+  { year: 1998, price: 1.86 },
+  { year: 1999, price: 2.27 },
+  { year: 2000, price: 3.00 },
+  { year: 2001, price: 3.46 },
+  { year: 2002, price: 4.08 },
+  { year: 2003, price: 5.19 },
+  { year: 2004, price: 6.38 },
+  { year: 2005, price: 7.40 },
+  { year: 2006, price: 6.69 },
+  { year: 2007, price: 7.53 },
+  { year: 2008, price: 5.32 },
+  { year: 2009, price: 5.82 },
+  { year: 2010, price: 4.63 },
+  { year: 2011, price: 5.01 },
   { year: 2012, price: 4.46 },
   { year: 2013, price: 6.52 },
   { year: 2014, price: 9.41 },
-  { year: 2015, price: 11.2 },
+  { year: 2015, price: 11.20 },
   { year: 2016, price: 12.13 },
-  { year: 2017, price: 13.6 },
+  { year: 2017, price: 13.60 },
   { year: 2018, price: 13.28 },
   { year: 2019, price: 14.76 },
-  { year: 2020, price: 19.7 },
-  { year: 2021, price: 35.3 },
+  { year: 2020, price: 19.70 },
+  { year: 2021, price: 35.30 },
   { year: 2022, price: 43.72 },
   { year: 2023, price: 51.02 },
-  { year: 2024, price: 62.35 },
+  { year: 2024, price: 62.35 }
 ];
+
 
 // S&P500 closing values on April 30 for each year.
 const sp500Close = [
