@@ -4,37 +4,20 @@ const vestingPeriod = 5; // 5 years
 
 // Historical data arrays (assumed closing prices)
 const historicalData = [
-  { year: 1996, price: 1.60 },
-  { year: 1997, price: 1.81 },
-  { year: 1998, price: 1.86 },
-  { year: 1999, price: 2.27 },
-  { year: 2000, price: 3.00 },
-  { year: 2001, price: 3.46 },
-  { year: 2002, price: 4.08 },
-  { year: 2003, price: 5.19 },
-  { year: 2004, price: 6.38 },
-  { year: 2005, price: 7.40 },
-  { year: 2006, price: 6.69 },
-  { year: 2007, price: 7.53 },
-  { year: 2008, price: 5.32 },
-  { year: 2009, price: 5.82 },
-  { year: 2010, price: 4.63 },
-  { year: 2011, price: 5.01 },
   { year: 2012, price: 4.46 },
   { year: 2013, price: 6.52 },
   { year: 2014, price: 9.41 },
-  { year: 2015, price: 11.20 },
+  { year: 2015, price: 11.2 },
   { year: 2016, price: 12.13 },
-  { year: 2017, price: 13.60 },
+  { year: 2017, price: 13.6 },
   { year: 2018, price: 13.28 },
   { year: 2019, price: 14.76 },
-  { year: 2020, price: 19.70 },
-  { year: 2021, price: 35.30 },
+  { year: 2020, price: 19.7 },
+  { year: 2021, price: 35.3 },
   { year: 2022, price: 43.72 },
   { year: 2023, price: 51.02 },
-  { year: 2024, price: 62.35 }
+  { year: 2024, price: 62.35 },
 ];
-
 
 // S&P500 closing values on April 30 for each year.
 const sp500Close = [
@@ -68,52 +51,6 @@ function formatPrice(value) {
   return `$${Number(value).toFixed(2)}`;
 }
 
-// Auto-generate Preset Buttons
-function generatePresets() {
-  const presetPanel = document.getElementById("presetPanel");
-  presetPanel.innerHTML = `
-    <h6>Preset Investments ($45,000 Investment)</h6>
-  `;
-
-  const n = historicalData.length;
-  const stepUp = Array.from({ length: n }, (_, i) => Math.floor(45000 / n) * (i + 1));
-  const steady = Array(n).fill(Math.floor(45000 / n));
-  const front = Array(n).fill(0); front[0] = 45000;
-  const late = Array(n).fill(0); late[n - 1] = 45000;
-
-  const presets = [
-    { name: "Step Up", values: stepUp },
-    { name: "Slow and Steady", values: steady },
-    { name: "Front Load", values: front },
-    { name: "Late Start", values: late }
-  ];
-
-  presets.forEach(preset => {
-    const btn = document.createElement("button");
-    btn.className = "btn btn-secondary preset-btn me-2 mb-2";
-    btn.textContent = preset.name;
-    btn.setAttribute("data-values", preset.values.join(","));
-    presetPanel.appendChild(btn);
-  });
-
-  // Rebind preset event handlers
-  document.querySelectorAll('.preset-btn').forEach(button => {
-    button.addEventListener('click', (e) => {
-      const values = e.target.getAttribute('data-values').split(',').map(val => parseFloat(val.trim()));
-      if (values.length !== historicalData.length) return alert("Preset length mismatch.");
-      values.forEach((val, i) => {
-        investmentAmounts[i] = val;
-        const year = historicalData[i].year;
-        document.getElementById(`slider-${year}`).value = val;
-        document.getElementById(`number-${year}`).value = formatCurrency(val);
-      });
-      updateCalculation();
-    });
-  });
-}
-
-
-
 // Build the investment input rows in the Historical Performance tab
 const sliderTable = document.getElementById("sliderTable");
 historicalData.forEach((item, index) => {
@@ -145,9 +82,6 @@ historicalData.forEach((item, index) => {
     updateCalculation();
   });
 
-  
-
-  
   // Text input: allow freehand input and update simulation as you type.
   numberField.addEventListener("input", (e) => {
     // Allow digits and the decimal point
@@ -158,9 +92,6 @@ historicalData.forEach((item, index) => {
     updateCalculation();  // update graph/table immediately
   });
 });
-
-generatePresets();
-
 
 // Presets
 document.querySelectorAll('.preset-btn').forEach(button => {
