@@ -92,6 +92,13 @@ input[type="number"] {
   border: 1px solid #ccc;
 }
 
+#inputPanel .card-body {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+
+
 /* Apply Button Styling */
 .btn-outline-primary {
   border-color: var(--main-green);
