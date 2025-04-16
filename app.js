@@ -15,7 +15,8 @@ const historicalData = [
   { year: 2020, price: 19.7 },
   { year: 2021, price: 35.3 },
   { year: 2022, price: 43.72 },
-  { year: 2023, price: 51.02 }
+  { year: 2023, price: 51.02 },
+  { year: 2024, price: 62.35 },
 ];
 
 // S&P500 closing values on April 30 for each year.
