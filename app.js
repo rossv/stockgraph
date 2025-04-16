@@ -68,6 +68,52 @@ function formatPrice(value) {
   return `$${Number(value).toFixed(2)}`;
 }
 
+// Auto-generate Preset Buttons
+function generatePresets() {
+  const presetPanel = document.getElementById("presetPanel");
+  presetPanel.innerHTML = `
+    <h6>Preset Investments ($45,000 Investment)</h6>
+  `;
+
+  const n = historicalData.length;
+  const stepUp = Array.from({ length: n }, (_, i) => Math.floor(45000 / n) * (i + 1));
+  const steady = Array(n).fill(Math.floor(45000 / n));
+  const front = Array(n).fill(0); front[0] = 45000;
+  const late = Array(n).fill(0); late[n - 1] = 45000;
+
+  const presets = [
+    { name: "Step Up", values: stepUp },
+    { name: "Slow and Steady", values: steady },
+    { name: "Front Load", values: front },
+    { name: "Late Start", values: late }
+  ];
+
+  presets.forEach(preset => {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-secondary preset-btn me-2 mb-2";
+    btn.textContent = preset.name;
+    btn.setAttribute("data-values", preset.values.join(","));
+    presetPanel.appendChild(btn);
+  });
+
+  // Rebind preset event handlers
+  document.querySelectorAll('.preset-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const values = e.target.getAttribute('data-values').split(',').map(val => parseFloat(val.trim()));
+      if (values.length !== historicalData.length) return alert("Preset length mismatch.");
+      values.forEach((val, i) => {
+        investmentAmounts[i] = val;
+        const year = historicalData[i].year;
+        document.getElementById(`slider-${year}`).value = val;
+        document.getElementById(`number-${year}`).value = formatCurrency(val);
+      });
+      updateCalculation();
+    });
+  });
+}
+
+
+
 // Build the investment input rows in the Historical Performance tab
 const sliderTable = document.getElementById("sliderTable");
 historicalData.forEach((item, index) => {
@@ -99,6 +145,9 @@ historicalData.forEach((item, index) => {
     updateCalculation();
   });
 
+  
+
+  
   // Text input: allow freehand input and update simulation as you type.
   numberField.addEventListener("input", (e) => {
     // Allow digits and the decimal point
@@ -109,6 +158,9 @@ historicalData.forEach((item, index) => {
     updateCalculation();  // update graph/table immediately
   });
 });
+
+generatePresets();
+
 
 // Presets
 document.querySelectorAll('.preset-btn').forEach(button => {
