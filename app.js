@@ -255,10 +255,11 @@ function updateCalculation() {
       <tr>
         <td>${simYear}</td>
         <td>${formatPrice(currentStockPrice)}</td>
-        <td>${formatCurrency(cumulativeEmployeeInvested)}</td>
-        <td>${formatCurrency(totalCurrentValue)}</td>
-        <td>${formatCurrency(sp500Value)}</td>
-      </tr>`;
+        <td>$${Math.round(cumulativeEmployeeInvested).toLocaleString()}</td>
+        <td>$${Math.round(totalCurrentValue).toLocaleString()}</td>
+        <td>$${Math.round(sp500Value).toLocaleString()}</td>
+      </tr>
+    `;
 
     const roi = cumulativeEmployeeInvested > 0
       ? ((totalCurrentValue - cumulativeEmployeeInvested) / cumulativeEmployeeInvested * 100).toFixed(2)
@@ -272,15 +273,15 @@ function updateCalculation() {
         <td>${formatCurrency(cumulativeEmployeeInvested)}</td>
         <td>${employeeSharesThisYear.toFixed(2)}</td>
         <td>${cumulativeEmployeeShares.toFixed(2)}</td>
-        <td>${matchAwardedThisYear_shares.toFixed(2)}</td>
-        <td>${cumulativeMatchingShares.toFixed(2)}</td>
+        <td>${Math.round(matchAwardedThisYear_shares).toLocaleString()}</td>
+        <td>${Math.round(cumulativeMatchingShares).toLocaleString()}</td>
         <td>${formatCurrency(matchAwardedThisYear_dollars)}</td>
         <td>${formatCurrency(currentValueEmployee)}</td>
         <td>${formatCurrency(currentValueMatching)}</td>
         <td>${formatCurrency(totalCurrentValue)}</td>
         <td>${formatCurrency(sp500Value)}</td>
-        <td>${sp500Price ? formatPrice(sp500Price) : '-'}</td>
-        <td>${roi}</td>
+        <td>${sp500Price ? `$${Number(sp500Price).toLocaleString()}` : '-'}</td>
+        <td>${roi}%</td>
       </tr>`;
 
     investedValueArray.push(cumulativeEmployeeInvested);
