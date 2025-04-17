@@ -1,57 +1,69 @@
 // Fixed parameters
-const matchRate = 0.25; // 25%
-const vestingPeriod = 5; // 5 years
+const matchRate = 0.25;
+const vestingPeriod = 5;
 
-// Historical data arrays (assumed closing prices)
+// Historical stock prices (April prices)
 const historicalData = [
+  { year: 1996, price: 1.60 },
+  { year: 1997, price: 1.81 },
+  { year: 1998, price: 1.86 },
+  { year: 1999, price: 2.27 },
+  { year: 2000, price: 3.00 },
+  { year: 2001, price: 3.46 },
+  { year: 2002, price: 4.08 },
+  { year: 2003, price: 5.19 },
+  { year: 2004, price: 6.38 },
+  { year: 2005, price: 7.40 },
+  { year: 2006, price: 6.69 },
+  { year: 2007, price: 7.53 },
+  { year: 2008, price: 5.32 },
+  { year: 2009, price: 5.82 },
+  { year: 2010, price: 4.63 },
+  { year: 2011, price: 5.01 },
   { year: 2012, price: 4.46 },
   { year: 2013, price: 6.52 },
   { year: 2014, price: 9.41 },
-  { year: 2015, price: 11.2 },
+  { year: 2015, price: 11.20 },
   { year: 2016, price: 12.13 },
-  { year: 2017, price: 13.6 },
+  { year: 2017, price: 13.60 },
   { year: 2018, price: 13.28 },
   { year: 2019, price: 14.76 },
-  { year: 2020, price: 19.7 },
-  { year: 2021, price: 35.3 },
+  { year: 2020, price: 19.70 },
+  { year: 2021, price: 35.30 },
   { year: 2022, price: 43.72 },
   { year: 2023, price: 51.02 },
-  { year: 2024, price: 62.35 },
+  { year: 2024, price: 62.35 }
 ];
 
-// S&P500 closing values on April 30 for each year.
+// S&P 500 data (still from 2012–2024, add more if you want to go earlier)
 const sp500Close = [
-  { year: 2012, close: 1397.91 },
-  { year: 2013, close: 1597.57 },
-  { year: 2014, close: 1883.95 },
-  { year: 2015, close: 2085.51 },
-  { year: 2016, close: 2065.30 },
-  { year: 2017, close: 2384.20 },
-  { year: 2018, close: 2648.05 },
-  { year: 2019, close: 2945.83 },
-  { year: 2020, close: 2912.43 },
-  { year: 2021, close: 4181.17 },
-  { year: 2022, close: 4131.93 },
-  { year: 2023, close: 4169.48 },
-  { year: 2024, close: 5035.69 }
+  { year: 1996, close: 653.7 }, { year: 1997, close: 759.6},
+  { year: 1998, close: 737.65 }, { year: 1999, close: 1294 },
+  { year: 2000, close: 1499 }, { year: 2001, close: 1160 },
+  { year: 2002, close: 1147 }, { year: 2003, close: 858.5 },
+  { year: 2004, close: 1132 }, { year: 2005, close: 1173 },
+  { year: 2006, close: 1295 }, { year: 2007, close: 1421 },
+  { year: 2008, close: 13705 }, { year: 2009, close: 811.1 },
+  { year: 2010, close: 1178 }, { year: 2011, close: 1332 },
+  { year: 2012, close: 1408 }, { year: 2013, close: 1562 },
+  { year: 2014, close: 1886 }, { year: 2015, close: 2060 },
+  { year: 2016, close: 2073 }, { year: 2017, close: 2363 },
+  { year: 2018, close: 2641 }, { year: 2019, close: 2867 },
+  { year: 2020, close: 2471 }, { year: 2021, close: 4020 },
+  { year: 2022, close: 4546 }, { year: 2023, close: 3577 },
+  { year: 2024, close: 5244 }, { year: 2023, close: 5633 }
 ];
 
-// Array to hold employee investment inputs for each year
 let investmentAmounts = new Array(historicalData.length).fill(0);
-
-// Global variable to store final simulation total (starting point for projections)
 let finalTotalValue = 0;
 
-// Helper functions for formatting
 function formatCurrency(value) {
   return `$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
-
 function formatPrice(value) {
   return `$${Number(value).toFixed(2)}`;
 }
 
-// Build the investment input rows in the Historical Performance tab
 const sliderTable = document.getElementById("sliderTable");
 historicalData.forEach((item, index) => {
   const row = document.createElement("tr");
@@ -71,7 +83,6 @@ historicalData.forEach((item, index) => {
   const slider = document.getElementById(`slider-${item.year}`);
   const numberField = document.getElementById(`number-${item.year}`);
 
-  // Slider event: snaps value immediately
   slider.addEventListener("input", (e) => {
     const rawVal = parseFloat(e.target.value);
     const price = item.price;
@@ -82,46 +93,75 @@ historicalData.forEach((item, index) => {
     updateCalculation();
   });
 
-  // Text input: allow freehand input and update simulation as you type.
   numberField.addEventListener("input", (e) => {
-    // Allow digits and the decimal point
     let rawInput = e.target.value.replace(/[^0-9.]/g, "");
     let value = parseFloat(rawInput);
     if (isNaN(value)) value = 0;
     investmentAmounts[index] = value;
-    updateCalculation();  // update graph/table immediately
-  });
-});
-
-// Presets
-document.querySelectorAll('.preset-btn').forEach(button => {
-  button.addEventListener('click', (e) => {
-    // Get the comma-separated preset values from the button's data attribute
-    const valuesString = e.target.getAttribute('data-values');
-    const valuesArray = valuesString.split(',').map(val => parseFloat(val.trim()));
-    
-    if (valuesArray.length !== historicalData.length) {
-      console.error("Preset values do not match number of years");
-      return;
-    }
-    
-    // Update investment amounts, slider, and text input for each year
-    valuesArray.forEach((value, index) => {
-      investmentAmounts[index] = value;
-      const year = historicalData[index].year;
-      document.getElementById(`slider-${year}`).value = value;
-      document.getElementById(`number-${year}`).value = formatCurrency(value);
-    });
-    
     updateCalculation();
   });
 });
 
-//  Snap Investments button
-const snapBtn = document.createElement("button");
-snapBtn.id = "snapBtn";
-snapBtn.className = "btn btn-secondary mt-2";
-snapBtn.innerText = "Snap Investments";
+// ✅ Generate dynamic preset buttons
+function generatePresets() {
+  const presetPanel = document.getElementById("presetPanel");
+  presetPanel.innerHTML = `<h6>Preset Investments ($45,000 Investment)</h6>`;
+
+  const n = historicalData.length;
+  const stepUp = Array.from({ length: n }, (_, i) => Math.floor(45000 / n) * (i + 1));
+  const steady = Array(n).fill(Math.floor(45000 / n));
+  const front = Array(n).fill(0); front[0] = 45000;
+  const late = Array(n).fill(0); late[n - 1] = 45000;
+
+  const presets = [
+    { name: "Step Up", values: stepUp },
+    { name: "Slow and Steady", values: steady },
+    { name: "Front Load", values: front },
+    { name: "Late Start", values: late }
+  ];
+
+  presets.forEach(preset => {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-secondary preset-btn me-2 mb-2";
+    btn.textContent = preset.name;
+    btn.setAttribute("data-values", preset.values.join(","));
+    presetPanel.appendChild(btn);
+  });
+
+  document.querySelectorAll('.preset-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const values = e.target.getAttribute('data-values').split(',').map(val => parseFloat(val.trim()));
+      if (values.length !== historicalData.length) {
+        alert("Preset does not match number of years.");
+        return;
+      }
+      values.forEach((value, index) => {
+        investmentAmounts[index] = value;
+        const year = historicalData[index].year;
+        document.getElementById(`slider-${year}`).value = value;
+        document.getElementById(`number-${year}`).value = formatCurrency(value);
+      });
+      updateCalculation();
+    });
+  });
+}
+
+// 👇 Call it after building sliders
+generatePresets();
+
+function applyToSubsequentYears(startIndex) {
+  const value = investmentAmounts[startIndex];
+  historicalData.forEach((item, i) => {
+    if (i >= startIndex) {
+      investmentAmounts[i] = value;
+      document.getElementById(`slider-${item.year}`).value = value;
+      document.getElementById(`number-${item.year}`).value = formatCurrency(value);
+    }
+  });
+  updateCalculation();
+}
+
+const snapBtn = document.getElementById("snapBtn");
 snapBtn.addEventListener("click", () => {
   historicalData.forEach((item, index) => {
     const price = item.price;
@@ -137,20 +177,6 @@ snapBtn.addEventListener("click", () => {
   updateCalculation();
 });
 
-
-function applyToSubsequentYears(startIndex) {
-  const value = investmentAmounts[startIndex];
-  historicalData.forEach((item, i) => {
-    if (i >= startIndex) {
-      investmentAmounts[i] = value;
-      document.getElementById(`slider-${item.year}`).value = value;
-      document.getElementById(`number-${item.year}`).value = formatCurrency(value);
-    }
-  });
-  updateCalculation();
-}
-
-// Main simulation function for Historical Performance and Detailed Tabulation tabs
 function updateCalculation() {
   const simYears = historicalData.map(item => item.year);
   const summaryBody = document.getElementById("summaryBody");
@@ -160,11 +186,9 @@ function updateCalculation() {
 
   let cumulativeEmployeeShares = 0;
   let cumulativeEmployeeInvested = 0;
-  let cumulativeMatchingAwarded = 0;
   let cumulativeMatchingShares = 0;
   let sp500Value = 0;
 
-  // Arrays for chart data
   let investedValueArray = [];
   let employeeValueArray = [];
   let totalValueArray = [];
@@ -172,51 +196,44 @@ function updateCalculation() {
 
   simYears.forEach((simYear, idx) => {
     const dataEntry = historicalData.find(item => item.year === simYear);
-    const currentStockPrice = dataEntry ? dataEntry.price : historicalData[historicalData.length - 1].price;
+    const currentStockPrice = dataEntry.price;
     const invIndex = historicalData.findIndex(item => item.year === simYear);
     const invested = invIndex !== -1 ? investmentAmounts[invIndex] : 0;
-    
-    // Employee shares purchased this year
-    const employeeSharesThisYear = invIndex !== -1 && invested > 0 ? invested / dataEntry.price : 0;
+
+    const employeeSharesThisYear = invested / currentStockPrice;
     cumulativeEmployeeShares += employeeSharesThisYear;
     cumulativeEmployeeInvested += invested;
-    
-    // Matching award for this year (vesting occurs after vestingPeriod)
-    // Calculates match shares (25% of shares purchased in the vesting year)
-    // and rounds them to a whole number.
+
     let matchAwardedThisYear_shares = 0;
     historicalData.forEach((entry, idx2) => {
       if (simYear === entry.year + vestingPeriod) {
         const purchaseAmount = investmentAmounts[idx2];
         if (purchaseAmount > 0) {
-          const purchasePrice = entry.price;
-          const employeeSharesPurchased = purchaseAmount / purchasePrice;
-          const matchShares = Math.round(employeeSharesPurchased * matchRate);
+          const matchShares = Math.round((purchaseAmount / entry.price) * matchRate);
           matchAwardedThisYear_shares += matchShares;
         }
       }
     });
-    let matchAwardedThisYear_dollars = matchAwardedThisYear_shares * currentStockPrice;
+    const matchAwardedThisYear_dollars = matchAwardedThisYear_shares * currentStockPrice;
     cumulativeMatchingShares += matchAwardedThisYear_shares;
-    
-    // Current values
+
     const currentValueEmployee = cumulativeEmployeeShares * currentStockPrice;
     const currentValueMatching = cumulativeMatchingShares * currentStockPrice;
     const totalCurrentValue = currentValueEmployee + currentValueMatching;
-    
-    // S&P500 simulation and price formatting with commas
+
     const sp500Record = sp500Close.find(rec => rec.year === simYear);
-    const sp500Price = sp500Record ? sp500Record.close : "";
-    const currentClose = sp500Record ? sp500Record.close : null;
+    const sp500Price = sp500Record?.close ?? "";
+    const currentClose = sp500Record?.close ?? null;
     const sp500Index = sp500Close.findIndex(rec => rec.year === simYear);
     if (sp500Index === 0) {
       sp500Value = invested;
     } else {
-      const prevClose = sp500Close[sp500Index - 1].close;
-      sp500Value = sp500Value === 0 && invested > 0 ? invested : (sp500Value + invested) * (currentClose / prevClose);
+      const prevClose = sp500Close[sp500Index - 1]?.close;
+      sp500Value = sp500Value === 0 && invested > 0
+        ? invested
+        : (sp500Value + invested) * (currentClose / prevClose);
     }
-    
-    // Append row to simplified summary table (Historical Performance)
+
     summaryBody.innerHTML += `
       <tr>
         <td>${simYear}</td>
@@ -224,13 +241,12 @@ function updateCalculation() {
         <td>${formatCurrency(cumulativeEmployeeInvested)}</td>
         <td>${formatCurrency(totalCurrentValue)}</td>
         <td>${formatCurrency(sp500Value)}</td>
-      </tr>
-    `;
-    
-    // Compute ROI for this year (if cumulative invested > 0)
-    const roi = cumulativeEmployeeInvested > 0 ? ((totalCurrentValue - cumulativeEmployeeInvested) / cumulativeEmployeeInvested * 100).toFixed(2) : "0.00";
-    
-    // Append row to detailed tabulation table
+      </tr>`;
+
+    const roi = cumulativeEmployeeInvested > 0
+      ? ((totalCurrentValue - cumulativeEmployeeInvested) / cumulativeEmployeeInvested * 100).toFixed(2)
+      : "0.00";
+
     detailedBody.innerHTML += `
       <tr>
         <td>${simYear}</td>
@@ -248,55 +264,34 @@ function updateCalculation() {
         <td>${formatCurrency(sp500Value)}</td>
         <td>${sp500Price ? formatPrice(sp500Price) : '-'}</td>
         <td>${roi}</td>
-      </tr>
-    `;
+      </tr>`;
 
-    
     investedValueArray.push(cumulativeEmployeeInvested);
     employeeValueArray.push(currentValueEmployee);
     totalValueArray.push(totalCurrentValue);
     sp500ValueArray.push(sp500Value);
-    
-    // Update final total value for projection starting point
     finalTotalValue = totalCurrentValue;
   });
-  
-  // Render the Historical Performance chart with four traces
+
   Plotly.newPlot("chart", [
     {
-      x: simYears,
-      y: investedValueArray,
-      name: "Cumulative Invested",
-      fill: "tozeroy",
-      fillcolor: "rgba(99,102,106,0.5)",
-      line: { color: "rgba(99,102,106,0.8)" },
-      hovertemplate: '$%{y:,.0f}<extra>Cumulative Invested</extra>'
+      x: simYears, y: investedValueArray, name: "Cumulative Invested",
+      fill: "tozeroy", fillcolor: "rgba(99,102,106,0.5)",
+      line: { color: "rgba(99,102,106,0.8)" }
     },
     {
-      x: simYears,
-      y: employeeValueArray,
-      name: "Employee Shares Value",
-      fill: "tonexty",
-      fillcolor: "rgba(67,176,42,0.5)",
-      line: { color: "rgba(67,176,42,0.8)" },
-      hovertemplate: '$%{y:,.0f}<extra>Employee Value</extra>'
+      x: simYears, y: employeeValueArray, name: "Employee Shares Value",
+      fill: "tonexty", fillcolor: "rgba(67,176,42,0.5)",
+      line: { color: "rgba(67,176,42,0.8)" }
     },
     {
-      x: simYears,
-      y: totalValueArray,
-      name: "Total Value (Emp+Match)",
-      fill: "tonexty",
-      fillcolor: "rgba(0,130,186,0.5)",
-      line: { color: "rgba(0,130,186,0.8)" },
-      hovertemplate: '$%{y:,.0f}<extra>Total Value</extra>'
+      x: simYears, y: totalValueArray, name: "Total Value (Emp+Match)",
+      fill: "tonexty", fillcolor: "rgba(0,130,186,0.5)",
+      line: { color: "rgba(0,130,186,0.8)" }
     },
     {
-      x: simYears,
-      y: sp500ValueArray,
-      name: "S&P500",
-      mode: 'lines',
-      line: { color: "rgba(198,54,99,1)", width: 2 },
-      hovertemplate: '$%{y:,.0f}<extra>S&P500</extra>'
+      x: simYears, y: sp500ValueArray, name: "S&P500",
+      mode: 'lines', line: { color: "rgba(198,54,99,1)", width: 2 }
     }
   ], {
     xaxis: { dtick: 1, title: 'Year' },
@@ -304,71 +299,47 @@ function updateCalculation() {
     legend: { orientation: "h", x: 0, xanchor: "left", y: -0.2 },
     margin: { t: 40 }
   }, { responsive: true });
-  
-  // Also update the projections automatically whenever the historical simulation changes
+
   updateScenarioComparison();
 }
 
-// Scenario Comparison: Project future values starting from the last historical year
 function updateScenarioComparison() {
   const projectionYears = parseInt(document.getElementById("projectionYears").value);
   const conservativeRate = parseFloat(document.getElementById("conservativeRate").value) / 100;
   const baseRate = parseFloat(document.getElementById("baseRate").value) / 100;
   const aggressiveRate = parseFloat(document.getElementById("aggressiveRate").value) / 100;
-  
-  // Start projections from the last historical year and final simulation total
+
   const startYear = historicalData[historicalData.length - 1].year;
   const startingValue = finalTotalValue;
-  
-  let years = [];
-  let conservative = [];
-  let base = [];
-  let aggressive = [];
-  
-  let currentCon = startingValue;
-  let currentBase = startingValue;
-  let currentAgg = startingValue;
-  
+
+  let years = [], conservative = [], base = [], aggressive = [];
+  let currentCon = startingValue, currentBase = startingValue, currentAgg = startingValue;
+
   for (let i = 0; i <= projectionYears; i++) {
     years.push(startYear + i);
     conservative.push(currentCon);
     base.push(currentBase);
     aggressive.push(currentAgg);
-    
     currentCon *= (1 + conservativeRate);
     currentBase *= (1 + baseRate);
     currentAgg *= (1 + aggressiveRate);
   }
-  
-  // Render the scenario projection chart with legend at bottom
-  // Order traces so that aggressive is drawn first, base next, and conservative on top
+
   Plotly.newPlot("scenarioChart", [
     {
-      x: years,
-      y: aggressive,
-      name: "Aggressive",
-      fill: "tozeroy",
-      fillcolor: "rgba(198,54,99,0.5)",
-      line: { color: "rgba(198,54,99,0.8)" },
-      hovertemplate: '$%{y:,.0f}<extra>Aggressive</extra>'
+      x: years, y: aggressive, name: "Aggressive",
+      fill: "tozeroy", fillcolor: "rgba(198,54,99,0.5)",
+      line: { color: "rgba(198,54,99,0.8)" }
     },
     {
-      x: years,
-      y: base,
-      name: "Base",
-      fill: "tozeroy",
-      fillcolor: "rgba(0,130,186,0.5)",
-      line: { color: "rgba(0,130,186,0.8)" },
-      hovertemplate: '$%{y:,.0f}<extra>Base</extra>'
+      x: years, y: base, name: "Base",
+      fill: "tozeroy", fillcolor: "rgba(0,130,186,0.5)",
+      line: { color: "rgba(0,130,186,0.8)" }
     },
     {
-      x: years,
-      y: conservative,
-      name: "Conservative",
-      fill: "tozeroy",
-      fillcolor: "rgba(67,176,42,0.5)",
-      line: { color: "rgba(67,176,42,0.8)" },
-      hovertemplate: '$%{y:,.0f}<extra>Conservative</extra>'
+      x: years, y: conservative, name: "Conservative",
+      fill: "tozeroy", fillcolor: "rgba(67,176,42,0.5)",
+      line: { color: "rgba(67,176,42,0.8)" }
     }
   ], {
     xaxis: { title: 'Year' },
@@ -376,8 +347,7 @@ function updateScenarioComparison() {
     legend: { orientation: "h", x: 0.5, xanchor: "center", y: -0.3 },
     margin: { t: 40 }
   }, { responsive: true });
-  
-  // Build projection table
+
   const projectionBody = document.getElementById("projectionBody");
   projectionBody.innerHTML = "";
   for (let i = 0; i < years.length; i++) {
@@ -387,43 +357,15 @@ function updateScenarioComparison() {
         <td>${formatCurrency(conservative[i])}</td>
         <td>${formatCurrency(base[i])}</td>
         <td>${formatCurrency(aggressive[i])}</td>
-      </tr>
-    `;
+      </tr>`;
   }
 }
 
-// Attach event listeners to projection input fields so that the projections update automatically
 document.getElementById("projectionYears").addEventListener("input", updateScenarioComparison);
 document.getElementById("conservativeRate").addEventListener("input", updateScenarioComparison);
 document.getElementById("baseRate").addEventListener("input", updateScenarioComparison);
 document.getElementById("aggressiveRate").addEventListener("input", updateScenarioComparison);
 
-// Export Detailed Tabulation table to CSV
-document.getElementById("exportCSV").addEventListener("click", () => {
-  let csvContent = "data:text/csv;charset=utf-8,";
-  const headers = ["Year", "Stock Price", "Invested This Year", "Cumulative Invested", "Employee Shares (Year)", "Cumulative Employee Shares", "Match Awarded This Year (#)", "Cumulative Match Awarded (#)", "Match Awarded This Year", "Cumulative Match Awarded", "Employee Value", "Match Value", "Total Value", "S&P500", "S&P500 Price", "ROI (%)"];
-  csvContent += headers.join(",") + "\r\n";
-  
-  const rows = document.querySelectorAll("#detailedTable tbody tr");
-  rows.forEach(row => {
-    const cols = row.querySelectorAll("td");
-    const rowData = [];
-    cols.forEach(col => {
-      rowData.push(col.innerText.replace(/\$/g, "").replace(/,/g, ""));
-    });
-    csvContent += rowData.join(",") + "\r\n";
-  });
-  
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "detailed_tabulation.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-});
-
-// Clear All Values functionality for Historical Performance tab
 document.getElementById("clearBtn").addEventListener("click", () => {
   investmentAmounts = new Array(historicalData.length).fill(0);
   historicalData.forEach(item => {
@@ -436,38 +378,17 @@ document.getElementById("clearBtn").addEventListener("click", () => {
   updateCalculation();
 });
 
-
-// Button to jump to the Detailed Tab
 document.getElementById("goToDetailsBtn").addEventListener("click", () => {
   const triggerEl = document.getElementById("detailed-tab");
   const tab = new bootstrap.Tab(triggerEl);
   tab.show();
 });
-// Button to jump to the Projected Growth tab
 document.getElementById("goToProjectionBtn").addEventListener("click", () => {
   const triggerEl = document.getElementById("projected-tab");
   const tab = new bootstrap.Tab(triggerEl);
   tab.show();
 });
 
-document.getElementById("snapBtn").addEventListener("click", () => {
-  historicalData.forEach((item, index) => {
-    const price = item.price;
-    const numberField = document.getElementById(`number-${item.year}`);
-    let rawInput = numberField.value.replace(/[^0-9.]/g, "");
-    let value = parseFloat(rawInput);
-    if (isNaN(value)) value = 0;
-    // Snap the entered value to the nearest lower multiple of the stock price
-    const snappedVal = Math.floor(value / price) * price;
-    investmentAmounts[index] = snappedVal;
-    // Update both slider and text field with the snapped value
-    document.getElementById(`slider-${item.year}`).value = snappedVal;
-    numberField.value = formatCurrency(snappedVal);
-  });
-  updateCalculation();
-});
-
-
-
-// Initialize simulation and scenario chart on load
+// Initial run
 updateCalculation();
+
