@@ -105,13 +105,29 @@ historicalData.forEach((item, index) => {
 // ✅ Generate dynamic preset buttons
 function generatePresets() {
   const presetPanel = document.getElementById("presetPanel");
-  presetPanel.innerHTML = `<h6>Preset Investments ($45,000 Investment)</h6>`;
+  presetPanel.innerHTML = `<h6>Preset Investments ($100,000 Investment)</h6>`;
 
   const n = historicalData.length;
-  const stepUp = Array.from({ length: n }, (_, i) => Math.floor(45000 / n) * (i + 1));
-  const steady = Array(n).fill(Math.floor(45000 / n));
-  const front = Array(n).fill(0); front[0] = 45000;
-  const late = Array(n).fill(0); late[n - 1] = 45000;
+  const total = 100000;
+
+  // Step Up: divide total proportional to 1 + 2 + ... + n
+  const sumOfSeries = (n * (n + 1)) / 2;
+  const stepUp = Array.from({ length: n }, (_, i) => ((i + 1) / sumOfSeries) * total);
+
+  // Slow and Steady: equal investment every year
+  const steady = Array(n).fill(total / n);
+
+  // Front Load: first 4 years get 25k
+  const front = Array(n).fill(0);
+  for (let i = 0; i < Math.min(4, n); i++) {
+    front[i] = 25000;
+  }
+
+  // Late Start: last 4 years get 25k
+  const late = Array(n).fill(0);
+  for (let i = n - 4; i < n; i++) {
+    if (i >= 0) late[i] = 25000;
+  }
 
   const presets = [
     { name: "Step Up", values: stepUp },
@@ -124,7 +140,7 @@ function generatePresets() {
     const btn = document.createElement("button");
     btn.className = "btn btn-secondary preset-btn me-2 mb-2";
     btn.textContent = preset.name;
-    btn.setAttribute("data-values", preset.values.join(","));
+    btn.setAttribute("data-values", preset.values.map(v => v.toFixed(2)).join(","));
     presetPanel.appendChild(btn);
   });
 
@@ -145,6 +161,7 @@ function generatePresets() {
     });
   });
 }
+
 
 // 👇 Call it after building sliders
 generatePresets();
