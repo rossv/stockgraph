@@ -43,7 +43,7 @@ const sp500Close = [
   { year: 2002, close: 1147 }, { year: 2003, close: 858.5 },
   { year: 2004, close: 1132 }, { year: 2005, close: 1173 },
   { year: 2006, close: 1295 }, { year: 2007, close: 1421 },
-  { year: 2008, close: 13705 }, { year: 2009, close: 811.1 },
+  { year: 2008, close: 1370 }, { year: 2009, close: 811.1 },
   { year: 2010, close: 1178 }, { year: 2011, close: 1332 },
   { year: 2012, close: 1408 }, { year: 2013, close: 1562 },
   { year: 2014, close: 1886 }, { year: 2015, close: 2060 },
