@@ -51,20 +51,22 @@
               <div class="card-body">
                 <h2 class="card-title">Investments by Year</h2>
                 <p class="text-muted">Purchase assumed to be in April at the new stock price</p>
-                <table class="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>Year</th>
-                      <th>Stock Price</th>
-                      <th>Range</th>
-                      <th>Amount</th>
-                      <th>Apply Yearly →</th>
-                    </tr>
-                  </thead>
-                  <tbody id="sliderTable">
-                    <!-- Rows injected dynamically by app.js -->
-                  </tbody>
-                </table>
+                <div id="sliderScrollContainer">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Year</th>
+                        <th>Stock Price</th>
+                        <th>Range</th>
+                        <th>Amount</th>
+                        <th>Apply Yearly →</th>
+                      </tr>
+                    </thead>
+                    <tbody id="sliderTable">
+                      <!-- Rows injected dynamically by app.js -->
+                    </tbody>
+                  </table>
+                </div>
                 <div class="d-flex flex-column">
                   <div class="d-flex justify-content-between mb-2">
                     <button id="clearBtn" class="btn btn-secondary">Clear All Values</button>
