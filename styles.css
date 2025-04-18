@@ -169,7 +169,7 @@ input[type="number"] {
 
 /* Scrollable area for investment inputs table only */
 #sliderScrollContainer {
-  max-height: 500px;
+  max-height: 700px;
   overflow-y: auto;
   margin-bottom: 1rem;
 }
