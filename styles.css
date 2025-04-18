@@ -167,3 +167,16 @@ input[type="number"] {
   overflow: hidden;
 }
 
+/* Scrollable area for investment inputs table only */
+#sliderScrollContainer {
+  max-height: 500px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+/* Prevent horizontal scrollbars */
+#sliderScrollContainer table {
+  table-layout: fixed;
+  width: 100%;
+}
+
