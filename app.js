@@ -61,7 +61,7 @@ function formatCurrency(value) {
   return `$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 function formatPrice(value) {
-  return `$${Number(value).toFixed(2)}`;
+  return `$${Number(value).toFixed(3)}`;
 }
 
 const sliderTable = document.getElementById("sliderTable");
