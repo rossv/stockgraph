@@ -4,35 +4,35 @@ const vestingPeriod = 5;
 
 // Historical stock prices (April prices)
 const historicalData = [
-  { year: 1996, price: 1.60 },
-  { year: 1997, price: 1.81 },
-  { year: 1998, price: 1.86 },
-  { year: 1999, price: 2.27 },
-  { year: 2000, price: 3.00 },
-  { year: 2001, price: 3.46 },
-  { year: 2002, price: 4.08 },
-  { year: 2003, price: 5.19 },
-  { year: 2004, price: 6.38 },
-  { year: 2005, price: 7.40 },
-  { year: 2006, price: 6.69 },
-  { year: 2007, price: 7.53 },
-  { year: 2008, price: 5.32 },
-  { year: 2009, price: 5.82 },
-  { year: 2010, price: 4.63 },
-  { year: 2011, price: 5.01 },
-  { year: 2012, price: 4.46 },
-  { year: 2013, price: 6.52 },
-  { year: 2014, price: 9.41 },
-  { year: 2015, price: 11.20 },
-  { year: 2016, price: 12.13 },
-  { year: 2017, price: 13.60 },
-  { year: 2018, price: 13.28 },
-  { year: 2019, price: 14.76 },
-  { year: 2020, price: 19.70 },
-  { year: 2021, price: 35.30 },
-  { year: 2022, price: 43.72 },
-  { year: 2023, price: 51.02 },
-  { year: 2024, price: 62.35 }
+  { year: 1996, price: 0.160 },
+  { year: 1997, price: 0.181 },
+  { year: 1998, price: 0.186 },
+  { year: 1999, price: 0.227 },
+  { year: 2000, price: 0.300 },
+  { year: 2001, price: 0.346 },
+  { year: 2002, price: 0.408 },
+  { year: 2003, price: 0.519 },
+  { year: 2004, price: 0.638 },
+  { year: 2005, price: 0.740 },
+  { year: 2006, price: 0.669 },
+  { year: 2007, price: 0.753 },
+  { year: 2008, price: 0.532 },
+  { year: 2009, price: 0.582 },
+  { year: 2010, price: 0.463 },
+  { year: 2011, price: 0.501 },
+  { year: 2012, price: 0.446 },
+  { year: 2013, price: 0.652 },
+  { year: 2014, price: 0.941 },
+  { year: 2015, price: 1.120 },
+  { year: 2016, price: 1.213 },
+  { year: 2017, price: 1.360 },
+  { year: 2018, price: 1.328 },
+  { year: 2019, price: 1.476 },
+  { year: 2020, price: 1.970 },
+  { year: 2021, price: 3.530 },
+  { year: 2022, price: 4.372 },
+  { year: 2023, price: 5.102 },
+  { year: 2024, price: 6.235 }
 ];
 
 // S&P 500 data (still from 2012–2024, add more if you want to go earlier)
@@ -53,14 +53,6 @@ const sp500Close = [
   { year: 2022, close: 4546 }, { year: 2023, close: 3577 },
   { year: 2024, close: 5244 }, { year: 2023, close: 5633 }
 ];
-
-
-historicalData.forEach(entry => {
-  if (entry.year >= 2024) {
-    entry.price = parseFloat((entry.price / 10).toFixed(2));
-  }
-});
-
 
 let investmentAmounts = new Array(historicalData.length).fill(0);
 let finalTotalValue = 0;
@@ -194,7 +186,7 @@ snapBtn.addEventListener("click", () => {
     let rawInput = numberField.value.replace(/[^0-9.]/g, "");
     let value = parseFloat(rawInput);
     if (isNaN(value)) value = 0;
-    const snappedVal = Math.round(value / price) * price;
+    const snappedVal = Math.floor(value / price) * price;
     investmentAmounts[index] = snappedVal;
     document.getElementById(`slider-${item.year}`).value = snappedVal;
     numberField.value = formatCurrency(snappedVal);
@@ -417,4 +409,3 @@ document.getElementById("goToProjectionBtn").addEventListener("click", () => {
 
 // Initial run
 updateCalculation();
-
