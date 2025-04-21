@@ -54,6 +54,14 @@ const sp500Close = [
   { year: 2024, close: 5244 }, { year: 2023, close: 5633 }
 ];
 
+
+historicalData.forEach(entry => {
+  if (entry.year >= 2024) {
+    entry.price = parseFloat((entry.price / 10).toFixed(2));
+  }
+});
+
+
 let investmentAmounts = new Array(historicalData.length).fill(0);
 let finalTotalValue = 0;
 
@@ -186,7 +194,7 @@ snapBtn.addEventListener("click", () => {
     let rawInput = numberField.value.replace(/[^0-9.]/g, "");
     let value = parseFloat(rawInput);
     if (isNaN(value)) value = 0;
-    const snappedVal = Math.floor(value / price) * price;
+    const snappedVal = Math.round(value / price) * price;
     investmentAmounts[index] = snappedVal;
     document.getElementById(`slider-${item.year}`).value = snappedVal;
     numberField.value = formatCurrency(snappedVal);
