@@ -1,4 +1,4 @@
-:root {
+:root{
   --main-gray:   rgb(99,102,106);
   --main-green:  rgb(67,176,42);
   --main-blue:   rgb(0,130,186);
@@ -12,58 +12,60 @@ body{
   color:#212529;
 }
 
-/* Navbar */
-.navbar-brand{font-weight:bold;color:var(--main-green)!important;}
-.navbar{background:#fff!important;}
-.logo{max-height:40px;margin-right:10px;}
+/* ── Banner / navbar ───────────────────────────────── */
+.big-navbar{padding-top:1rem;padding-bottom:1rem;}
+.logo{max-height:60px;}
+.navbar-brand{color:var(--main-green)!important;}
 
-/* Tabs */
-.nav-tabs .nav-link{color:var(--main-green)!important;}
-.nav-tabs .nav-link.active{color:var(--main-green)!important;border-color:var(--main-green)!important;}
+/* ── Tabs as rounded rectangles ───────────────────── */
+.rounded-tabs .nav-link{
+  border-radius:.75rem .75rem 0 0;
+  color:var(--main-green)!important;
+}
+.rounded-tabs .nav-link.active{
+  background:#fff;
+  border:1px solid var(--main-green);
+  border-bottom-color:#fff;
+}
 
-/* Tables */
-.table thead th{background:var(--main-green)!important;color:#fff;}
+/* ── Card & table tweaks ──────────────────────────── */
 .card{margin-bottom:1rem;}
+.table thead th{background:var(--main-green)!important;color:#fff;}
 .table th,.table td{vertical-align:middle;}
+
+/* Scroll containers */
+#sliderScrollContainer{max-height:700px;overflow-y:auto;}
+#summaryScrollContainer{max-height:350px;overflow-y:auto;}
+
+/* Fixed widths in summary table */
+#summaryTable{table-layout:fixed;width:100%;}
+#summaryTable th,#summaryTable td{width:20%;overflow:hidden;}
+
+/* Currency inputs */
+.currency-input{text-align:right;font-weight:bold;}
 
 /* Slider */
 .slidecontainer{width:100%;}
-.slider{-webkit-appearance:none;width:100%;height:25px;background:#d3d3d3;outline:none;opacity:.7;transition:opacity .2s;}
+.slider{
+  -webkit-appearance:none;width:100%;height:25px;background:#d3d3d3;
+  outline:none;opacity:.7;transition:opacity .2s;
+}
 .slider:hover{opacity:1;}
-.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:25px;height:35px;background:#43B02A;cursor:pointer;}
+.slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:25px;height:35px;
+  background:#43B02A;cursor:pointer;
+}
 .slider::-moz-range-thumb{width:25px;height:25px;background:#43B02A;cursor:pointer;}
 
-/* Inputs */
-input[type="text"],input[type="number"]{
-  width:100%;text-align:right;font-weight:bold;padding:4px;border-radius:4px;border:1px solid #ccc;
-}
-
-/* Buttons */
-.btn-outline-primary{border-color:var(--main-green);color:var(--main-green);}
-.btn-outline-primary:hover{background:var(--main-green);color:#fff;}
-#exportCSV,
-#goToProjectionBtn,
-#goToDetailsBtn{
-  background:var(--main-magenta);border-color:var(--main-magenta);color:#fff;
-}
-#exportCSV:hover,#goToProjectionBtn:hover,#goToDetailsBtn:hover{opacity:.75;color:#fff;}
+/* Preset buttons, magenta buttons */
 .preset-btn{background:var(--main-blue);border:1px solid var(--main-blue);color:#fff;}
 .preset-btn:hover{background:#0056b3;border-color:#0056b3;color:#fff;}
-
-/* Investment slider scroll */
-#sliderScrollContainer{max-height:700px;overflow-y:auto;margin-bottom:1rem;}
-#sliderScrollContainer table{table-layout:fixed;width:100%;}
-
-/* Summary table scroll */
-#summaryScrollContainer{max-height:350px;overflow-y:auto;}
-
-/* Ensure both main panels fit on 1080p without overflow */
-#inputPanel .card-body,
-#chartPanel .card-body{
-  max-height:80vh;
-  overflow-y:auto;
+#goToDetailsBtn,#goToProjectionBtn,#exportCSV{
+  background:var(--main-magenta);border-color:var(--main-magenta);color:#fff;
 }
+#goToDetailsBtn:hover,#goToProjectionBtn:hover,#exportCSV:hover{opacity:.75;color:#fff;}
 
-/* Summary table fixed column widths */
-#summaryTable{table-layout:fixed;width:100%;}
-#summaryTable th,#summaryTable td{width:calc(100%/5);overflow:hidden;}
+/* Scenario card narrower on desktop */
+@media (min-width:992px){
+  .scenario-card{max-width:22rem;margin-left:auto;margin-right:auto;}
+}
