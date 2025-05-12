@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stock Investment Dashboard</title>
+
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <!-- Custom Styles -->
@@ -12,7 +13,7 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-  <!-- Navigation Bar with Logo and White Background -->
+  <!-- Navigation Bar with Logo -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
@@ -26,23 +27,29 @@
     <!-- Tab Navigation -->
     <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="historical-tab" data-bs-toggle="tab" data-bs-target="#historical" type="button" role="tab">
+        <button class="nav-link active" id="historical-tab" data-bs-toggle="tab"
+                data-bs-target="#historical" type="button" role="tab">
           Historical Performance
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="detailed-tab" data-bs-toggle="tab" data-bs-target="#detailed" type="button" role="tab">
+        <button class="nav-link" id="detailed-tab" data-bs-toggle="tab"
+                data-bs-target="#detailed" type="button" role="tab">
           Detailed Tabulation
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="projected-tab" data-bs-toggle="tab" data-bs-target="#projected" type="button" role="tab">
+        <button class="nav-link" id="projected-tab" data-bs-toggle="tab"
+                data-bs-target="#projected" type="button" role="tab">
           Projected Growth
         </button>
       </li>
     </ul>
+
     <div class="tab-content" id="dashboardTabsContent">
-      <!-- Historical Performance Tab -->
+      <!-- ────────────────────────────────────────────────
+           HISTORICAL PERFORMANCE TAB
+      ────────────────────────────────────────────────── -->
       <div class="tab-pane fade show active" id="historical" role="tabpanel" aria-labelledby="historical-tab">
         <div class="row mt-4">
           <!-- Investment Input Panel -->
@@ -51,6 +58,22 @@
               <div class="card-body">
                 <h2 class="card-title">Investments by Year</h2>
                 <p class="text-muted">Purchase assumed to be in April at the new stock price</p>
+
+                <!-- ▸ Buttons moved ABOVE sliders  -->
+                <div class="d-flex flex-column mb-3">
+                  <div class="d-flex justify-content-between mb-2">
+                    <button id="clearBtn" class="btn btn-secondary">Clear All Values</button>
+                    <button id="goToDetailsBtn" class="btn btn-secondary" type="button">Go to Details</button>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <button id="snapBtn" class="btn btn-secondary">Snap Investments to Stock Price</button>
+                    <button id="goToProjectionBtn" class="btn btn-secondary" type="button">Go to Projected</button>
+                  </div>
+                  <!-- Preset Investments Panel (populated dynamically) -->
+                  <div id="presetPanel" class="mt-3"></div>
+                </div>
+
+                <!-- ▸ Sliders (scrollable) -->
                 <div id="sliderScrollContainer">
                   <table class="table table-striped">
                     <thead>
@@ -62,57 +85,39 @@
                         <th>Apply Yearly →</th>
                       </tr>
                     </thead>
-                    <tbody id="sliderTable">
-                      <!-- Rows injected dynamically by app.js -->
-                    </tbody>
+                    <tbody id="sliderTable"><!-- rows injected by JS --></tbody>
                   </table>
                 </div>
-                <div class="d-flex flex-column">
-                  <div class="d-flex justify-content-between mb-2">
-                    <button id="clearBtn" class="btn btn-secondary">Clear All Values</button>
-                    <button id="goToDetailsBtn" class="btn btn-secondary" type="button">Go to Details</button>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <button id="snapBtn" class="btn btn-secondary">Snap Investments to Stock Price</button>
-                    <button id="goToProjectionBtn" class="btn btn-secondary" type="button">Go to Projected</button>
-                  </div>
-                  <!-- Preset Investments Panel (populated dynamically by JS) -->
-                  <div id="presetPanel" class="mt-3"></div>
-
-                </div> 
               </div>
             </div>
           </div>
 
-          <!-- Chart & Simplified Summary Panel -->
+          <!-- Chart & Summary Panel -->
           <div id="chartPanel" class="col-lg-8 mb-4">
             <div class="card">
               <div class="card-body">
                 <h2 class="card-title">Stock Value Over Time</h2>
                 <div id="chart" style="width: 100%; height: 450px;"></div>
-                <div class="table-responsive mt-3">
+
+                <!-- ▸ Summary table now vertically scrollable -->
+                <div id="summaryScrollContainer" class="table-responsive mt-3">
                   <table id="summaryTable" class="table table-bordered">
                     <thead>
                       <tr>
-                        <th title="Financial Year ended December 31st, with stock price announced the following April">Financial Year</th>
+                        <th title="Calendar year when the investment was made">Year</th>
                         <th title="Wade Trim stock price as announced in April of the following year">Price</th>
                         <th title="Total amount you've invested cumulatively up to this year">Cumulative Invested</th>
                         <th title="Total value of all employee and match shares this year">Total Value</th>
                         <th title="Simulated value if you'd invested in an S&P500 index fund instead">S&P500</th>
                       </tr>
                     </thead>
-                    <tbody id="summaryBody">
-                      <!-- Simplified summary rows injected dynamically -->
-                    </tbody>
+                    <tbody id="summaryBody"><!-- filled by app.js --></tbody>
                   </table>
                 </div>
               </div>
             </div>
           </div>
-               
         </div>
-        
-        
 
         <!-- Disclosures -->
         <div id="disclosures" class="text-center text-muted">
@@ -121,7 +126,9 @@
         </div>
       </div>
 
-      <!-- Detailed Tabulation Tab -->
+      <!-- ────────────────────────────────────────────────
+           DETAILED TABULATION TAB
+      ────────────────────────────────────────────────── -->
       <div class="tab-pane fade" id="detailed" role="tabpanel" aria-labelledby="detailed-tab">
         <div class="row mt-4">
           <div class="col-12 mb-4">
@@ -132,36 +139,25 @@
                   <table id="detailedTable" class="table table-bordered">
                     <thead>
                       <tr>
-                        <th title="Financial Year ended December 31st, with stock price announced the following April">Financial Year</th>
-                        <th title="Wade Trim stock price as announced in April of the following year">Stock Price</th>
-                        <th title="Amount invested in Wade Trim stock this year">Invested<br>This Year</th>
-                        <th title="Total invested across all years to date">Cumulative<br>Invested</th>
-                        <th title="Number of shares bought this year from your investment">Employee<br>Shares (Year)</th>
-                        <th title="Total number of employee shares accumulated to date">Cumulative<br>Employee Shares</th>
-                        <th title="Company match awarded this year, based on 5-year vesting">Match Awarded<br>This Year (#)</th>
-                        <th title="Total matched shares awarded over time">Cumulative<br>Match Awarded (#)</th>
-                        <th title="Dollar value of match awarded this year, based on current stock price">Cumulative<br>Match Awarded</th>
-                        <th title="Value of employee shares based on current stock price">Employee<br>Value</th>
-                        <th title="Value of matched shares based on current stock price">Match<br>Value</th>
-                        <th title="Combined value of all employee and matched shares">Total<br>Value</th>
-                        <th title="Simulated value if same amount was invested in S&P500 instead">S&P500</th>
-                        <th title="S&P500 closing price on April 1 of this year">S&P500 Price</th>
-                        <th title="Return on investment = (Total Value - Invested) ÷ Invested × 100%">ROI (%)</th>
+                        <th>Year</th><th>Stock Price</th><th>Invested<br>This Year</th><th>Cumulative<br>Invested</th>
+                        <th>Employee<br>Shares (Year)</th><th>Cumulative<br>Employee Shares</th>
+                        <th>Match Awarded<br>This Year (#)</th><th>Cumulative<br>Match Awarded (#)</th>
+                        <th>Cumulative<br>Match Awarded</th><th>Employee<br>Value</th>
+                        <th>Match<br>Value</th><th>Total<br>Value</th>
+                        <th>S&P500</th><th>S&P500 Price</th><th>ROI (%)</th>
                       </tr>
                     </thead>
-                    <tbody id="detailedBody">
-                      <!-- Detailed rows injected dynamically by app.js -->
-                    </tbody>
+                    <tbody id="detailedBody"><!-- rows injected --></tbody>
                   </table>
                 </div>
                 <button id="exportCSV" class="btn" type="button">Export to CSV</button>
                 <div class="mt-3 text-muted small">
-                  <p><strong>Notes:</strong></p>
+                  <strong>Notes:</strong>
                   <ul>
-                    <li><strong>S&P500 Value:</strong> Assumes the amount invested in Wade Trim stock was instead invested in an S&P500 index fund at April 1st closing each year.</li>
-                    <li><strong>ROI (%):</strong> Calculated as (Total Value - Cumulative Invested) ÷ Cumulative Invested × 100.</li>
-                    <li><strong>Partial Shares:</strong> Wade Trim does not issue partial shares. Use the “Snap Investments” button on the main tab to round to the nearest whole-share investment.</li>
-                    <li><strong>Stock Price Years:</strong> The price listed for each year is based on the company’s performance the previous year. For example, the 2024 stock price of $62.35 reflects the company's value at the end of 2024 and was announced in April 2025.</li>
+                    <li><strong>S&P500 Value:</strong> Assumes Wade Trim investment placed instead in an S&P500 index fund on April 1 each year.</li>
+                    <li><strong>ROI (%):</strong> (Total Value − Cumulative Invested) ÷ Cumulative Invested × 100.</li>
+                    <li><strong>Partial Shares:</strong> Click “Snap Investments” to round to whole shares.</li>
+                    <li><strong>Stock Price Years:</strong> Price reflects prior‑year performance (e.g. 2024 price announced April 2025).</li>
                   </ul>
                 </div>
               </div>
@@ -170,7 +166,9 @@
         </div>
       </div>
 
-      <!-- Projected Growth Tab -->
+      <!-- ────────────────────────────────────────────────
+           PROJECTED GROWTH TAB
+      ────────────────────────────────────────────────── -->
       <div class="tab-pane fade" id="projected" role="tabpanel" aria-labelledby="projected-tab">
         <div class="row mt-4">
           <!-- Scenario Controls -->
@@ -178,54 +176,70 @@
             <div class="card">
               <div class="card-body">
                 <h2 class="card-title">Scenario Settings</h2>
+
                 <div class="mb-3">
                   <label for="projectionYears" class="form-label">Projection (years)</label>
-                  <input type="number" id="projectionYears" class="form-control form-control-sm" value="7" min="1" max="30">
+                  <input type="number" id="projectionYears" class="form-control form-control-sm"
+                         value="7" min="1" max="30">
                 </div>
+
                 <div class="mb-3">
-                  <label for="conservativeRate" class="form-label">Conservative Growth (%)</label>
-                  <small class="form-text text-muted">A typical stock market long-term growth rate</small>
-                  <input type="number" id="conservativeRate" class="form-control form-control-sm" value="6" min="0" max="50">
+                  <label for="annualPurchase" class="form-label">Annual Additional Purchase ($)</label>
+                  <small class="form-text text-muted">
+                    Amount you plan to invest each projection year
+                  </small>
+                  <input type="number" id="annualPurchase" class="form-control form-control-sm"
+                         value="0" min="0" step="any">
                 </div>
+
                 <div class="mb-3">
-                  <label for="baseRate" class="form-label">Base Growth (%)</label>
-                  <small class="form-text text-muted">The calculated 30-year average return rate.</small>
-                  <input type="number" id="baseRate" class="form-control form-control-sm" value="15" min="0" max="50">
+                  <label for="conservativeRate" class="form-label">Conservative Growth (%)</label>
+                  <small class="form-text text-muted">Typical broad‑market rate</small>
+                  <input type="number" id="conservativeRate" class="form-control form-control-sm"
+                         value="6" min="0" max="50">
                 </div>
+
                 <div class="mb-3">
-                  <label for="aggressiveRate" class="form-label">Aggressive Growth (%)</label>
-                  <small class="form-text text-muted">The calculated 10-year average return rate</small>
-                  <input type="number" id="aggressiveRate" class="form-control form-control-sm" value="22" min="0" max="50">
+                  <label for="baseRate" class="form-label">Base Growth (%)</label>
+                  <small class="form-text text-muted">Median Wade Trim growth rate</small>
+                  <input type="number" id="baseRate" class="form-control form-control-sm"
+                         value="19" min="0" max="50">
                 </div>
-                <p class="mt-2 text-muted">Does not include additional future stock purchases.</p>
+
+                <div class="mb-3">
+                  <label for="aggressiveRate" class="form-label">Aggressive Growth (%)</label>
+                  <small class="form-text text-muted">Average Wade Trim growth rate</small>
+                  <input type="number" id="aggressiveRate" class="form-control form-control-sm"
+                         value="27" min="0" max="50">
+                </div>
+
+                <p class="mt-2 text-muted">
+                  Does not include additional future stock purchases <em>unless</em> you specify an amount above.
+                </p>
               </div>
             </div>
           </div>
-          <!-- Projection Chart and Table Panel -->
+
+          <!-- Projection Chart & Table -->
           <div class="col-lg-8 mb-4">
             <div class="card">
               <div class="card-body">
                 <h2 class="card-title">Projected Growth</h2>
                 <div id="scenarioChart" style="width: 100%; height: 450px;"></div>
+
                 <div class="table-responsive mt-3">
                   <table id="projectionTable" class="table table-bordered">
                     <thead>
-                      <tr>
-                        <th>Year</th>
-                        <th>Conservative</th>
-                        <th>Base</th>
-                        <th>Aggressive</th>
-                      </tr>
+                      <tr><th>Year</th><th>Conservative</th><th>Base</th><th>Aggressive</th></tr>
                     </thead>
-                    <tbody id="projectionBody">
-                      <!-- Projection table rows injected dynamically by app.js -->
-                    </tbody>
+                    <tbody id="projectionBody"><!-- filled by JS --></tbody>
                   </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <!-- Disclosures -->
         <div id="disclosuresProjection" class="text-center text-muted">
           <p>Past performance is not a guarantee of future results</p>
@@ -235,9 +249,8 @@
     </div>
   </div>
 
-  <!-- Custom Script -->
+  <!-- Custom Script & Bootstrap Bundle -->
   <script src="app.js"></script>
-  <!-- Bootstrap Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
