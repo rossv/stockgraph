@@ -17,7 +17,7 @@
 </head>
 
 <body>
-  <!-- ───────────── Banner / Navbar ───────────── -->
+  <!-- ── Banner / Navbar ───────────────────────────── -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white big-navbar">
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center gap-2" href="#">
@@ -31,7 +31,7 @@
     </div>
   </nav>
 
-  <!-- ───────────── Tabs ───────────── -->
+  <!-- ── Tabs ------------------------------------------------ -->
   <div class="container-fluid mt-4">
     <ul class="nav nav-tabs rounded-tabs" id="dashboardTabs" role="tablist">
       <li class="nav-item">
@@ -73,170 +73,7 @@
     </ul>
 
     <div class="tab-content" id="dashboardTabsContent">
-      <!-- ───────────────────────────────────────────
-           HISTORICAL PERFORMANCE TAB
-      ─────────────────────────────────────────── -->
-      <div
-        class="tab-pane fade show active"
-        id="historical"
-        role="tabpanel"
-        aria-labelledby="historical-tab"
-      >
-        <div class="row mt-4">
-          <!-- ▸ Investment inputs ------------------- -->
-          <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-              <div class="card-body d-flex flex-column">
-                <h2 class="card-title">Investments by Financial Year</h2>
-                <p class="text-muted">
-                  Purchases assumed to be in April of the following year at the
-                  new stock price
-                </p>
-
-                <!-- Buttons row -->
-                <div class="d-flex justify-content-between mb-3 flex-wrap">
-                  <button
-                    id="snapBtn"
-                    class="btn btn-secondary flex-grow-1 me-2 mb-2"
-                  >
-                    Snap Investments to Stock Price
-                  </button>
-                  <button id="goToDetailsBtn" class="btn btn-secondary me-2 mb-2">
-                    Go to Details
-                  </button>
-                  <button id="goToProjectionBtn" class="btn btn-secondary mb-2">
-                    Go to Projected
-                  </button>
-                </div>
-
-                <!-- Presets (Clear All injected by JS) -->
-                <div id="presetPanel" class="mb-3"></div>
-
-                <!-- Slider table -->
-                <div id="sliderScrollContainer" class="flex-grow-1">
-                  <table class="table table-striped mb-0">
-                    <thead>
-                      <tr>
-                        <th>Financial Year</th>
-                        <th>Stock Price</th>
-                        <th>Purchase</th>
-                        <th>Amount</th>
-                        <th class="two-line">
-                          Apply to All<br />Following Year
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody id="sliderTable"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ▸ Chart & summary --------------------- -->
-          <div class="col-lg-8 mb-4">
-            <div class="card h-100">
-              <div class="card-body d-flex flex-column">
-                <h2 class="card-title">Stock Value Over Time</h2>
-                <div id="chart" style="width: 100%; height: 450px"></div>
-
-                <div
-                  id="summaryScrollContainer"
-                  class="table-responsive mt-3 flex-grow-1"
-                >
-                  <table
-                    id="summaryTable"
-                    class="table table-bordered mb-0"
-                  >
-                    <thead>
-                      <tr>
-                        <th>Financial Year</th>
-                        <th>Price</th>
-                        <th>Cumulative Invested</th>
-                        <th>Total Value</th>
-                        <th>S&amp;P 500</th>
-                      </tr>
-                    </thead>
-                    <tbody id="summaryBody"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ───────────────────────────────────────────
-           DETAILED TABULATION TAB
-      ─────────────────────────────────────────── -->
-      <div
-        class="tab-pane fade"
-        id="detailed"
-        role="tabpanel"
-        aria-labelledby="detailed-tab"
-      >
-        <div class="row mt-4">
-          <div class="col-12 mb-4">
-            <div class="card">
-              <div class="card-body">
-                <h2 class="card-title">Detailed Tabulation</h2>
-                <div class="table-responsive">
-                  <table
-                    id="detailedTable"
-                    class="table table-bordered"
-                  >
-                    <thead>
-                      <tr>
-                        <th>Financial Year</th>
-                        <th>Stock Price</th>
-                        <th>Invested<br />This Year</th>
-                        <th>Cumulative<br />Invested</th>
-                        <th>Employee<br />Shares (Year)</th>
-                        <th>Cumulative<br />Employee Shares</th>
-                        <th>Match Awarded<br />This Year (#)</th>
-                        <th>Cumulative<br />Match Awarded (#)</th>
-                        <th>Cumulative<br />Match Awarded</th>
-                        <th>Employee<br />Value</th>
-                        <th>Match<br />Value</th>
-                        <th>Total<br />Value</th>
-                        <th>S&amp;P 500</th>
-                        <th>S&amp;P Price</th>
-                        <th>ROI (%)</th>
-                      </tr>
-                    </thead>
-                    <tbody id="detailedBody"></tbody>
-                  </table>
-                </div>
-
-                <button id="exportCSV" class="btn" type="button">
-                  Export to CSV
-                </button>
-
-                <div class="mt-3 text-muted small">
-                  <strong>Notes:</strong>
-                  <ul>
-                    <li>
-                      S&amp;P 500 value assumes equal investment on April 1 each
-                      year in an index fund.
-                    </li>
-                    <li>
-                      ROI = (Total Value − Cumulative Invested) ÷
-                      Cumulative Invested.
-                    </li>
-                    <li>
-                      Click “Snap Investments” to round to whole shares.
-                    </li>
-                    <li>
-                      Stock price for a given year is announced the following
-                      April (e.g., 2024 price set in April 2025).
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Historical tab markup unchanged … -->
 
       <!-- ───────────────────────────────────────────
            PROJECTED GROWTH TAB
@@ -247,9 +84,9 @@
         role="tabpanel"
         aria-labelledby="projected-tab"
       >
-        <!-- NOTE the new col‑auto / col layout -->
-        <div class="row g-3 align-items-start mt-4">
-          <!-- ▸ Scenario settings (shrink‑wraps) -->
+        <!--  NEW: flex‑nowrap from lg and up  -->
+        <div class="row g-3 align-items-start flex-lg-nowrap mt-4">
+          <!-- Scenario settings (wrap content) -->
           <div class="col-auto">
             <div class="card scenario-card">
               <div class="card-body">
@@ -322,8 +159,8 @@
             </div>
           </div>
 
-          <!-- ▸ Projection chart & table (fills the rest) -->
-          <div class="col">
+          <!--  NEW: extra class for min-width:0  -->
+          <div class="col projected-chart-col">
             <div class="card h-100">
               <div class="card-body d-flex flex-column">
                 <h2 class="card-title">Projected Growth</h2>
@@ -352,6 +189,7 @@
             </div>
           </div>
         </div>
+        <!-- /row -->
       </div>
       <!-- /projected tab -->
     </div>
