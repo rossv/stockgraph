@@ -59,7 +59,7 @@ body {
   overflow-y: auto;
 }
 #summaryScrollContainer {
-  max-height: 350px;
+  /*max-height: 700px;*/
   overflow-y: auto;
 }
 
