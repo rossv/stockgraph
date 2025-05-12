@@ -55,7 +55,7 @@ body {
 
 /* Scrollable areas */
 #sliderScrollContainer {
-  max-height: 700px;
+  /*max-height: 700px;*/
   overflow-y: auto;
 }
 #summaryScrollContainer {
@@ -150,3 +150,7 @@ body {
   .scenario-card { max-width: 22rem; }
 }
 
+.card-body.d-flex .flex-grow-1 {
+  /* let flexbox shrink the scroll areas as needed */
+  min-height: 0;
+}
