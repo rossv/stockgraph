@@ -1,446 +1,260 @@
-/*─────────────────────────────────────────────────────────
-  app.js – full version (12 May 2025)
-─────────────────────────────────────────────────────────*/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Investment Dashboard</title>
 
-/* Parameters */
-const matchRate = 0.25;
-const vestingPeriod = 5;
+  <!-- Bootstrap -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
 
-/* Split‑adjusted Wade‑Trim prices (3 decimal) */
-const historicalData = [
-  1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
-  2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015,
-  2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
-].map((yr, i) => ({
-  year: yr,
-  price: [
-    0.160, 0.181, 0.186, 0.227, 0.300, 0.346, 0.408, 0.519, 0.638,
-    0.740, 0.669, 0.753, 0.532, 0.582, 0.463, 0.501, 0.446, 0.652,
-    0.941, 1.120, 1.213, 1.360, 1.328, 1.476, 1.970, 3.530, 4.372,
-    5.102, 6.235
-  ][i]
-}));
+<body>
+  <!-- ── Banner / Navbar ───────────────────────────────────────── -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white big-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <img class="logo"
+             src="https://www.wadetrim.com/wp-content/uploads/wade-trim-logo_696x696.png"
+             alt="Wade Trim"/>
+        <span class="fs-3 fw-bold">Stock Dashboard</span>
+      </a>
+    </div>
+  </nav>
 
-/* April‑1 S&P 500 closes (1996‑2024) */
-const sp500Close = [
-  653.7, 759.6, 737.7, 1294, 1499, 1160, 1147, 858.5, 1132, 1173,
-  1295, 1421, 1370, 811.1, 1178, 1332, 1408, 1562, 1886, 2060,
-  2073, 2363, 2641, 2867, 2471, 4020, 4546, 3577, 5244
-].map((c, i) => ({ year: 1996 + i, close: c }));
+  <!-- ── Tab Bar ──────────────────────────────────────────────── -->
+  <div class="container-fluid mt-4">
+    <ul class="nav nav-tabs rounded-tabs" id="dashboardTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link active" id="historical-tab"
+                data-bs-toggle="tab" data-bs-target="#historical"
+                type="button" role="tab">
+          Historical Performance
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" id="detailed-tab"
+                data-bs-toggle="tab" data-bs-target="#detailed"
+                type="button" role="tab">
+          Detailed Tabulation
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" id="projected-tab"
+                data-bs-toggle="tab" data-bs-target="#projected"
+                type="button" role="tab">
+          Projected Growth
+        </button>
+      </li>
+    </ul>
 
-/* State */
-let investmentAmounts = Array(historicalData.length).fill(0);
-let finalTotalValue = 0;
+    <div class="tab-content" id="dashboardTabsContent">
+      <!-- ════════════════════════════════════════════════════
+           HISTORICAL PERFORMANCE TAB
+      ════════════════════════════════════════════════════ -->
+      <div class="tab-pane fade show active" id="historical" role="tabpanel" aria-labelledby="historical-tab">
+        <div class="row mt-4">
+          <!-- Investment Input Panel -->
+          <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+              <div class="card-body d-flex flex-column">
+                <h2 class="card-title">Investments by Financial Year</h2>
+                <p class="text-muted">
+                  Purchases assumed to be in April of the following year at the new stock price
+                </p>
 
-/* Helpers */
-const fmtCur = v =>
-  `$${Number(v).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
-const fmtPrice = v => `$${Number(v).toFixed(3)}`;
+                <!-- Buttons Row -->
+                <div class="d-flex justify-content-between mb-3 flex-wrap">
+                  <button id="snapBtn"
+                          class="btn btn-secondary flex-grow-1 me-2 mb-2">
+                    Snap Investments to Stock Price
+                  </button>
+                  <button id="goToDetailsBtn"
+                          class="btn btn-secondary me-2 mb-2">
+                    Go to Details
+                  </button>
+                  <button id="goToProjectionBtn"
+                          class="btn btn-secondary mb-2">
+                    Go to Projected
+                  </button>
+                </div>
 
-/* Build slider rows */
-const sliderTable = document.getElementById("sliderTable");
+                <!-- Preset Buttons -->
+                <div id="presetPanel" class="mb-3">
+                  <h6>Preset Investments ($100,000 investment)</h6>
+                  <!-- JS injects preset & clear buttons -->
+                </div>
 
-historicalData.forEach((rec, idx) => {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td>${rec.year}</td>
-    <td>${fmtPrice(rec.price)}</td>
-    <td>
-      <div class="slidecontainer">
-        <input type="range" class="slider" id="slider-${rec.year}"
-               min="0" max="20000" step="any" value="0">
-      </div>
-    </td>
-    <td><input type="text" id="number-${rec.year}"
-               class="currency-input" value="$0"></td>
-    <td><button class="btn btn-sm btn-outline-primary"
-                onclick="applyToSubsequentYears(${idx})">
-          Apply →
-        </button></td>`;
-  sliderTable.appendChild(tr);
+                <!-- Slider Table -->
+                <div id="sliderScrollContainer" class="flex-grow-1">
+                  <table class="table table-striped mb-0">
+                    <thead>
+                      <tr>
+                        <th>Financial Year</th>
+                        <th>Stock Price</th>
+                        <th>Purchase</th>
+                        <th>Amount</th>
+                        <th class="two-line">Apply to All<br/>Following Year</th>
+                      </tr>
+                    </thead>
+                    <tbody id="sliderTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  const slider = tr.querySelector(`#slider-${rec.year}`);
-  const number = tr.querySelector(`#number-${rec.year}`);
+          <!-- Chart & Summary Panel -->
+          <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+              <div class="card-body d-flex flex-column">
+                <h2 class="card-title">Stock Value Over Time</h2>
+                <div id="chart" style="width:100%;height:450px;"></div>
 
-  /* slider */
-  slider.addEventListener("input", e => {
-    const raw = +e.target.value;
-    const snap = Math.round(raw / rec.price) * rec.price; // nearest
-    investmentAmounts[idx] = snap;
-    slider.value = snap;
-    number.value = fmtCur(snap);
-    updateCalculation();
-  });
+                <div id="summaryScrollContainer"
+                     class="table-responsive mt-3 flex-grow-1">
+                  <table id="summaryTable" class="table table-bordered mb-0">
+                    <thead>
+                      <tr>
+                        <th>Financial Year</th><th>Price</th>
+                        <th>Cumulative Invested</th>
+                        <th>Total Value</th><th>S&amp;P 500</th>
+                      </tr>
+                    </thead>
+                    <tbody id="summaryBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /row -->
+      </div><!-- /historical tab -->
 
-  /* textbox: focus/blur for nice currency UX */
-  number.addEventListener("focus", e => {
-    const val = e.target.value.replace(/[^0-9.]/g, "");
-    e.target.value = val === "0.00" || val === "0" ? "" : val;
-  });
-  number.addEventListener("blur", e => {
-    const v = parseFloat(e.target.value.replace(/[^0-9.]/g, "")) || 0;
-    investmentAmounts[idx] = v;
-    e.target.value = fmtCur(v);
-    updateCalculation();
-  });
-  number.addEventListener("input", e => {
-    const v = parseFloat(e.target.value.replace(/[^0-9.]/g, "")) || 0;
-    investmentAmounts[idx] = v;
-    updateCalculation();
-  });
-});
+      <!-- ════════════════════════════════════════════════════
+           DETAILED TABULATION TAB
+      ════════════════════════════════════════════════════ -->
+      <div class="tab-pane fade" id="detailed" role="tabpanel" aria-labelledby="detailed-tab">
+        <div class="row mt-4">
+          <div class="col-12 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h2 class="card-title">Detailed Tabulation</h2>
+                <div class="table-responsive">
+                  <table id="detailedTable" class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Financial Year</th><th>Stock Price</th>
+                        <th>Invested<br/>This Year</th>
+                        <th>Cumulative<br/>Invested</th>
+                        <th>Employee<br/>Shares (Year)</th>
+                        <th>Cumulative<br/>Employee Shares</th>
+                        <th>Match Awarded<br/>This Year (#)</th>
+                        <th>Cumulative<br/>Match Awarded (#)</th>
+                        <th>Cumulative<br/>Match Awarded</th>
+                        <th>Employee<br/>Value</th>
+                        <th>Match<br/>Value</th>
+                        <th>Total<br/>Value</th>
+                        <th>S&amp;P 500</th>
+                        <th>S&amp;P Price</th>
+                        <th>ROI (%)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="detailedBody"></tbody>
+                  </table>
+                </div>
 
-/* Preset buttons + Clear All */
-function generatePresets() {
-  const panel = document.getElementById("presetPanel");
-  panel.innerHTML = '<h6>Preset Investments ($100,000 investment)</h6>';
-  const n = historicalData.length,
-    total = 100000,
-    sumSeries = (n * (n + 1)) / 2;
-  const stepUp = Array.from(
-      { length: n },
-      (_, i) => ((i + 1) / sumSeries) * total
-    ),
-    steady = Array(n).fill(total / n),
-    front = Array.from({ length: n }, (_, i) => (i < 4 ? 25000 : 0)),
-    late = Array.from({ length: n }, (_, i) => (i >= n - 4 ? 25000 : 0));
+                <button id="exportCSV" class="btn" type="button">Export to CSV</button>
 
-  [
-    { name: "Step Up", values: stepUp },
-    { name: "Slow & Steady", values: steady },
-    { name: "Front Load", values: front },
-    { name: "Late Start", values: late }
-  ].forEach(p => {
-    const b = document.createElement("button");
-    b.className = "btn btn-secondary preset-btn me-2 mb-2";
-    b.textContent = p.name;
-    b.dataset.values = p.values.join(",");
-    panel.appendChild(b);
-  });
+                <div class="mt-3 text-muted small">
+                  <strong>Notes:</strong>
+                  <ul>
+                    <li>S&amp;P 500 value assumes equal investment on April 1 each year in an index fund.</li>
+                    <li>ROI = (Total Value − Cumulative Invested) ÷ Cumulative Invested.</li>
+                    <li>Click “Snap Investments” to round to whole shares.</li>
+                    <li>Stock price for a given year is announced the following April (e.g., 2024 price set in April 2025).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /detailed tab -->
 
-  const clr = document.createElement("button");
-  clr.id = "clearBtn";
-  clr.className = "btn btn-outline-secondary ms-2 mb-2";
-  clr.textContent = "Clear All Values";
-  panel.appendChild(clr);
+      <!-- ════════════════════════════════════════════════════
+           PROJECTED GROWTH TAB
+      ════════════════════════════════════════════════════ -->
+      <div class="tab-pane fade" id="projected" role="tabpanel" aria-labelledby="projected-tab">
+        <div class="row g-3 align-items-start flex-lg-nowrap mt-4">
+          <!-- Scenario Settings (shrink‑wrap column) -->
+          <div class="col-auto">
+            <div class="card scenario-card">
+              <div class="card-body">
+                <h2 class="card-title">Scenario Settings</h2>
 
-  panel.querySelectorAll(".preset-btn").forEach(btn => {
-    btn.addEventListener("click", e => {
-      const vals = e.target.dataset.values.split(",").map(Number);
-      vals.forEach((v, i) => {
-        investmentAmounts[i] = v;
-        const yr = historicalData[i].year;
-        document.getElementById(`slider-${yr}`).value = v;
-        document.getElementById(`number-${yr}`).value = fmtCur(v);
-      });
-      updateCalculation();
-    });
-  });
-  clr.addEventListener("click", clearAll);
-}
-generatePresets();
+                <label class="form-label mt-2" for="projectionYears">Projection (years)</label>
+                <input id="projectionYears" type="number"
+                       class="form-control form-control-sm" value="7" min="1" max="30"/>
 
-/* Clear & Snap */
-function clearAll() {
-  investmentAmounts.fill(0);
-  historicalData.forEach(rec => {
-    document.getElementById(`slider-${rec.year}`).value = 0;
-    document.getElementById(`number-${rec.year}`).value = "$0";
-  });
-  updateCalculation();
-}
-document.getElementById("snapBtn").addEventListener("click", () => {
-  historicalData.forEach((rec, i) => {
-    const raw = investmentAmounts[i];
-    const snap = Math.round(raw / rec.price) * rec.price;
-    investmentAmounts[i] = snap;
-    document.getElementById(`slider-${rec.year}`).value = snap;
-    document.getElementById(`number-${rec.year}`).value = fmtCur(snap);
-  });
-  updateCalculation();
-});
+                <label class="form-label mt-3" for="annualPurchase">Annual Additional Purchase ($)</label>
+                <input id="annualPurchase" type="text"
+                       class="form-control form-control-sm currency-input" value="$0"/>
 
-/* Apply to following years */
-function applyToSubsequentYears(startIdx) {
-  const v = investmentAmounts[startIdx];
-  historicalData.forEach((rec, i) => {
-    if (i >= startIdx) {
-      investmentAmounts[i] = v;
-      document.getElementById(`slider-${rec.year}`).value = v;
-      document.getElementById(`number-${rec.year}`).value = fmtCur(v);
-    }
-  });
-  updateCalculation();
-}
+                <label class="form-label mt-3" for="conservativeRate">Conservative Growth (%)</label>
+                <input id="conservativeRate" type="number"
+                       class="form-control form-control-sm" value="6" min="0" max="50"/>
 
-/* Navigation buttons */
-document
-  .getElementById("goToDetailsBtn")
-  .addEventListener("click", () =>
-    new bootstrap.Tab(document.getElementById("detailed-tab")).show()
-  );
-document
-  .getElementById("goToProjectionBtn")
-  .addEventListener("click", () =>
-    new bootstrap.Tab(document.getElementById("projected-tab")).show()
-  );
+                <label class="form-label mt-3" for="baseRate">Base Growth (%)</label>
+                <input id="baseRate" type="number"
+                       class="form-control form-control-sm" value="19" min="0" max="50"/>
 
-/* Historical calculation & chart */
-function updateCalculation() {
-  const summaryBody = document.getElementById("summaryBody");
-  const detailedBody = document.getElementById("detailedBody");
-  summaryBody.innerHTML = detailedBody.innerHTML = "";
+                <label class="form-label mt-3" for="aggressiveRate">Aggressive Growth (%)</label>
+                <input id="aggressiveRate" type="number"
+                       class="form-control form-control-sm" value="27" min="0" max="50"/>
 
-  let cumShares = 0,
-    cumInvest = 0,
-    cumMatchShares = 0,
-    spVal = 0;
-  const years = [],
-    investedArr = [],
-    empValArr = [],
-    totalArr = [],
-    spArr = [];
+                <p class="text-muted small mt-4 mb-0">
+                  Past performance is not a guarantee of future results.<br/>
+                  Excludes tax implications on matching shares and capital gains.
+                </p>
+              </div>
+            </div>
+          </div>
 
-  historicalData.forEach((rec, idx) => {
-    const invest = investmentAmounts[idx];
-    const price = rec.price;
+          <!-- Projected Growth chart & table -->
+          <div class="col projected-chart-col">
+            <div class="card h-100">
+              <div class="card-body d-flex flex-column">
+                <h2 class="card-title">Projected Growth</h2>
+                <div id="scenarioChart"
+                     style="width:100%;height:450px;"></div>
 
-    /* employee shares */
-    const empShares = invest / price;
-    cumShares += empShares;
-    cumInvest += invest;
+                <div class="table-responsive mt-3 flex-grow-1">
+                  <table id="projectionTable" class="table table-bordered mb-0">
+                    <thead>
+                      <tr>
+                        <th>Financial Year</th>
+                        <th>Conservative</th>
+                        <th>Base</th>
+                        <th>Aggressive</th>
+                      </tr>
+                    </thead>
+                    <tbody id="projectionBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /row -->
+      </div><!-- /projected tab -->
+    </div><!-- /tab-content -->
+  </div><!-- /container -->
 
-    /* vesting */
-    let matchThis = 0;
-    if (idx >= vestingPeriod) {
-      const invAgo = investmentAmounts[idx - vestingPeriod];
-      if (invAgo > 0) {
-        const priceAgo = historicalData[idx - vestingPeriod].price;
-        matchThis = Math.round((invAgo / priceAgo) * matchRate);
-        cumMatchShares += matchThis;
-      }
-    }
-
-    /* values */
-    const valEmp = cumShares * price;
-    const valMatch = cumMatchShares * price;
-    const totalVal = valEmp + valMatch;
-
-    /* S&P */
-    const spClose = sp500Close[idx].close;
-    if (idx === 0) spVal = invest;
-    else {
-      const prevClose = sp500Close[idx - 1].close;
-      spVal = (spVal + invest) * (spClose / prevClose);
-    }
-
-    /* summary row */
-    summaryBody.insertAdjacentHTML(
-      "beforeend",
-      `<tr>
-        <td>${rec.year}</td>
-        <td>${fmtPrice(price)}</td>
-        <td>${fmtCur(cumInvest)}</td>
-        <td>${fmtCur(totalVal)}</td>
-        <td>${fmtCur(spVal)}</td>
-      </tr>`
-    );
-
-    /* detailed row */
-    const roi =
-      cumInvest > 0
-        ? (((totalVal - cumInvest) / cumInvest) * 100).toFixed(2)
-        : "0.00";
-    detailedBody.insertAdjacentHTML(
-      "beforeend",
-      `<tr>
-        <td>${rec.year}</td>
-        <td>${fmtPrice(price)}</td>
-        <td>${fmtCur(invest)}</td>
-        <td>${fmtCur(cumInvest)}</td>
-        <td>${empShares.toFixed(2)}</td>
-        <td>${cumShares.toFixed(2)}</td>
-        <td>${matchThis}</td>
-        <td>${cumMatchShares}</td>
-        <td>${fmtCur(matchThis * price)}</td>
-        <td>${fmtCur(valEmp)}</td>
-        <td>${fmtCur(valMatch)}</td>
-        <td>${fmtCur(totalVal)}</td>
-        <td>${fmtCur(spVal)}</td>
-        <td>$${spClose.toLocaleString()}</td>
-        <td>${roi}%</td>
-      </tr>`
-    );
-
-    years.push(rec.year);
-    investedArr.push(cumInvest);
-    empValArr.push(valEmp);
-    totalArr.push(totalVal);
-    spArr.push(spVal);
-    finalTotalValue = totalVal;
-  });
-
-  /* Plot historical */
-  Plotly.newPlot(
-    "chart",
-    [
-      {
-        x: years,
-        y: investedArr,
-        name: "Cumulative Invested",
-        fill: "tozeroy",
-        fillcolor: "rgba(99,102,106,.5)",
-        line: { color: "rgba(99,102,106,.8)" }
-      },
-      {
-        x: years,
-        y: empValArr,
-        name: "Employee Shares Value",
-        fill: "tonexty",
-        fillcolor: "rgba(67,176,42,.5)",
-        line: { color: "rgba(67,176,42,.8)" }
-      },
-      {
-        x: years,
-        y: totalArr,
-        name: "Total Value (Emp+Match)",
-        fill: "tonexty",
-        fillcolor: "rgba(0,130,186,.5)",
-        line: { color: "rgba(0,130,186,.8)" }
-      },
-      {
-        x: years,
-        y: spArr,
-        name: "S&P 500 (if invested)",
-        mode: "lines",
-        line: { color: "rgba(198,54,99,1)", width: 2 }
-      }
-    ],
-    {
-      xaxis: { dtick: 1, title: "Financial Year" },
-      yaxis: { title: "Value ($)" },
-      legend: { orientation: "h", x: 0, xanchor: "left", y: -0.25 },
-      margin: { t: 40 }
-    },
-    { responsive: true }
-  );
-
-  updateScenarioComparison();
-}
-
-/* Annual purchase currency handling */
-const annualInput = document.getElementById("annualPurchase");
-annualInput.addEventListener("focus", e => {
-  e.target.value = e.target.value.replace(/[^0-9.]/g, "");
-});
-annualInput.addEventListener("blur", e => {
-  const v = parseFloat(e.target.value.replace(/[^0-9.]/g, "")) || 0;
-  e.target.value = fmtCur(v).replace(".00", "");
-  updateScenarioComparison();
-});
-annualInput.addEventListener("input", () => updateScenarioComparison());
-
-/* Projection listeners */
-["projectionYears", "conservativeRate", "baseRate", "aggressiveRate"].forEach(
-  id => document.getElementById(id).addEventListener("input", updateScenarioComparison)
-);
-
-/* Projection calculation */
-function updateScenarioComparison() {
-  const yrsFwd = +document.getElementById("projectionYears").value;
-  const annual =
-    parseFloat(annualInput.value.replace(/[^0-9.]/g, "")) || 0;
-  const rCons = +document.getElementById("conservativeRate").value / 100;
-  const rBase = +document.getElementById("baseRate").value / 100;
-  const rAggr = +document.getElementById("aggressiveRate").value / 100;
-
-  const startYear = historicalData.at(-1).year;
-  const startPrice = historicalData.at(-1).price;
-  const startShares = finalTotalValue / startPrice;
-
-  const proj = rate => {
-    let price = startPrice,
-      totalShares = startShares;
-    const purchases = [];
-    const yrs = [],
-      vals = [];
-    for (let i = 0; i <= yrsFwd; i++) {
-      const yr = startYear + i;
-      if (i > 0) price *= 1 + rate;
-      if (i > 0 && annual > 0) {
-        const bought = annual / price;
-        totalShares += bought;
-        purchases.push(bought);
-      } else if (i > 0) purchases.push(0);
-
-      const vestIdx = i - vestingPeriod - 1;
-      if (vestIdx >= 0 && purchases[vestIdx] > 0) {
-        totalShares += purchases[vestIdx] * matchRate;
-      }
-      yrs.push(yr);
-      vals.push(totalShares * price);
-    }
-    return { yrs, vals };
-  };
-
-  const cons = proj(rCons),
-    base = proj(rBase),
-    aggr = proj(rAggr);
-
-  Plotly.newPlot(
-    "scenarioChart",
-    [
-      {
-        x: aggr.yrs,
-        y: aggr.vals,
-        name: "Aggressive",
-        fill: "tozeroy",
-        fillcolor: "rgba(198,54,99,.5)",
-        line: { color: "rgba(198,54,99,.8)" }
-      },
-      {
-        x: base.yrs,
-        y: base.vals,
-        name: "Base",
-        fill: "tozeroy",
-        fillcolor: "rgba(0,130,186,.5)",
-        line: { color: "rgba(0,130,186,.8)" }
-      },
-      {
-        x: cons.yrs,
-        y: cons.vals,
-        name: "Conservative",
-        fill: "tozeroy",
-        fillcolor: "rgba(67,176,42,.5)",
-        line: { color: "rgba(67,176,42,.8)" }
-      }
-    ],
-    {
-      xaxis: { title: "Financial Year" },
-      yaxis: { title: "Projected Value ($)" },
-      legend: { orientation: "h", x: 0.5, xanchor: "center", y: -0.3 },
-      margin: { t: 40 }
-    },
-    { responsive: true }
-  );
-
-  const tbody = document.getElementById("projectionBody");
-  tbody.innerHTML = "";
-  for (let i = 0; i < cons.yrs.length; i++) {
-    tbody.insertAdjacentHTML(
-      "beforeend",
-      `<tr>
-        <td>${cons.yrs[i]}</td>
-        <td>${fmtCur(cons.vals[i])}</td>
-        <td>${fmtCur(base.vals[i])}</td>
-        <td>${fmtCur(aggr.vals[i])}</td>
-      </tr>`
-    );
-  }
-}
-
-/* Initial render */
-updateCalculation();
+  <!-- Scripts -->
+  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
