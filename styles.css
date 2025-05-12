@@ -5,19 +5,13 @@
   --main-magenta:rgb(198,54,99);
 }
 
-/* Global */
-body{
-  font-family: Arial, sans-serif;
-  background:#f8f9fa;
-  color:#212529;
-}
-
-/* ── Banner / navbar ───────────────────────────────── */
-.big-navbar{padding-top:1rem;padding-bottom:1rem;}
+/* ── General ───────────────────────────────────────── */
+body{font-family:Arial, sans-serif;background:#f8f9fa;color:#212529;}
+.big-navbar{padding:1.25rem 1rem;}
 .logo{max-height:60px;}
 .navbar-brand{color:var(--main-green)!important;}
 
-/* ── Tabs as rounded rectangles ───────────────────── */
+/* ── Rounded tabs ─────────────────────────────────── */
 .rounded-tabs .nav-link{
   border-radius:.75rem .75rem 0 0;
   color:var(--main-green)!important;
@@ -28,36 +22,23 @@ body{
   border-bottom-color:#fff;
 }
 
-/* ── Card & table tweaks ──────────────────────────── */
+/* ── Tables & cards ───────────────────────────────── */
 .card{margin-bottom:1rem;}
 .table thead th{background:var(--main-green)!important;color:#fff;}
 .table th,.table td{vertical-align:middle;}
 
-/* Scroll containers */
+/* two-line header in slider table */
+.two-line{line-height:1.1;white-space:normal;}
+
+/* Scroll areas */
 #sliderScrollContainer{max-height:700px;overflow-y:auto;}
 #summaryScrollContainer{max-height:350px;overflow-y:auto;}
 
-/* Fixed widths in summary table */
+/* Summary table fixed width */
 #summaryTable{table-layout:fixed;width:100%;}
 #summaryTable th,#summaryTable td{width:20%;overflow:hidden;}
 
-/* Currency inputs */
-.currency-input{text-align:right;font-weight:bold;}
-
-/* Slider */
-.slidecontainer{width:100%;}
-.slider{
-  -webkit-appearance:none;width:100%;height:25px;background:#d3d3d3;
-  outline:none;opacity:.7;transition:opacity .2s;
-}
-.slider:hover{opacity:1;}
-.slider::-webkit-slider-thumb{
-  -webkit-appearance:none;width:25px;height:35px;
-  background:#43B02A;cursor:pointer;
-}
-.slider::-moz-range-thumb{width:25px;height:25px;background:#43B02A;cursor:pointer;}
-
-/* Preset buttons, magenta buttons */
+/* Buttons */
 .preset-btn{background:var(--main-blue);border:1px solid var(--main-blue);color:#fff;}
 .preset-btn:hover{background:#0056b3;border-color:#0056b3;color:#fff;}
 #goToDetailsBtn,#goToProjectionBtn,#exportCSV{
@@ -65,7 +46,19 @@ body{
 }
 #goToDetailsBtn:hover,#goToProjectionBtn:hover,#exportCSV:hover{opacity:.75;color:#fff;}
 
-/* Scenario card narrower on desktop */
+/* Slider */
+.slidecontainer{width:100%;}
+.slider{-webkit-appearance:none;width:100%;height:25px;background:#d3d3d3;
+        outline:none;opacity:.7;transition:opacity .2s;}
+.slider:hover{opacity:1;}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:25px;height:35px;
+     background:#43B02A;cursor:pointer;}
+.slider::-moz-range-thumb{width:25px;height:25px;background:#43B02A;cursor:pointer;}
+
+/* Inputs */
+.currency-input{text-align:right;font-weight:bold;}
+
+/* Scenario card ‑ narrower but left‑aligned */
 @media (min-width:992px){
-  .scenario-card{max-width:22rem;margin-left:auto;margin-right:auto;}
+  .scenario-card{max-width:22rem;}
 }
