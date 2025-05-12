@@ -135,6 +135,13 @@ body {
   font-weight: bold;
 }
 
+/* styles.css  ─ add this anywhere after the existing .currency-input rule */
+#sliderTable .currency-input {
+  /* pick whatever you like: */
+  width: 6rem;          /* fixed width (≈ 96 px) */
+  max-width: 100px;     /* prevents it from stretching in wide screens */
+}
+
 /* Scenario card: narrower but left‑aligned on large screens */
 @media (min-width: 992px) {
   .scenario-card {
