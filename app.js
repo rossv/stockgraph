@@ -96,7 +96,7 @@ historicalData.forEach((rec, idx) => {
 /* Preset buttons + Clear All */
 function generatePresets() {
   const panel = document.getElementById("presetPanel");
-  panel.innerHTML = "";
+  panel.innerHTML = '<h6>Preset Investments ($100,000 investment)</h6>';
   const n = historicalData.length,
     total = 100000,
     sumSeries = (n * (n + 1)) / 2;
