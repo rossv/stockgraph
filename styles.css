@@ -1,194 +1,69 @@
 :root {
-  --main-gray: rgb(99,102,106);
-  --main-green: rgb(67,176,42);
-  --main-blue: rgb(0,130,186);
-  --main-magenta: rgb(198,54,99);
+  --main-gray:   rgb(99,102,106);
+  --main-green:  rgb(67,176,42);
+  --main-blue:   rgb(0,130,186);
+  --main-magenta:rgb(198,54,99);
 }
 
-/* Global Styles */
-body {
+/* Global */
+body{
   font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
-  color: #212529;
+  background:#f8f9fa;
+  color:#212529;
 }
 
-/* Navbar Logo and Header */
-.navbar-brand {
-  font-weight: bold;
-  color: var(--main-green) !important;
-}
-.navbar {
-  background-color: #fff !important;
-}
-.logo {
-  max-height: 40px;
-  margin-right: 10px;
+/* Navbar */
+.navbar-brand{font-weight:bold;color:var(--main-green)!important;}
+.navbar{background:#fff!important;}
+.logo{max-height:40px;margin-right:10px;}
+
+/* Tabs */
+.nav-tabs .nav-link{color:var(--main-green)!important;}
+.nav-tabs .nav-link.active{color:var(--main-green)!important;border-color:var(--main-green)!important;}
+
+/* Tables */
+.table thead th{background:var(--main-green)!important;color:#fff;}
+.card{margin-bottom:1rem;}
+.table th,.table td{vertical-align:middle;}
+
+/* Slider */
+.slidecontainer{width:100%;}
+.slider{-webkit-appearance:none;width:100%;height:25px;background:#d3d3d3;outline:none;opacity:.7;transition:opacity .2s;}
+.slider:hover{opacity:1;}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:25px;height:35px;background:#43B02A;cursor:pointer;}
+.slider::-moz-range-thumb{width:25px;height:25px;background:#43B02A;cursor:pointer;}
+
+/* Inputs */
+input[type="text"],input[type="number"]{
+  width:100%;text-align:right;font-weight:bold;padding:4px;border-radius:4px;border:1px solid #ccc;
 }
 
-/* Tab Styling: Use green for tab text */
-.nav-tabs .nav-link {
-  color: var(--main-green) !important;
+/* Buttons */
+.btn-outline-primary{border-color:var(--main-green);color:var(--main-green);}
+.btn-outline-primary:hover{background:var(--main-green);color:#fff;}
+#exportCSV,
+#goToProjectionBtn,
+#goToDetailsBtn{
+  background:var(--main-magenta);border-color:var(--main-magenta);color:#fff;
 }
-.nav-tabs .nav-link.active {
-  color: var(--main-green) !important;
-  border-color: var(--main-green) !important;
+#exportCSV:hover,#goToProjectionBtn:hover,#goToDetailsBtn:hover{opacity:.75;color:#fff;}
+.preset-btn{background:var(--main-blue);border:1px solid var(--main-blue);color:#fff;}
+.preset-btn:hover{background:#0056b3;border-color:#0056b3;color:#fff;}
+
+/* Investment slider scroll */
+#sliderScrollContainer{max-height:700px;overflow-y:auto;margin-bottom:1rem;}
+#sliderScrollContainer table{table-layout:fixed;width:100%;}
+
+/* Summary table scroll */
+#summaryScrollContainer{max-height:350px;overflow-y:auto;}
+
+/* Ensure both main panels fit on 1080p without overflow */
+#inputPanel .card-body,
+#chartPanel .card-body{
+  max-height:80vh;
+  overflow-y:auto;
 }
 
-/* Table Headers */
-.table thead th {
-  background-color: var(--main-green) !important;
-  color: #fff;
-}
-
-/* Card & Table Styling */
-.card {
-  margin-bottom: 1rem;
-}
-.table th,
-.table td {
-  vertical-align: middle;
-}
-
-/* Custom Slider Styling (adapted from your example) */
-.slidecontainer {
-  width: 100%;
-}
-.slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 25px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: 0.2s;
-  transition: opacity 0.2s;
-}
-.slider:hover {
-  opacity: 1;
-}
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 35px;
-  background: #43B02A;  /* Green: rgb(67,176,42) */
-  cursor: pointer;
-}
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #43B02A;  /* Green: rgb(67,176,42) */
-  cursor: pointer;
-}
-
-/* Input Styling for text and number inputs */
-input[type="text"],
-input[type="number"] {
-  width: 100%;
-  text-align: right;
-  font-weight: bold;
-  padding: 4px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-
-/* Apply Button Styling */
-.btn-outline-primary {
-  border-color: var(--main-green);
-  color: var(--main-green);
-}
-.btn-outline-primary:hover {
-  background-color: var(--main-green);
-  color: #fff;
-}
-
-/* Export CSV Button styling (rgb(198,54,99)) */
-#exportCSV {
-  background-color: var(--main-magenta);
-  border-color: var(--main-magenta);
-  color: #fff;
-}
-#exportCSV:hover {
-  background-color: var(--main-magenta);
-  border-color: var(--main-magenta);
-  color: #fff;
-}
-
-/* Go to Projected Growth Button styling (rgb(198,54,99)) */
-#goToProjectionBtn {
-  background-color: var(--main-magenta);
-  border-color: var(--main-magenta);
-  color: #fff;
-}
-#goToProjectionBtn:hover {
-  opacity: 0.75;
-  color: #fff;
-}
-
-/* Go to Details Button styling (magenta) */
-#goToDetailsBtn {
-  background-color: var(--main-magenta);
-  border-color: var(--main-magenta);
-  color: #fff;
-}
-
-#goToDetailsBtn:hover {
-  opacity: 0.75;
-  color: #fff;
-}
-
-/* Ensure Scenario Chart fills full width */
-#scenarioChart {
-  width: 100% !important;
-}
-
-/* Style preset buttons as blue */
-.preset-btn {
-  background-color: var(--main-blue); /* blue background */
-  border: 1px solid var(--main-blue); 
-  color: #fff;
-}
-
-.preset-btn:hover {
-  background-color: #0056b3; /* darker blue on hover */
-  border-color: #0056b3;
-  color: #fff;
-}
-
-#summaryTable {
-  table-layout: fixed;
-  width: 100%;
-}
-
-#summaryTable th,
-#summaryTable td {
-  width: calc(100% / 5);
-  overflow: hidden;
-}
-
-/* Scrollable area for investment inputs table only */
-#sliderScrollContainer {
-  max-height: 700px;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-}
-
-/* Prevent horizontal scrollbars */
-#sliderScrollContainer table {
-  table-layout: fixed;
-  width: 100%;
-}
-
-
-
-/* Input with dollar formatting */
-.input-group-text {
-  background-color: #e9ecef;
-  font-weight: bold;
-  border-right: 0;
-}
-.form-control.dollar-input {
-  border-left: 0;
-  text-align: right;
-}
+/* Summary table fixed column widths */
+#summaryTable{table-layout:fixed;width:100%;}
+#summaryTable th,#summaryTable td{width:calc(100%/5);overflow:hidden;}
