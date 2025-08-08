@@ -3,6 +3,7 @@
   Last updated: 12 May 2025
 ────────────────────────────────────────────────────────────*/
 
+
 /* ── Fixed parameters ───────────────────────────────────── */
 const matchRate     = 0.25;   // 25 % company match
 const vestingPeriod = 5;      // match vests 5 years later
