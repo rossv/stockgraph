@@ -161,3 +161,20 @@ annualInput.addEventListener('blur',e=>{
   updateScenarioComparison();
 });
 annualInput.addEventListener('input',updateScenarioComparison);
+
+function exportDetailedTable(){
+  const rows=[...document.querySelectorAll('#detailedTable tr')];
+  const csv=rows.map(r=>
+    [...r.querySelectorAll('th,td')]
+      .map(c=>`"${c.innerText.replace(/"/g,'""')}"`)
+      .join(',')
+  ).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download='detailed.csv';
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+document.getElementById('exportCSV').addEventListener('click',exportDetailedTable);
