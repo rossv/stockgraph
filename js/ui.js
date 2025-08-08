@@ -2,6 +2,23 @@ import { historicalData } from './data.js';
 import { fmtCur, fmtPrice, updateCalculation, updateScenarioComparison, investmentAmounts, resetInvestmentAmounts } from './calculator.js';
 
 const sliderTable=document.getElementById('sliderTable');
+const STORAGE_INVEST='investmentAmounts';
+const STORAGE_PROJ='projectionParams';
+
+function saveInvestments(){
+  localStorage.setItem(STORAGE_INVEST,JSON.stringify(investmentAmounts));
+}
+
+function saveProjectionParams(){
+  const params={
+    projectionYears:document.getElementById('projectionYears').value,
+    conservativeRate:document.getElementById('conservativeRate').value,
+    baseRate:document.getElementById('baseRate').value,
+    aggressiveRate:document.getElementById('aggressiveRate').value,
+    annualPurchase:document.getElementById('annualPurchase').value.replace(/[^0-9.]/g,'')
+  };
+  localStorage.setItem(STORAGE_PROJ,JSON.stringify(params));
+}
 
 function clearAll(){
   investmentAmounts.fill(0);
@@ -9,6 +26,7 @@ function clearAll(){
     document.getElementById(`slider-${rec.year}`).value=0;
     document.getElementById(`number-${rec.year}`).value='$0';
   });
+  localStorage.removeItem(STORAGE_INVEST);
   updateCalculation();
 }
 
@@ -54,6 +72,7 @@ function generatePresets(){
         document.getElementById(`number-${yr}`).value=fmtCur(v);
       });
       updateCalculation();
+      saveInvestments();
     });
   });
   clr.addEventListener('click',clearAll);
@@ -63,19 +82,39 @@ export function buildUI(){
   sliderTable.innerHTML='';
   resetInvestmentAmounts(historicalData.length);
 
+  const storedInvest=JSON.parse(localStorage.getItem(STORAGE_INVEST)||'[]');
+  const storedProj=JSON.parse(localStorage.getItem(STORAGE_PROJ)||'{}');
+
+  // populate projection inputs if stored
+  const projYears=document.getElementById('projectionYears');
+  const cons=document.getElementById('conservativeRate');
+  const base=document.getElementById('baseRate');
+  const aggr=document.getElementById('aggressiveRate');
+  const annual=document.getElementById('annualPurchase');
+  if(storedProj.projectionYears!==undefined) projYears.value=storedProj.projectionYears;
+  if(storedProj.conservativeRate!==undefined) cons.value=storedProj.conservativeRate;
+  if(storedProj.baseRate!==undefined) base.value=storedProj.baseRate;
+  if(storedProj.aggressiveRate!==undefined) aggr.value=storedProj.aggressiveRate;
+  if(storedProj.annualPurchase!==undefined){
+    const ap=parseFloat(storedProj.annualPurchase)||0;
+    annual.value=fmtCur(ap).replace('.00','');
+  }
+
   historicalData.forEach((rec,idx)=>{
     const tr=document.createElement('tr');
+    const initVal=storedInvest[idx]||0;
+    investmentAmounts[idx]=initVal;
     tr.innerHTML=`
       <td>${rec.year}</td>
       <td>${fmtPrice(rec.price)}</td>
       <td>
         <div class="slidecontainer">
           <input type="range" class="slider" id="slider-${rec.year}"
-                 min="0" max="20000" step="any" value="0">
+                 min="0" max="20000" step="any" value="${initVal}">
         </div>
       </td>
       <td><input type="text" id="number-${rec.year}"
-                 class="currency-input" value="$0"></td>
+                 class="currency-input" value="${fmtCur(initVal)}"></td>
       <td><button class="btn btn-sm btn-outline-primary"
                   onclick="applyToSubsequentYears(${idx})">
             Apply\u00A0\u2192
@@ -92,6 +131,7 @@ export function buildUI(){
       slider.value=snap;
       number.value=fmtCur(snap);
       updateCalculation();
+      saveInvestments();
     });
 
     number.addEventListener('focus',e=>{
@@ -103,17 +143,20 @@ export function buildUI(){
       slider.value=v;
       e.target.value=fmtCur(v);
       updateCalculation();
+      saveInvestments();
     });
     number.addEventListener('input',e=>{
       const v=parseFloat(e.target.value.replace(/[^0-9.]/g,''))||0;
       investmentAmounts[idx]=v;
       slider.value=v;
       updateCalculation();
+      saveInvestments();
     });
   });
 
   generatePresets();
   updateCalculation();
+  updateScenarioComparison();
 }
 
 export function applyToSubsequentYears(startIdx){
@@ -126,6 +169,7 @@ export function applyToSubsequentYears(startIdx){
     }
   });
   updateCalculation();
+  saveInvestments();
 }
 
 window.applyToSubsequentYears=applyToSubsequentYears;
@@ -139,6 +183,7 @@ document.getElementById('snapBtn').addEventListener('click',()=>{
     document.getElementById(`number-${rec.year}`).value=fmtCur(snap);
   });
   updateCalculation();
+  saveInvestments();
 });
 
 document.getElementById('goToDetailsBtn').addEventListener('click',()=>{
@@ -150,7 +195,10 @@ document.getElementById('goToProjectionBtn').addEventListener('click',()=>{
 
 const annualInput=document.getElementById('annualPurchase');
 ['projectionYears','conservativeRate','baseRate','aggressiveRate'].forEach(
- id=>document.getElementById(id).addEventListener('input',updateScenarioComparison)
+ id=>document.getElementById(id).addEventListener('input',()=>{
+   updateScenarioComparison();
+   saveProjectionParams();
+ })
 );
 annualInput.addEventListener('focus',e=>{
   e.target.value=e.target.value.replace(/[^0-9.]/g,'');
@@ -159,8 +207,12 @@ annualInput.addEventListener('blur',e=>{
   const v=parseFloat(e.target.value.replace(/[^0-9.]/g,''))||0;
   e.target.value=fmtCur(v).replace('.00','');
   updateScenarioComparison();
+  saveProjectionParams();
 });
-annualInput.addEventListener('input',updateScenarioComparison);
+annualInput.addEventListener('input',()=>{
+  updateScenarioComparison();
+  saveProjectionParams();
+});
 
 function exportDetailedTable(){
   const rows=[...document.querySelectorAll('#detailedTable tr')];
