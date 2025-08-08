@@ -80,12 +80,14 @@ historicalData.forEach((rec,idx)=>{
   number.addEventListener("blur",e=>{
     const v=parseFloat(e.target.value.replace(/[^0-9.]/g,""))||0;
     investmentAmounts[idx]=v;
+    slider.value=v;             // keep slider in sync with manual entry
     e.target.value=fmtCur(v);
     updateCalculation();
   });
   number.addEventListener("input",e=>{
     const v=parseFloat(e.target.value.replace(/[^0-9.]/g,""))||0;
     investmentAmounts[idx]=v;
+    slider.value=v;             // reflect typed value immediately
     updateCalculation();
   });
 });
