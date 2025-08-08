@@ -177,4 +177,19 @@ function exportDetailedTable(){
   URL.revokeObjectURL(link.href);
 }
 
-document.getElementById('exportCSV').addEventListener('click',exportDetailedTable);
+  document.getElementById('exportCSV').addEventListener('click',exportDetailedTable);
+
+function downloadMainChart(){
+  Plotly.downloadImage(document.getElementById('chart'),{
+    format:'png',filename:'stock_value_over_time'
+  });
+}
+
+function downloadProjectionChart(){
+  Plotly.downloadImage(document.getElementById('scenarioChart'),{
+    format:'png',filename:'projected_growth'
+  });
+}
+
+document.getElementById('downloadMainChart').addEventListener('click',downloadMainChart);
+document.getElementById('downloadProjectionChart').addEventListener('click',downloadProjectionChart);
