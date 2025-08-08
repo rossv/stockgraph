@@ -362,6 +362,30 @@ function updateScenarioComparison(){
 }
 
 /*─────────────────────────────────────────────────────────
+  Export detailed table as CSV
+─────────────────────────────────────────────────────────*/
+function exportToCSV(){
+  const table=document.getElementById("detailedTable");
+  const rows=Array.from(table.querySelectorAll("tr"));
+  const csv=rows.map(row=>
+    Array.from(row.querySelectorAll("th,td"))
+      .map(cell=>`"${cell.innerText.replace(/"/g,'""')}"`)
+      .join(",")
+  ).join("\n");
+  const blob=new Blob([csv],{type:"text/csv"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="detailed_table.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("exportCSV").addEventListener("click",exportToCSV);
+
+/*─────────────────────────────────────────────────────────
   Initial render
 ─────────────────────────────────────────────────────────*/
 updateCalculation();
