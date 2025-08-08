@@ -193,6 +193,10 @@ document.getElementById('goToProjectionBtn').addEventListener('click',()=>{
   new bootstrap.Tab(document.getElementById('projected-tab')).show();
 });
 
+document.getElementById('projected-tab').addEventListener('shown.bs.tab', () => {
+  updateScenarioComparison();
+});
+
 const annualInput=document.getElementById('annualPurchase');
 ['projectionYears','conservativeRate','baseRate','aggressiveRate'].forEach(
  id=>document.getElementById(id).addEventListener('input',()=>{
