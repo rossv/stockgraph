@@ -7,29 +7,12 @@
 const matchRate     = 0.25;   // 25 % company match
 const vestingPeriod = 5;      // match vests 5 years later
 
-/* ── Split‑adjusted Wade Trim prices (3 decimal) ────────── */
-const historicalData = [
-  1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,
-  2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,
-  2016,2017,2018,2019,2020,2021,2022,2023,2024
-].map((year,i)=>({
-  year,
-  price:[
-    0.160,0.181,0.186,0.227,0.300,0.346,0.408,0.519,0.638,0.740,
-    0.669,0.753,0.532,0.582,0.463,0.501,0.446,0.652,0.941,1.120,
-    1.213,1.360,1.328,1.476,1.970,3.530,4.372,5.102,6.235
-  ][i]
-}));
-
-/* ── April‑1 S&P 500 closes (1996‑2024) ────────────────── */
-const sp500Close = [
-  653.7, 759.6, 737.7, 1294, 1499, 1160, 1147, 858.5, 1132, 1173,
-  1295, 1421, 1370, 811.1, 1178, 1332, 1408, 1562, 1886, 2060,
-  2073, 2363, 2641, 2867, 2471, 4020, 4546, 3577, 5244
-].map((close,i)=>({year:1996+i,close}));
+/* ── Data placeholders ─────────────────────────────────── */
+let historicalData = [];
+let sp500Close     = [];
 
 /* ── State ─────────────────────────────────────────────── */
-let investmentAmounts = Array(historicalData.length).fill(0);
+let investmentAmounts = [];
 let finalTotalValue   = 0;
 
 /* ── Formatting helpers ───────────────────────────────── */
@@ -41,56 +24,64 @@ const fmtPrice = v => `$${Number(v).toFixed(3)}`;
 ─────────────────────────────────────────────────────────*/
 const sliderTable=document.getElementById("sliderTable");
 
-historicalData.forEach((rec,idx)=>{
-  const tr=document.createElement("tr");
-  tr.innerHTML=`
-    <td>${rec.year}</td>
-    <td>${fmtPrice(rec.price)}</td>
-    <td>
-      <div class="slidecontainer">
-        <input type="range" class="slider" id="slider-${rec.year}"
-               min="0" max="20000" step="any" value="0">
-      </div>
-    </td>
-    <td><input type="text" id="number-${rec.year}"
-               class="currency-input" value="$0"></td>
-    <td><button class="btn btn-sm btn-outline-primary"
-                onclick="applyToSubsequentYears(${idx})">
-          Apply →
-        </button></td>`;
-  sliderTable.appendChild(tr);
+function buildUI(){
+  sliderTable.innerHTML="";
+  investmentAmounts = Array(historicalData.length).fill(0);
 
-  const slider=document.getElementById(`slider-${rec.year}`);
-  const number=document.getElementById(`number-${rec.year}`);
+  historicalData.forEach((rec,idx)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${rec.year}</td>
+      <td>${fmtPrice(rec.price)}</td>
+      <td>
+        <div class="slidecontainer">
+          <input type="range" class="slider" id="slider-${rec.year}"
+                 min="0" max="20000" step="any" value="0">
+        </div>
+      </td>
+      <td><input type="text" id="number-${rec.year}"
+                 class="currency-input" value="$0"></td>
+      <td><button class="btn btn-sm btn-outline-primary"
+                  onclick="applyToSubsequentYears(${idx})">
+            Apply →
+          </button></td>`;
+    sliderTable.appendChild(tr);
 
-  /* slider -> textbox */
-  slider.addEventListener("input",e=>{
-    const raw=+e.target.value;
-    const snap=Math.round(raw/rec.price)*rec.price; // nearest
-    investmentAmounts[idx]=snap;
-    slider.value=snap;
-    number.value=fmtCur(snap);
-    updateCalculation();
+    const slider=document.getElementById(`slider-${rec.year}`);
+    const number=document.getElementById(`number-${rec.year}`);
+
+    /* slider -> textbox */
+    slider.addEventListener("input",e=>{
+      const raw=+e.target.value;
+      const snap=Math.round(raw/rec.price)*rec.price; // nearest
+      investmentAmounts[idx]=snap;
+      slider.value=snap;
+      number.value=fmtCur(snap);
+      updateCalculation();
+    });
+
+    /* textbox UX */
+    number.addEventListener("focus",e=>{
+      e.target.value=e.target.value.replace(/[^0-9.]/g,"");
+    });
+    number.addEventListener("blur",e=>{
+      const v=parseFloat(e.target.value.replace(/[^0-9.]/g,""))||0;
+      investmentAmounts[idx]=v;
+      slider.value=v;             // keep slider in sync with manual entry
+      e.target.value=fmtCur(v);
+      updateCalculation();
+    });
+    number.addEventListener("input",e=>{
+      const v=parseFloat(e.target.value.replace(/[^0-9.]/g,""))||0;
+      investmentAmounts[idx]=v;
+      slider.value=v;             // reflect typed value immediately
+      updateCalculation();
+    });
   });
 
-  /* textbox UX */
-  number.addEventListener("focus",e=>{
-    e.target.value=e.target.value.replace(/[^0-9.]/g,"");
-  });
-  number.addEventListener("blur",e=>{
-    const v=parseFloat(e.target.value.replace(/[^0-9.]/g,""))||0;
-    investmentAmounts[idx]=v;
-    slider.value=v;             // keep slider in sync with manual entry
-    e.target.value=fmtCur(v);
-    updateCalculation();
-  });
-  number.addEventListener("input",e=>{
-    const v=parseFloat(e.target.value.replace(/[^0-9.]/g,""))||0;
-    investmentAmounts[idx]=v;
-    slider.value=v;             // reflect typed value immediately
-    updateCalculation();
-  });
-});
+  generatePresets();
+  updateCalculation();
+}
 
 /*─────────────────────────────────────────────────────────
   Preset buttons + Clear All
@@ -143,7 +134,6 @@ function generatePresets(){
   });
   clr.addEventListener("click",clearAll);
 }
-generatePresets();
 
 /*─────────────────────────────────────────────────────────
   Bulk helpers
@@ -361,31 +351,23 @@ function updateScenarioComparison(){
   }
 }
 
-/*─────────────────────────────────────────────────────────
-  Export detailed table as CSV
-─────────────────────────────────────────────────────────*/
-function exportToCSV(){
-  const table=document.getElementById("detailedTable");
-  const rows=Array.from(table.querySelectorAll("tr"));
-  const csv=rows.map(row=>
-    Array.from(row.querySelectorAll("th,td"))
-      .map(cell=>`"${cell.innerText.replace(/"/g,'""')}"`)
-      .join(",")
-  ).join("\n");
-  const blob=new Blob([csv],{type:"text/csv"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download="detailed_table.csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+async function loadJSON(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(`Failed to fetch ${url}`);
+  return res.json();
 }
 
-document.getElementById("exportCSV").addEventListener("click",exportToCSV);
+async function init(){
+  try{
+    [historicalData,sp500Close] = await Promise.all([
+      loadJSON("./data/history.json"),
+      loadJSON("./data/sp500.json")
+    ]);
+    buildUI();
+  }catch(err){
+    console.error("Failed to load data",err);
+    sliderTable.innerHTML = '<tr><td colspan="5">Data load failed.</td></tr>';
+  }
+}
 
-/*─────────────────────────────────────────────────────────
-  Initial render
-─────────────────────────────────────────────────────────*/
-updateCalculation();
+document.addEventListener('DOMContentLoaded', init);
