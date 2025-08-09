@@ -28,10 +28,20 @@ body {
   border-radius: 0.75rem 0.75rem 0 0;
   color: var(--main-green) !important;
 }
+
 .rounded-tabs .nav-link.active {
   background: #fff;
   border: 1px solid var(--main-green);
   border-bottom-color: #fff;
+}
+
+#dashboardTabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#dashboardTabs .nav-link {
+  white-space: nowrap;
 }
 
 /* Cards & tables */
