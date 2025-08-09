@@ -12,6 +12,12 @@ body {
   color: #212529;
 }
 
+/* Smooth background & shadow transitions */
+.btn,
+.nav-link {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
 /* Banner */
 .big-navbar {
   padding: 1.25rem 1rem;
@@ -47,6 +53,13 @@ body {
 /* Cards & tables */
 .card {
   margin-bottom: 1rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 .table thead th {
   background: var(--main-green) !important;
@@ -192,4 +205,9 @@ footer {
   text-align: center;
   margin-top: 2rem;
   color: var(--main-gray);
+}
+
+/* Icon spacing */
+.btn i {
+  margin-right: .25rem;
 }
