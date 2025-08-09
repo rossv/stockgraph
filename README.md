@@ -25,3 +25,6 @@ This project relies on the following libraries loaded via CDN in `index.html`:
 - [Plotly](https://plotly.com/javascript/) – interactive charts
 
 No additional build steps are required.
+
+## Disclaimer
+This project does not offer financial advice. Data may be inaccurate or incomplete, and users assume all risk for investment decisions.
