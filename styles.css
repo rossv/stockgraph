@@ -85,13 +85,23 @@ body {
 }
 
 /* Blue button styles */
-.btn-blue,
-.preset-btn {
+.btn-blue {
   background: var(--main-blue);
   border-color: var(--main-blue);
   color: #fff;
 }
-.btn-blue:hover,
+.btn-blue:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+  color: #fff;
+}
+
+/* Preset (blue) button styles */
+.preset-btn {
+  background: var(--main-blue);
+  border: 1px solid var(--main-blue);
+  color: #fff;
+}
 .preset-btn:hover {
   background: #0056b3;
   border-color: #0056b3;
