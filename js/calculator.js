@@ -16,7 +16,7 @@ export function updateCalculation(){
   summaryBody.innerHTML=detailedBody.innerHTML='';
 
   let cumShares=0,cumInvest=0,cumMatchShares=0,spVal=0;
-  const yrs=[],invArr=[],empArr=[],totArr=[],spArr=[];
+  const yrs=[],invArr=[],empArr=[],totArr=[],spArr=[],roiArr=[];
 
   historicalData.forEach((rec,idx)=>{
     const invest=investmentAmounts[idx];
@@ -55,7 +55,8 @@ export function updateCalculation(){
         <td>${fmtCur(spVal)}</td>
       </tr>`);
 
-    const roi=cumInvest>0?(((totalVal-cumInvest)/cumInvest)*100).toFixed(2):'0.00';
+    const roiVal=cumInvest>0?((totalVal-cumInvest)/cumInvest)*100:0;
+    const roi=roiVal.toFixed(2);
     detailedBody.insertAdjacentHTML('beforeend',`
       <tr>
         <td>${rec.year}</td><td>${fmtPrice(price)}</td>
@@ -70,7 +71,7 @@ export function updateCalculation(){
 
     yrs.push(rec.year);
     invArr.push(cumInvest); empArr.push(valEmp);
-    totArr.push(totalVal);  spArr.push(spVal);
+    totArr.push(totalVal);  spArr.push(spVal); roiArr.push(roiVal);
     finalTotalValue=totalVal;
   });
 
@@ -90,6 +91,14 @@ export function updateCalculation(){
     xaxis:{dtick:1,title:'Financial\u00A0Year'},
     yaxis:{title:'Value\u00A0($)'},
     legend:{orientation:'h',x:0,xanchor:'left',y:-.25},
+    margin:{t:40},
+  },{responsive:true,staticPlot:true,displayModeBar:false,scrollZoom:false,doubleClick:false});
+
+  Plotly.newPlot('roiChart',[
+    {x:yrs,y:roiArr,name:'ROI\u00A0(%)',mode:'lines',line:{color:'rgba(198,54,99,1)',width:2}}
+  ],{
+    xaxis:{dtick:1,title:'Financial\u00A0Year'},
+    yaxis:{title:'ROI\u00A0(%)'},
     margin:{t:40},
   },{responsive:true,staticPlot:true,displayModeBar:false,scrollZoom:false,doubleClick:false});
 
