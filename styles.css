@@ -12,6 +12,18 @@ body {
   color: #212529;
 }
 
+/* Loading spinner */
+#loadingSpinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4rem;
+  height: 4rem;
+  color: var(--main-green);
+  z-index: 1050;
+}
+
 /* Banner */
 .big-navbar {
   padding: 1.25rem 1rem;
