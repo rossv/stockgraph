@@ -84,12 +84,14 @@ body {
   overflow: hidden;
 }
 
-/* Preset (blue) button styles */
+/* Blue button styles */
+.btn-blue,
 .preset-btn {
   background: var(--main-blue);
-  border: 1px solid var(--main-blue);
+  border-color: var(--main-blue);
   color: #fff;
 }
+.btn-blue:hover,
 .preset-btn:hover {
   background: #0056b3;
   border-color: #0056b3;
@@ -98,14 +100,16 @@ body {
 /* Magenta action button styles */
 #goToDetailsBtn,
 #goToProjectionBtn,
-#exportCSV {
+#exportCSV,
+#exportProjectionCSV {
   background: var(--main-magenta);
   border-color: var(--main-magenta);
   color: #fff;
 }
 #goToDetailsBtn:hover,
 #goToProjectionBtn:hover,
-#exportCSV:hover {
+#exportCSV:hover,
+#exportProjectionCSV:hover {
   opacity: 0.75;
   color: #fff;
 }
