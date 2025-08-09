@@ -91,7 +91,7 @@ export function updateCalculation(){
     yaxis:{title:'Value\u00A0($)'},
     legend:{orientation:'h',x:0,xanchor:'left',y:-.25},
     margin:{t:40},
-  },{responsive:true});
+  },{responsive:true,staticPlot:true,displayModeBar:false,scrollZoom:false,doubleClick:false});
 
   updateScenarioComparison();
 }
@@ -145,7 +145,7 @@ export function updateScenarioComparison(){
     yaxis:{title:'Projected\u00A0Value\u00A0($)'},
     legend:{orientation:'h',x:0.5,xanchor:'center',y:-0.3},
     margin:{t:40},
-  },{responsive:true});
+  },{responsive:true,staticPlot:true,displayModeBar:false,scrollZoom:false,doubleClick:false});
 
   const tbody=document.getElementById('projectionBody');
   tbody.innerHTML='';
