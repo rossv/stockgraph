@@ -179,3 +179,8 @@ footer {
   margin-top: 2rem;
   color: var(--main-gray);
 }
+
+/* Icon spacing */
+.btn i {
+  margin-right: .25rem;
+}
