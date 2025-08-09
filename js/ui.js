@@ -233,7 +233,23 @@ function exportDetailedTable(){
   URL.revokeObjectURL(link.href);
 }
 
+function exportProjectionTable(){
+  const rows=[...document.querySelectorAll('#projectionTable tr')];
+  const csv=rows.map(r=>
+    [...r.querySelectorAll('th,td')]
+      .map(c=>`"${c.innerText.replace(/"/g,'""')}"`)
+      .join(',')
+  ).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download='projection.csv';
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
   document.getElementById('exportCSV').addEventListener('click',exportDetailedTable);
+  document.getElementById('exportProjectionCSV').addEventListener('click',exportProjectionTable);
 
 function downloadMainChart(){
   Plotly.downloadImage(document.getElementById('chart'),{
