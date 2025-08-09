@@ -155,3 +155,10 @@ body {
   /* let flexbox shrink the scroll areas as needed */
   min-height: 0;
 }
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  color: var(--main-gray);
+}
