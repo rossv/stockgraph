@@ -14,8 +14,10 @@ Stockgraph is a static, browser‑based dashboard that visualizes historical sto
 
 ## Updating historical data
 Update the JSON data files in the `data/` directory:
-- `history.json` – stock price for each financial year
-- `sp500.json` – S&P 500 closing value for each year
+- `history.json` – yearly closing price of the stock (sourced from a private dataset)
+- `sp500.json` – S&P 500 closing value for each year (sourced from Stooq)
+
+These files were exported from a private dataset (stock prices) and the public Stooq database (S&P 500) and are provided for convenience only. Values may be outdated or contain mistakes, so contributors should verify accuracy with a trusted financial source before committing changes.
 
 Add a new object with the latest year and values to each array and keep the list ordered by year.
 
