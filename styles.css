@@ -7,7 +7,7 @@
 
 /* Global */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', Arial, sans-serif;
   background: #f8f9fa;
   color: #212529;
 }
@@ -21,6 +21,11 @@ body {
 }
 .navbar-brand {
   color: var(--main-green) !important;
+  font-weight: 700;
+}
+
+.card-title {
+  font-weight: 600;
 }
 
 /* Tabs */
