@@ -5,6 +5,10 @@ async function init(){
   try{
     await loadData();
     buildUI();
+    const firstTabEl=document.querySelector('#historical-tab');
+    if(firstTabEl){
+      new bootstrap.Tab(firstTabEl).show();
+    }
   }catch(err){
     console.error('Failed to load data',err);
     const sliderTable=document.getElementById('sliderTable');
