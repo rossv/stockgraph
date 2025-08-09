@@ -156,6 +156,13 @@ body {
   min-height: 0;
 }
 
+/* Adjust chart height on narrow devices */
+@media (max-width: 576px) {
+  #scenarioChart {
+    height: 300px;
+  }
+}
+
 /* Footer */
 footer {
   text-align: center;
