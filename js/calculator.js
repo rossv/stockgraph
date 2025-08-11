@@ -114,11 +114,15 @@ export function updateScenarioComparison(){
   const startPrice=historicalData.at(-1).price;
   const startShares=finalTotalValue/startPrice;
 
-  const proj=rate=>{
+  const yrs=[];
+  for(let i=0;i<=yrsFwd;i++){
+    yrs.push(startYear+i);
+  }
+
+  const proj=(rate,yrs)=>{
     let price=startPrice,totalShares=startShares;
-    const purchases=[],yrs=[],vals=[];
-    for(let i=0;i<=yrsFwd;i++){
-      const yr=startYear+i;
+    const purchases=[],vals=[];
+    for(let i=0;i<yrs.length;i++){
       if(i>0) price*=(1+rate);
       if(i>0 && annual>0){
         const bought=annual/price;
@@ -129,21 +133,21 @@ export function updateScenarioComparison(){
       if(vestIdx>=0 && purchases[vestIdx]>0){
         totalShares+=purchases[vestIdx]*matchRate;
       }
-      yrs.push(yr); vals.push(totalShares*price);
+      vals.push(totalShares*price);
     }
-    return{yrs,vals};
+    return vals;
   };
 
-  const cons=proj(rCons),base=proj(rBase),aggr=proj(rAggr);
+  const cons=proj(rCons,yrs),base=proj(rBase,yrs),aggr=proj(rAggr,yrs);
 
   Plotly.newPlot('scenarioChart',[
-    {x:aggr.yrs,y:aggr.vals,name:'Aggressive',
+    {x:yrs,y:aggr,name:'Aggressive',
      fill:'tozeroy',fillcolor:'rgba(198,54,99,.5)',
      line:{color:'rgba(198,54,99,.8)'}},
-    {x:base.yrs,y:base.vals,name:'Base',
+    {x:yrs,y:base,name:'Base',
      fill:'tozeroy',fillcolor:'rgba(0,130,186,.5)',
      line:{color:'rgba(0,130,186,.8)'}},
-    {x:cons.yrs,y:cons.vals,name:'Conservative',
+    {x:yrs,y:cons,name:'Conservative',
      fill:'tozeroy',fillcolor:'rgba(67,176,42,.5)',
      line:{color:'rgba(67,176,42,.8)'}}
   ],{
@@ -155,13 +159,13 @@ export function updateScenarioComparison(){
 
   const tbody=document.getElementById('projectionBody');
   tbody.innerHTML='';
-  for(let i=0;i<cons.yrs.length;i++){
+  for(let i=0;i<yrs.length;i++){
     tbody.insertAdjacentHTML('beforeend',`
       <tr>
-        <td>${cons.yrs[i]}</td>
-        <td>${fmtCur(cons.vals[i])}</td>
-        <td>${fmtCur(base.vals[i])}</td>
-        <td>${fmtCur(aggr.vals[i])}</td>
+        <td>${yrs[i]}</td>
+        <td>${fmtCur(cons[i])}</td>
+        <td>${fmtCur(base[i])}</td>
+        <td>${fmtCur(aggr[i])}</td>
       </tr>`);
   }
 }
