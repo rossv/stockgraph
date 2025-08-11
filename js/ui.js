@@ -230,8 +230,8 @@ annualInput.addEventListener('input',()=>{
   saveProjectionParams();
 });
 
-function exportDetailedTable(){
-  const rows=[...document.querySelectorAll('#detailedTable tr')];
+function exportTableToCSV(tableId,filename){
+  const rows=[...document.querySelectorAll(`#${tableId} tr`)];
   const csv=rows.map(r=>
     [...r.querySelectorAll('th,td')]
       .map(c=>`"${c.innerText.replace(/"/g,'""')}"`)
@@ -240,28 +240,13 @@ function exportDetailedTable(){
   const blob=new Blob([csv],{type:'text/csv'});
   const link=document.createElement('a');
   link.href=URL.createObjectURL(blob);
-  link.download='detailed.csv';
+  link.download=`${filename}.csv`;
   link.click();
   URL.revokeObjectURL(link.href);
 }
 
-function exportProjectionTable(){
-  const rows=[...document.querySelectorAll('#projectionTable tr')];
-  const csv=rows.map(r=>
-    [...r.querySelectorAll('th,td')]
-      .map(c=>`"${c.innerText.replace(/"/g,'""')}"`)
-      .join(',')
-  ).join('\n');
-  const blob=new Blob([csv],{type:'text/csv'});
-  const link=document.createElement('a');
-  link.href=URL.createObjectURL(blob);
-  link.download='projection.csv';
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
-
-  document.getElementById('exportCSV').addEventListener('click',exportDetailedTable);
-  document.getElementById('exportProjectionCSV').addEventListener('click',exportProjectionTable);
+  document.getElementById('exportCSV').addEventListener('click',()=>exportTableToCSV('detailedTable','detailed'));
+  document.getElementById('exportProjectionCSV').addEventListener('click',()=>exportTableToCSV('projectionTable','projection'));
 
 function downloadMainChart(){
   Plotly.downloadImage(document.getElementById('chart'),{
