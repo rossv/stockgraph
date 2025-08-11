@@ -181,7 +181,6 @@ export function buildUI(){
   generatePresets();
 
   updateCalculation();
-  updateScenarioComparison();
 }
 
 export function applyToSubsequentYears(startIdx){
