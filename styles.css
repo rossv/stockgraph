@@ -12,6 +12,12 @@ body {
   color: #212529;
 }
 
+/* Extra bottom space ensures the footer remains visible on mobile
+   devices with browser or OS menu bars */
+body {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 2rem);
+}
+
 /* Smooth background & shadow transitions */
 .btn,
 .nav-link {
