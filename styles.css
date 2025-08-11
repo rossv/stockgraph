@@ -75,16 +75,12 @@ body {
 .table thead th {
   background: var(--main-green) !important;
   color: #fff;
+  white-space: normal;
+  word-break: break-word;
 }
 .table th,
 .table td {
   vertical-align: middle;
-}
-
-/* Two‑line header cell in slider table */
-.two-line {
-  line-height: 1.1;
-  white-space: normal;
 }
 
 /* Scrollable areas */
