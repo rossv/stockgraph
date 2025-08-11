@@ -4,14 +4,25 @@ export const vestingPeriod = 5;  // match vests 5 years later
 export let historicalData = [];
 export let sp500Close = [];
 
-export async function loadData(){
-  const [histRes, spRes] = await Promise.all([
-    fetch('./data/history.json'),
-    fetch('./data/sp500.json')
-  ]);
-  if(!histRes.ok || !spRes.ok){
-    throw new Error('Failed to load data');
+async function fetchJson(url){
+  try{
+    const res=await fetch(url);
+    if(!res.ok){
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+    return await res.json();
+  }catch(err){
+    throw new Error(`${err.message} (${url})`);
   }
-  historicalData = await histRes.json();
-  sp500Close = await spRes.json();
+}
+
+export async function loadData(){
+  try{
+    [historicalData, sp500Close]=await Promise.all([
+      fetchJson('./data/history.json'),
+      fetchJson('./data/sp500.json')
+    ]);
+  }catch(err){
+    throw new Error(err.message);
+  }
 }
