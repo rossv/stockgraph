@@ -60,9 +60,22 @@ function generatePresets(){
   controlRow.className='d-flex gap-2 mb-2';
 
   const snap=document.createElement('button');
+  snap.type='button';
   snap.id='snapBtn';
   snap.className='btn btn-secondary flex-fill';
   snap.textContent='Snap\u00A0Investments\u00A0to\u00A0Stock\u00A0Price';
+  snap.addEventListener('click',()=>{
+    historicalData.forEach((rec,i)=>{
+      const raw=Number(investmentAmounts[i]);
+      const snapVal=Math.round(raw/rec.price)*rec.price;
+      investmentAmounts[i]=snapVal;
+      document.getElementById(`slider-${rec.year}`).value=snapVal;
+      document.getElementById(`number-${rec.year}`).value=fmtCur(snapVal);
+    });
+    updateCalculation();
+    saveInvestments();
+    snap.blur();
+  });
 
   const clr=document.createElement('button');
   clr.id='clearBtn';
@@ -166,18 +179,6 @@ export function buildUI(){
   });
 
   generatePresets();
-
-  document.getElementById('snapBtn').addEventListener('click',()=>{
-    historicalData.forEach((rec,i)=>{
-      const raw=investmentAmounts[i];
-      const snap=Math.round(raw/rec.price)*rec.price;
-      investmentAmounts[i]=snap;
-      document.getElementById(`slider-${rec.year}`).value=snap;
-      document.getElementById(`number-${rec.year}`).value=fmtCur(snap);
-    });
-    updateCalculation();
-    saveInvestments();
-  });
 
   updateCalculation();
   updateScenarioComparison();
