@@ -1,7 +1,8 @@
 import { matchRate, vestingPeriod, historicalData, sp500Close } from './data.js';
 
-export const fmtCur = v => `$${Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+export const fmtCur = v => `$${Number(v).toLocaleString(undefined,{maximumFractionDigits:0})}`;
 export const fmtPrice = v => `$${Number(v).toFixed(3)}`;
+export const fmtNum = v => Number(v).toLocaleString(undefined,{maximumFractionDigits:0});
 
 export let investmentAmounts = [];
 export let finalTotalValue = 0;
@@ -61,8 +62,8 @@ export function updateCalculation(){
       <tr>
         <td>${rec.year}</td><td>${fmtPrice(price)}</td>
         <td>${fmtCur(invest)}</td><td>${fmtCur(cumInvest)}</td>
-        <td>${empShares.toFixed(2)}</td><td>${cumShares.toFixed(2)}</td>
-        <td>${matchThis}</td><td>${cumMatchShares}</td>
+        <td>${fmtNum(empShares)}</td><td>${fmtNum(cumShares)}</td>
+        <td>${fmtNum(matchThis)}</td><td>${fmtNum(cumMatchShares)}</td>
         <td>${fmtCur(matchThis*price)}</td>
         <td>${fmtCur(valEmp)}</td><td>${fmtCur(valMatch)}</td>
         <td>${fmtCur(totalVal)}</td><td>${fmtCur(spVal)}</td>

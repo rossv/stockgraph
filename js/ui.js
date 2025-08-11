@@ -108,7 +108,7 @@ export function buildUI(){
   if(storedProj.aggressiveRate!==undefined) aggr.value=storedProj.aggressiveRate;
   if(storedProj.annualPurchase!==undefined){
     const ap=parseFloat(storedProj.annualPurchase)||0;
-    annual.value=fmtCur(ap).replace('.00','');
+    annual.value=fmtCur(ap);
   }
 
   historicalData.forEach((rec,idx)=>{
@@ -221,7 +221,7 @@ annualInput.addEventListener('focus',e=>{
 });
 annualInput.addEventListener('blur',e=>{
   const v=parseFloat(e.target.value.replace(/[^0-9.]/g,''))||0;
-  e.target.value=fmtCur(v).replace('.00','');
+  e.target.value=fmtCur(v);
   updateScenarioComparison();
   saveProjectionParams();
 });
