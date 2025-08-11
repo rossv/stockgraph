@@ -6,15 +6,12 @@
 }
 
 /* Global */
+/* Extra bottom space ensures the footer remains visible on mobile
+   devices with browser or OS menu bars */
 body {
   font-family: 'Inter', Arial, sans-serif;
   background: #f8f9fa;
   color: #212529;
-}
-
-/* Extra bottom space ensures the footer remains visible on mobile
-   devices with browser or OS menu bars */
-body {
   padding-bottom: calc(env(safe-area-inset-bottom) + 2rem);
 }
 
