@@ -19,6 +19,8 @@ Update the JSON data files in the `data/` directory:
 
 These files were exported from a private dataset (stock prices) and the public Stooq database (S&P 500) and are provided for convenience only. Values may be outdated or contain mistakes, so contributors should verify accuracy with a trusted financial source before committing changes.
 
+See [data/DATA.md](data/DATA.md) for detailed information about data sources and accuracy notes.
+
 Add a new object with the latest year and values to each array and keep the list ordered by year.
 
 ## Dependencies
