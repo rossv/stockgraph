@@ -18,9 +18,12 @@ async function init(){
       });
     }
   }catch(err){
-    console.error('Failed to load data',err);
+    const message=`Failed to load data: ${err.message}`;
+    console.error(message);
     const sliderTable=document.getElementById('sliderTable');
-    sliderTable.innerHTML='<tr><td colspan="5">Data load failed.</td></tr>';
+    if(sliderTable){
+      sliderTable.innerHTML=`<tr><td colspan="5">${message}</td></tr>`;
+    }
   }
 }
 
