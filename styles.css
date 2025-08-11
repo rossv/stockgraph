@@ -177,6 +177,17 @@ body {
   max-width: 100px;     /* prevents it from stretching in wide screens */
 }
 
+@media (max-width: 576px) {
+  #sliderTable th,
+  #sliderTable td {
+    padding: 0.25rem;
+    font-size: 0.875rem;
+  }
+  #sliderTable .currency-input {
+    width: 4rem;
+  }
+}
+
 /* Prevent the chart/table column from forcing a wrap */
 .projected-chart-col { min-width: 0; }
 
