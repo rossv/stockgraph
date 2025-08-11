@@ -177,6 +177,10 @@ body {
   max-width: 100px;     /* prevents it from stretching in wide screens */
 }
 
+#sliderTable thead th {
+  white-space: normal;
+}
+
 /* Prevent the chart/table column from forcing a wrap */
 .projected-chart-col { min-width: 0; }
 

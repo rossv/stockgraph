@@ -1,7 +1,7 @@
 import { historicalData } from './data.js';
 import { fmtCur, fmtPrice, updateCalculation, updateScenarioComparison, investmentAmounts, resetInvestmentAmounts } from './calculator.js';
 
-const sliderTable=document.getElementById('sliderTable');
+const sliderTable=document.getElementById('sliderTableBody');
 const STORAGE_INVEST='investmentAmounts';
 const STORAGE_PROJ='projectionParams';
 
