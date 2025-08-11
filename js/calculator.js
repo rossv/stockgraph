@@ -88,7 +88,7 @@ export function updateCalculation(){
     {x:yrs,y:spArr,name:'S&P\u00A0500\u00A0(if\u00A0invested)',
      mode:'lines',line:{color:'rgba(198,54,99,1)',width:2}},
     {x:yrs,y:roiArr,name:'ROI\u00A0(%)',mode:'lines',
-     line:{color:'rgba(198,54,99,1)',dash:'dash'},yaxis:'y2'}
+     line:{color:'rgba(255,165,0,1)',dash:'dash'},yaxis:'y2'}
   ],{
     xaxis:{dtick:1,title:'Financial\u00A0Year'},
     yaxis:{title:'Value\u00A0($)'},
