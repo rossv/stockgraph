@@ -26,7 +26,9 @@ Add a new object with the latest year and values to each array and keep the list
 ## Dependencies
 This project relies on the following libraries loaded via CDN in `index.html`:
 - [Bootstrap 5](https://getbootstrap.com/) – layout and components
-- [Plotly](https://plotly.com/javascript/) – interactive charts
+- [Plotly Basic](https://plotly.com/javascript/) – interactive charts
+
+*Limitations:* the Plotly basic bundle supports only core trace types such as scatter and bar charts. Specialized charts like 3D, geographic, or financial visualizations are not included.
 
 No additional build steps are required.
 
