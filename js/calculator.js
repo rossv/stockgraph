@@ -86,19 +86,14 @@ export function updateCalculation(){
      fill:'tonexty',fillcolor:'rgba(0,130,186,.5)',
      line:{color:'rgba(0,130,186,.8)'}},
     {x:yrs,y:spArr,name:'S&P\u00A0500\u00A0(if\u00A0invested)',
-     mode:'lines',line:{color:'rgba(198,54,99,1)',width:2}}
+     mode:'lines',line:{color:'rgba(198,54,99,1)',width:2}},
+    {x:yrs,y:roiArr,name:'ROI\u00A0(%)',mode:'lines',
+     line:{color:'rgba(198,54,99,1)',dash:'dash'},yaxis:'y2'}
   ],{
     xaxis:{dtick:1,title:'Financial\u00A0Year'},
     yaxis:{title:'Value\u00A0($)'},
+    yaxis2:{title:'ROI\u00A0(%)',overlaying:'y',side:'right',showgrid:false},
     legend:{orientation:'h',x:0,xanchor:'left',y:-.25},
-    margin:{t:40},
-  },{responsive:true,staticPlot:true,displayModeBar:false,scrollZoom:false,doubleClick:false});
-
-  Plotly.newPlot('roiChart',[
-    {x:yrs,y:roiArr,name:'ROI\u00A0(%)',mode:'lines',line:{color:'rgba(198,54,99,1)',width:2}}
-  ],{
-    xaxis:{dtick:1,title:'Financial\u00A0Year'},
-    yaxis:{title:'ROI\u00A0(%)'},
     margin:{t:40},
   },{responsive:true,staticPlot:true,displayModeBar:false,scrollZoom:false,doubleClick:false});
 
