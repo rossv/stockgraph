@@ -56,11 +56,22 @@ function generatePresets(){
     panel.appendChild(b);
   });
 
+  const controlRow=document.createElement('div');
+  controlRow.className='d-flex gap-2 mb-2';
+
+  const snap=document.createElement('button');
+  snap.id='snapBtn';
+  snap.className='btn btn-secondary flex-fill';
+  snap.textContent='Snap\u00A0Investments\u00A0to\u00A0Stock\u00A0Price';
+
   const clr=document.createElement('button');
   clr.id='clearBtn';
-  clr.className='btn btn-outline-secondary ms-2 mb-2';
+  clr.className='btn btn-outline-secondary flex-fill';
   clr.textContent='Clear\u00A0All\u00A0Values';
-  panel.appendChild(clr);
+
+  controlRow.appendChild(snap);
+  controlRow.appendChild(clr);
+  panel.appendChild(controlRow);
 
   panel.querySelectorAll('.preset-btn').forEach(btn=>{
     btn.addEventListener('click',e=>{
@@ -155,6 +166,19 @@ export function buildUI(){
   });
 
   generatePresets();
+
+  document.getElementById('snapBtn').addEventListener('click',()=>{
+    historicalData.forEach((rec,i)=>{
+      const raw=investmentAmounts[i];
+      const snap=Math.round(raw/rec.price)*rec.price;
+      investmentAmounts[i]=snap;
+      document.getElementById(`slider-${rec.year}`).value=snap;
+      document.getElementById(`number-${rec.year}`).value=fmtCur(snap);
+    });
+    updateCalculation();
+    saveInvestments();
+  });
+
   updateCalculation();
   updateScenarioComparison();
 }
@@ -173,18 +197,6 @@ export function applyToSubsequentYears(startIdx){
 }
 
 window.applyToSubsequentYears=applyToSubsequentYears;
-
-document.getElementById('snapBtn').addEventListener('click',()=>{
-  historicalData.forEach((rec,i)=>{
-    const raw=investmentAmounts[i];
-    const snap=Math.round(raw/rec.price)*rec.price;
-    investmentAmounts[i]=snap;
-    document.getElementById(`slider-${rec.year}`).value=snap;
-    document.getElementById(`number-${rec.year}`).value=fmtCur(snap);
-  });
-  updateCalculation();
-  saveInvestments();
-});
 
 document.getElementById('goToDetailsBtn').addEventListener('click',()=>{
   new bootstrap.Tab(document.getElementById('detailed-tab')).show();
