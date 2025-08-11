@@ -41,10 +41,11 @@ export function updateCalculation(){
     const totalVal=valEmp+valMatch;
 
     const spClose=sp500Close[idx].close;
-    if(idx===0) spVal=invest;
-    else{
+    if(idx>0){
       const prevClose=sp500Close[idx-1].close;
-      spVal=(spVal+invest)*(spClose/prevClose);
+      spVal=spVal*(spClose/prevClose)+invest;
+    }else{
+      spVal=invest;
     }
 
     summaryBody.insertAdjacentHTML('beforeend',`
