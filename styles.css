@@ -75,18 +75,23 @@ body {
 .table thead th {
   background: var(--main-green) !important;
   color: #fff;
-  white-space: normal;
-  word-break: break-word;
+  white-space: normal; /* allow wrapping between words */
+  word-break: keep-all; /* prevent breaking within words */
 }
 .table th,
 .table td {
   vertical-align: middle;
 }
 
+#sliderTable th {
+  font-size: 0.85rem;
+}
+
 /* Scrollable areas */
 #sliderScrollContainer {
   /*max-height: 700px;*/
   overflow-y: auto;
+  overflow-x: hidden; /* avoid horizontal scroll in main input table */
 }
 #summaryScrollContainer {
   /*max-height: 700px;*/
