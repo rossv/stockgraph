@@ -57,7 +57,7 @@ function generatePresets(){
   });
 
   const controlRow=document.createElement('div');
-  controlRow.className='d-flex gap-2 mb-2';
+  controlRow.className='d-flex flex-wrap gap-2 mb-2';
 
   const snap=document.createElement('button');
   snap.type='button';
