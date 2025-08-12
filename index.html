@@ -194,23 +194,33 @@
 
                 <label class="form-label mt-2" for="projectionYears">Projection (years)</label>
                 <input id="projectionYears" type="number"
-                       class="form-control form-control-sm" value="7" min="1" max="30"/>
+                       class="form-control form-control-sm" value="7"/>
+                <input id="projectionYearsSlider" type="range" class="slider"
+                       min="0" max="50" value="7"/>
 
                 <label class="form-label mt-3" for="annualPurchase">Annual Additional Purchase ($)</label>
                 <input id="annualPurchase" type="text"
                        class="form-control form-control-sm currency-input" value="$0"/>
+                <input id="annualPurchaseSlider" type="range" class="slider"
+                       min="0" max="100000" value="0"/>
 
                 <label class="form-label mt-3" for="conservativeRate">Conservative Growth (%)</label>
                 <input id="conservativeRate" type="number"
-                       class="form-control form-control-sm" value="6" min="0" max="50"/>
+                       class="form-control form-control-sm" value="6"/>
+                <input id="conservativeRateSlider" type="range" class="slider"
+                       min="0" max="30" value="6"/>
 
                 <label class="form-label mt-3" for="baseRate">Base Growth (%)</label>
                 <input id="baseRate" type="number"
-                       class="form-control form-control-sm" value="19" min="0" max="50"/>
+                       class="form-control form-control-sm" value="19"/>
+                <input id="baseRateSlider" type="range" class="slider"
+                       min="0" max="30" value="19"/>
 
                 <label class="form-label mt-3" for="aggressiveRate">Aggressive Growth (%)</label>
                 <input id="aggressiveRate" type="number"
-                       class="form-control form-control-sm" value="27" min="0" max="50"/>
+                       class="form-control form-control-sm" value="27"/>
+                <input id="aggressiveRateSlider" type="range" class="slider"
+                       min="0" max="30" value="27"/>
 
                 <p class="text-muted small mt-4 mb-0">
                   Past performance is not a guarantee of future results.<br/>

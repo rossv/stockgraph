@@ -115,13 +115,42 @@ export function buildUI(){
   const base=document.getElementById('baseRate');
   const aggr=document.getElementById('aggressiveRate');
   const annual=document.getElementById('annualPurchase');
-  if(storedProj.projectionYears!==undefined) projYears.value=storedProj.projectionYears;
-  if(storedProj.conservativeRate!==undefined) cons.value=storedProj.conservativeRate;
-  if(storedProj.baseRate!==undefined) base.value=storedProj.baseRate;
-  if(storedProj.aggressiveRate!==undefined) aggr.value=storedProj.aggressiveRate;
+  const projYearsSlider=document.getElementById('projectionYearsSlider');
+  const consSlider=document.getElementById('conservativeRateSlider');
+  const baseSlider=document.getElementById('baseRateSlider');
+  const aggrSlider=document.getElementById('aggressiveRateSlider');
+  const annualSlider=document.getElementById('annualPurchaseSlider');
+
+  if(storedProj.projectionYears!==undefined){
+    projYears.value=storedProj.projectionYears;
+    projYearsSlider.value=storedProj.projectionYears;
+  } else {
+    projYearsSlider.value=projYears.value;
+  }
+  if(storedProj.conservativeRate!==undefined){
+    cons.value=storedProj.conservativeRate;
+    consSlider.value=storedProj.conservativeRate;
+  } else {
+    consSlider.value=cons.value;
+  }
+  if(storedProj.baseRate!==undefined){
+    base.value=storedProj.baseRate;
+    baseSlider.value=storedProj.baseRate;
+  } else {
+    baseSlider.value=base.value;
+  }
+  if(storedProj.aggressiveRate!==undefined){
+    aggr.value=storedProj.aggressiveRate;
+    aggrSlider.value=storedProj.aggressiveRate;
+  } else {
+    aggrSlider.value=aggr.value;
+  }
   if(storedProj.annualPurchase!==undefined){
     const ap=parseFloat(storedProj.annualPurchase)||0;
     annual.value=fmtCur(ap);
+    annualSlider.value=ap;
+  } else {
+    annualSlider.value=parseFloat(annual.value.replace(/[^0-9.]/g,''))||0;
   }
 
   historicalData.forEach((rec,idx)=>{
@@ -210,22 +239,55 @@ document.getElementById('projected-tab').addEventListener('shown.bs.tab', () => 
 });
 
 const annualInput=document.getElementById('annualPurchase');
-['projectionYears','conservativeRate','baseRate','aggressiveRate'].forEach(
- id=>document.getElementById(id).addEventListener('input',()=>{
-   updateScenarioComparison();
-   saveProjectionParams();
- })
-);
+const annualSlider=document.getElementById('annualPurchaseSlider');
+
+const projYears=document.getElementById('projectionYears');
+const projYearsSlider=document.getElementById('projectionYearsSlider');
+projYears.addEventListener('input',()=>{
+  projYearsSlider.value=projYears.value;
+  updateScenarioComparison();
+  saveProjectionParams();
+});
+projYearsSlider.addEventListener('input',()=>{
+  projYears.value=projYearsSlider.value;
+  updateScenarioComparison();
+  saveProjectionParams();
+});
+
+['conservative','base','aggressive'].forEach(prefix=>{
+  const input=document.getElementById(`${prefix}Rate`);
+  const slider=document.getElementById(`${prefix}RateSlider`);
+  input.addEventListener('input',()=>{
+    slider.value=input.value;
+    updateScenarioComparison();
+    saveProjectionParams();
+  });
+  slider.addEventListener('input',()=>{
+    input.value=slider.value;
+    updateScenarioComparison();
+    saveProjectionParams();
+  });
+});
+
+annualSlider.addEventListener('input',()=>{
+  const v=+annualSlider.value;
+  annualInput.value=fmtCur(v);
+  updateScenarioComparison();
+  saveProjectionParams();
+});
 annualInput.addEventListener('focus',e=>{
   e.target.value=e.target.value.replace(/[^0-9.]/g,'');
 });
 annualInput.addEventListener('blur',e=>{
   const v=parseFloat(e.target.value.replace(/[^0-9.]/g,''))||0;
+  annualSlider.value=v;
   e.target.value=fmtCur(v);
   updateScenarioComparison();
   saveProjectionParams();
 });
-annualInput.addEventListener('input',()=>{
+annualInput.addEventListener('input',e=>{
+  const v=parseFloat(e.target.value.replace(/[^0-9.]/g,''))||0;
+  annualSlider.value=v;
   updateScenarioComparison();
   saveProjectionParams();
 });
