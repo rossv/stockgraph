@@ -23,6 +23,10 @@ See [data/DATA.md](data/DATA.md) for detailed information about data sources and
 
 Add a new object with the latest year and values to each array and keep the list ordered by year.
 
+Both `history.json` and `sp500.json` must include the same set of years in the
+same order so the arrays remain equal in length and chronological. Mismatched
+or missing entries will cause runtime errors in `updateCalculation`.
+
 ## Dependencies
 This project relies on the following libraries loaded via CDN in `index.html`:
 - [Bootstrap 5](https://getbootstrap.com/) – layout and components
