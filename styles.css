@@ -136,7 +136,7 @@ body {
 
 /* Limit width for buttons that should shrink on large screens */
 .limited-btn {
-  align-self: flex-start;
+  align-self: center;
   width: 100%;
   max-width: 300px;
 }
