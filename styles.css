@@ -120,16 +120,25 @@ body {
 /* Magenta action button styles */
 #goToDetailsBtn,
 #goToProjectionBtn,
-#exportCSV {
+#exportCSV,
+#exportProjectionCSV {
   background: var(--main-magenta);
   border-color: var(--main-magenta);
   color: #fff;
 }
 #goToDetailsBtn:hover,
 #goToProjectionBtn:hover,
-#exportCSV:hover {
+#exportCSV:hover,
+#exportProjectionCSV:hover {
   opacity: 0.75;
   color: #fff;
+}
+
+/* Limit width for buttons that should shrink on large screens */
+.limited-btn {
+  align-self: flex-start;
+  width: 100%;
+  max-width: 300px;
 }
 
 /* Slider */
