@@ -20,7 +20,7 @@ export function updateCalculation(){
   const yrs=[],invArr=[],empArr=[],totArr=[],spArr=[],roiArr=[];
 
   historicalData.forEach((rec,idx)=>{
-    const invest=investmentAmounts[idx];
+    const invest=Number(investmentAmounts[idx])||0;
     const price =rec.price;
     const empShares=invest/price;
     cumShares+=empShares;
@@ -28,7 +28,7 @@ export function updateCalculation(){
 
     let matchThis=0;
     if(idx>=vestingPeriod){
-      const invAgo=investmentAmounts[idx-vestingPeriod];
+      const invAgo=Number(investmentAmounts[idx-vestingPeriod])||0;
       if(invAgo>0){
         const priceAgo=historicalData[idx-vestingPeriod].price;
         matchThis=Math.round((invAgo/priceAgo)*matchRate);
