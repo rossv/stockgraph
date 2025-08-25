@@ -91,6 +91,12 @@ export function updateCalculation(){
     finalTotalValue=totalVal;
   }
 
+  const maxRoi=Math.max(...roiArr.map(v=>Math.abs(v)));
+  let roiTick=100;
+  while(maxRoi/roiTick>10){
+    roiTick*=2;
+  }
+
   Plotly.newPlot('chart',[
     {x:yrs,y:invArr,name:'Cumulative\u00A0Invested',
      fill:'tozeroy',fillcolor:'rgba(99,102,106,.5)',
@@ -108,7 +114,7 @@ export function updateCalculation(){
   ],{
     xaxis:{dtick:1,title:'Financial\u00A0Year'},
     yaxis:{title:'Value\u00A0($)'},
-    yaxis2:{title:'ROI\u00A0(%)',overlaying:'y',side:'right',showgrid:false,tick0:0,dtick:100},
+    yaxis2:{title:'ROI\u00A0(%)',overlaying:'y',side:'right',showgrid:false,tick0:0,dtick:roiTick},
     legend:{orientation:'h',x:0,xanchor:'left',y:-.25},
     margin:{t:40},
   },{responsive:true,staticPlot:true,displayModeBar:false,scrollZoom:false,doubleClick:false});
