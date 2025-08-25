@@ -19,7 +19,16 @@ export function updateCalculation(){
   let cumShares=0,cumInvest=0,cumMatchShares=0,spVal=0;
   const yrs=[],invArr=[],empArr=[],totArr=[],spArr=[],roiArr=[];
 
-  historicalData.forEach((rec,idx)=>{
+  const histLen=historicalData.length;
+  const spLen=sp500Close.length;
+  const len=Math.min(histLen,spLen);
+  if(histLen!==spLen){
+    console.error(`Data length mismatch: historicalData has ${histLen} entries while sp500Close has ${spLen}.`);
+    alert('Data files are inconsistent. Calculations use only overlapping records.');
+  }
+
+  for(let idx=0; idx<len; idx++){
+    const rec=historicalData[idx];
     const invest=Number(investmentAmounts[idx])||0;
     const price =rec.price;
     const empShares=invest/price;
@@ -40,8 +49,13 @@ export function updateCalculation(){
     const valMatch=cumMatchShares*price;
     const totalVal=valEmp+valMatch;
 
-    const spClose=sp500Close[idx].close;
-    if(idx>0){
+    const spRec=sp500Close[idx];
+    if(!spRec){
+      console.error(`Missing S&P 500 data for index ${idx}.`);
+      break;
+    }
+    const spClose=spRec.close;
+    if(idx>0 && sp500Close[idx-1]){
       const prevClose=sp500Close[idx-1].close;
       spVal=spVal*(spClose/prevClose)+invest;
     }else{
@@ -75,7 +89,7 @@ export function updateCalculation(){
     invArr.push(cumInvest); empArr.push(valEmp);
     totArr.push(totalVal);  spArr.push(spVal); roiArr.push(roiVal);
     finalTotalValue=totalVal;
-  });
+  }
 
   Plotly.newPlot('chart',[
     {x:yrs,y:invArr,name:'Cumulative\u00A0Invested',
