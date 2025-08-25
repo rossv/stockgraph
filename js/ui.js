@@ -109,6 +109,13 @@ export function buildUI(){
   const storedInvest=JSON.parse(localStorage.getItem(STORAGE_INVEST)||'[]');
   const storedProj=JSON.parse(localStorage.getItem(STORAGE_PROJ)||'{}');
 
+  // determine an appropriate slider ceiling. Use the largest preset (25k)
+  // and any stored investment, then add a small buffer so manual entries
+  // aren't immediately clamped.
+  const SLIDER_BASE_MAX = 25000; // largest preset value (front/late)
+  const SLIDER_BUFFER = 5000;    // allow some headroom for manual input
+  const sliderMax = Math.max(SLIDER_BASE_MAX, ...storedInvest) + SLIDER_BUFFER;
+
   // populate projection inputs if stored
   const projYears=document.getElementById('projectionYears');
   const cons=document.getElementById('conservativeRate');
@@ -163,7 +170,7 @@ export function buildUI(){
       <td>
         <div class="slidecontainer">
           <input type="range" class="slider" id="slider-${rec.year}"
-                 min="0" max="20000" step="any" value="${initVal}">
+                 min="0" max="${sliderMax}" step="any" value="${initVal}">
         </div>
       </td>
       <td><input type="text" id="number-${rec.year}"
