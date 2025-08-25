@@ -249,7 +249,7 @@ export function buildUI(){
   updateCalculation();
 }
 
-export function applyToSubsequentYears(startIdx){
+function applyToSubsequentYears(startIdx){
   const v=investmentAmounts[startIdx];
   historicalData.forEach((rec,i)=>{
     if(i>=startIdx){

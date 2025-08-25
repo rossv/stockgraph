@@ -2,10 +2,10 @@ import { matchRate, vestingPeriod, historicalData, sp500Close } from './data.js'
 
 export const fmtCur = v => `$${Number(v).toLocaleString(undefined,{maximumFractionDigits:0})}`;
 export const fmtPrice = v => `$${Number(v).toFixed(3)}`;
-export const fmtNum = v => Number(v).toLocaleString(undefined,{maximumFractionDigits:0});
+const fmtNum = v => Number(v).toLocaleString(undefined,{maximumFractionDigits:0});
 
 export let investmentAmounts = [];
-export let finalTotalValue = 0;
+let finalTotalValue = 0;
 
 export function resetInvestmentAmounts(len){
   investmentAmounts = Array(len).fill(0);
