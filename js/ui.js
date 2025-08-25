@@ -5,8 +5,24 @@ const sliderTable=document.getElementById('sliderTable');
 const STORAGE_INVEST='investmentAmounts';
 const STORAGE_PROJ='projectionParams';
 
+let storageWarningShown=false;
+function handleStorageError(err){
+  console.warn('Local storage unavailable; persistence disabled.', err);
+  if(!storageWarningShown){
+    const div=document.createElement('div');
+    div.className='alert alert-warning m-2';
+    div.textContent='Saving is disabled because local storage is unavailable.';
+    document.body.prepend(div);
+    storageWarningShown=true;
+  }
+}
+
 function saveInvestments(){
-  localStorage.setItem(STORAGE_INVEST,JSON.stringify(investmentAmounts));
+  try{
+    localStorage.setItem(STORAGE_INVEST,JSON.stringify(investmentAmounts));
+  }catch(e){
+    handleStorageError(e);
+  }
 }
 
 function saveProjectionParams(){
@@ -17,7 +33,11 @@ function saveProjectionParams(){
     aggressiveRate:document.getElementById('aggressiveRate').value,
     annualPurchase:document.getElementById('annualPurchase').value.replace(/[^0-9.]/g,'')
   };
-  localStorage.setItem(STORAGE_PROJ,JSON.stringify(params));
+  try{
+    localStorage.setItem(STORAGE_PROJ,JSON.stringify(params));
+  }catch(e){
+    handleStorageError(e);
+  }
 }
 
 function clearAll(){
@@ -26,7 +46,11 @@ function clearAll(){
     document.getElementById(`slider-${rec.year}`).value=0;
     document.getElementById(`number-${rec.year}`).value='$0';
   });
-  localStorage.removeItem(STORAGE_INVEST);
+  try{
+    localStorage.removeItem(STORAGE_INVEST);
+  }catch(e){
+    handleStorageError(e);
+  }
   updateCalculation();
 }
 
@@ -106,8 +130,14 @@ export function buildUI(){
   sliderTable.innerHTML='';
   resetInvestmentAmounts(historicalData.length);
 
-  const storedInvest=JSON.parse(localStorage.getItem(STORAGE_INVEST)||'[]');
-  const storedProj=JSON.parse(localStorage.getItem(STORAGE_PROJ)||'{}');
+  let storedInvest=[];
+  let storedProj={};
+  try{
+    storedInvest=JSON.parse(localStorage.getItem(STORAGE_INVEST)||'[]');
+    storedProj=JSON.parse(localStorage.getItem(STORAGE_PROJ)||'{}');
+  }catch(e){
+    handleStorageError(e);
+  }
 
   // determine an appropriate slider ceiling. Use the largest preset (25k)
   // and any stored investment, then add a small buffer so manual entries
