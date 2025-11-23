@@ -17,7 +17,7 @@ export function updateCalculation(){
   summaryBody.innerHTML=detailedBody.innerHTML='';
 
   let cumShares=0,cumInvest=0,cumMatchShares=0,spVal=0;
-  const yrs=[],invArr=[],empArr=[],totArr=[],spArr=[],roiArr=[];
+  const yrs=[],invArr=[],empArr=[],totArr=[],spArr=[],roiEmpArr=[],roiInclArr=[];
 
   const histLen=historicalData.length;
   const spLen=sp500Close.length;
@@ -71,8 +71,10 @@ export function updateCalculation(){
         <td>${fmtCur(spVal)}</td>
       </tr>`);
 
-    const roiVal=cumInvest>0?((totalVal-cumInvest)/cumInvest)*100:0;
-    const roi=roiVal.toFixed(2);
+    const roiEmpVal=cumInvest>0?((valEmp-cumInvest)/cumInvest)*100:0;
+    const roiInclVal=cumInvest>0?((totalVal-cumInvest)/cumInvest)*100:0;
+    const roiEmp=roiEmpVal.toFixed(2);
+    const roiIncl=roiInclVal.toFixed(2);
     detailedBody.insertAdjacentHTML('beforeend',`
       <tr>
         <td>${rec.year}</td><td>${fmtPrice(price)}</td>
@@ -82,16 +84,18 @@ export function updateCalculation(){
         <td>${fmtCur(matchThis*price)}</td>
         <td>${fmtCur(valEmp)}</td><td>${fmtCur(valMatch)}</td>
         <td>${fmtCur(totalVal)}</td><td>${fmtCur(spVal)}</td>
-        <td>$${spClose.toLocaleString()}</td><td>${roi}%</td>
+        <td>$${spClose.toLocaleString()}</td><td>${roiEmp}%</td><td>${roiIncl}%</td>
       </tr>`);
 
     yrs.push(rec.year);
     invArr.push(cumInvest); empArr.push(valEmp);
-    totArr.push(totalVal);  spArr.push(spVal); roiArr.push(roiVal);
+    totArr.push(totalVal);  spArr.push(spVal);
+    roiEmpArr.push(roiEmpVal); roiInclArr.push(roiInclVal);
     finalTotalValue=totalVal;
   }
 
-  const maxRoi=Math.max(...roiArr.map(v=>Math.abs(v)));
+  const roiValues=roiEmpArr.concat(roiInclArr).map(v=>Math.abs(v));
+  const maxRoi=Math.max(...roiValues,0);
   let roiTick=100;
   while(maxRoi/roiTick>10){
     roiTick*=2;
@@ -109,8 +113,10 @@ export function updateCalculation(){
      line:{color:'rgba(0,130,186,.8)'}},
     {x:yrs,y:spArr,name:'S&P\u00A0500\u00A0(if\u00A0invested)',
      mode:'lines',line:{color:'rgba(198,54,99,1)',width:2}},
-    {x:yrs,y:roiArr,name:'ROI\u00A0(%)',mode:'lines',
-     line:{color:'rgba(255,165,0,1)',dash:'dash'},yaxis:'y2'}
+    {x:yrs,y:roiEmpArr,name:'ROI\u00A0on\u00A0your\u00A0contributions\u00A0(%)',mode:'lines',
+     line:{color:'rgba(255,165,0,1)',dash:'dash'},yaxis:'y2'},
+    {x:yrs,y:roiInclArr,name:'ROI\u00A0incl.\u00A0company\u00A0match\u00A0(%)',mode:'lines',
+     line:{color:'rgba(255,69,0,1)',dash:'dot'},yaxis:'y2'}
   ],{
     xaxis:{dtick:1,title:'Financial\u00A0Year'},
     yaxis:{title:'Value\u00A0($)'},
