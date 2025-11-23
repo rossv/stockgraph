@@ -25,6 +25,83 @@ function saveInvestments(){
   }
 }
 
+function downloadInvestmentsAsJSON(){
+  const payload={
+    generatedAt:new Date().toISOString(),
+    investments:historicalData.map((rec,idx)=>({
+      year:rec.year,
+      amount:Number(investmentAmounts[idx])||0
+    }))
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download='investments.json';
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+function parseInvestmentPayload(payload){
+  if(!Array.isArray(payload)){
+    throw new Error('Expected an array of investments.');
+  }
+  const byYear=new Map();
+  payload.forEach((entry,idx)=>{
+    if(typeof entry==='number'){
+      const yr=historicalData[idx]?.year;
+      if(yr!==undefined) byYear.set(yr,entry);
+      return;
+    }
+    if(entry && typeof entry==='object'){
+      const yr=('year' in entry)?Number(entry.year):historicalData[idx]?.year;
+      if(Number.isNaN(yr) || yr===undefined){
+        throw new Error('Each investment entry must include a valid year.');
+      }
+      const amt='amount' in entry?entry.amount:(
+        'value' in entry?entry.value:(
+          'invested' in entry?entry.invested:0
+        )
+      );
+      byYear.set(yr,Number(amt)||0);
+      return;
+    }
+    throw new Error('Unexpected entry format in investments array.');
+  });
+  return byYear;
+}
+
+function applyLoadedInvestments(byYear){
+  historicalData.forEach((rec,i)=>{
+    const amt=byYear.has(rec.year)?Number(byYear.get(rec.year))||0:0;
+    investmentAmounts[i]=amt;
+    document.getElementById(`slider-${rec.year}`).value=amt;
+    document.getElementById(`number-${rec.year}`).value=fmtCur(amt);
+  });
+  updateCalculation();
+  saveInvestments();
+}
+
+function handleInvestmentFile(file,inputEl){
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const parsed=JSON.parse(reader.result);
+      const payload=Array.isArray(parsed)?parsed:parsed?.investments;
+      if(!payload){
+        throw new Error('JSON must include an "investments" array.');
+      }
+      const byYear=parseInvestmentPayload(payload);
+      applyLoadedInvestments(byYear);
+    }catch(err){
+      alert(`Failed to load investments: ${err.message}`);
+    }finally{
+      if(inputEl) inputEl.value='';
+    }
+  };
+  reader.readAsText(file);
+}
+
 function saveProjectionParams(){
   const params={
     projectionYears:document.getElementById('projectionYears').value,
@@ -109,6 +186,36 @@ function generatePresets(){
   controlRow.appendChild(snap);
   controlRow.appendChild(clr);
   panel.appendChild(controlRow);
+
+  const ioRow=document.createElement('div');
+  ioRow.className='d-flex flex-wrap gap-2';
+
+  const saveJson=document.createElement('button');
+  saveJson.type='button';
+  saveJson.className='btn btn-outline-secondary flex-fill';
+  saveJson.textContent='Save\u00A0Investments\u00A0(JSON)';
+  saveJson.addEventListener('click',()=>{
+    downloadInvestmentsAsJSON();
+    saveJson.blur();
+  });
+
+  const loadJson=document.createElement('button');
+  loadJson.type='button';
+  loadJson.className='btn btn-outline-secondary flex-fill';
+  loadJson.textContent='Load\u00A0Investments\u00A0(JSON)';
+
+  const fileInput=document.createElement('input');
+  fileInput.type='file';
+  fileInput.accept='application/json';
+  fileInput.className='d-none';
+  fileInput.addEventListener('change',()=>handleInvestmentFile(fileInput.files?.[0],fileInput));
+
+  loadJson.addEventListener('click',()=>fileInput.click());
+
+  ioRow.appendChild(saveJson);
+  ioRow.appendChild(loadJson);
+  panel.appendChild(ioRow);
+  panel.appendChild(fileInput);
 
   panel.querySelectorAll('.preset-btn').forEach(btn=>{
     btn.addEventListener('click',e=>{
