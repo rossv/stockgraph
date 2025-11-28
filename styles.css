@@ -229,3 +229,60 @@ footer {
 .btn i {
   margin-right: .25rem;
 }
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0; /* Start hidden */
+}
+
+/* Stagger delays for cards */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+
+/* Button Active State */
+.btn:active {
+  transform: scale(0.96);
+}
+
+/* Input Focus */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--main-green);
+  box-shadow: 0 0 0 0.25rem rgba(67, 176, 42, 0.25);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Slider Thumb Hover */
+.slider::-webkit-slider-thumb {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.slider:hover::-webkit-slider-thumb {
+  transform: scale(1.1);
+  background-color: #369622; /* slightly darker green */
+}
+.slider::-moz-range-thumb {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.slider:hover::-moz-range-thumb {
+  transform: scale(1.1);
+  background-color: #369622;
+}
+
+/* Table Row Animation */
+.table-row-anim {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}

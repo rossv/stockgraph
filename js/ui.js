@@ -320,6 +320,8 @@ export function buildUI() {
 
   historicalData.forEach((rec, idx) => {
     const tr = document.createElement('tr');
+    tr.className = 'table-row-anim';
+    tr.style.animationDelay = `${idx * 0.05}s`;
     const initVal = storedInvest[idx] || 0;
     investmentAmounts[idx] = initVal;
     tr.innerHTML = `

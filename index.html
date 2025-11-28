@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stock Investment Dashboard</title>
 
   <!-- Bootstrap -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   <!-- Bootstrap Icons -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <!-- Custom styles -->
   <link rel="stylesheet" href="styles.css" />
   <!-- Plotly.js -->
@@ -26,9 +25,8 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-white big-navbar">
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-        <img class="logo"
-             src="https://www.wadetrim.com/wp-content/uploads/wade-trim-logo_696x696.png"
-             alt="Wade Trim"/>
+        <img class="logo" src="https://www.wadetrim.com/wp-content/uploads/wade-trim-logo_696x696.png"
+          alt="Wade Trim" />
         <span class="fs-3 fw-bold">Stock Dashboard</span>
       </a>
     </div>
@@ -38,23 +36,20 @@
   <div class="container-fluid mt-4">
     <ul class="nav nav-tabs rounded-tabs flex-nowrap overflow-auto" id="dashboardTabs" role="tablist">
       <li class="nav-item">
-        <button class="nav-link" id="historical-tab"
-                data-bs-toggle="tab" data-bs-target="#historical"
-                type="button" role="tab">
+        <button class="nav-link" id="historical-tab" data-bs-toggle="tab" data-bs-target="#historical" type="button"
+          role="tab">
           Historical Performance
         </button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" id="detailed-tab"
-                data-bs-toggle="tab" data-bs-target="#detailed"
-                type="button" role="tab">
+        <button class="nav-link" id="detailed-tab" data-bs-toggle="tab" data-bs-target="#detailed" type="button"
+          role="tab">
           Detailed Tabulation
         </button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" id="projected-tab"
-                data-bs-toggle="tab" data-bs-target="#projected"
-                type="button" role="tab">
+        <button class="nav-link" id="projected-tab" data-bs-toggle="tab" data-bs-target="#projected" type="button"
+          role="tab">
           Projected Growth
         </button>
       </li>
@@ -68,7 +63,7 @@
         <div class="row mt-4">
           <!-- Investment Input Panel -->
           <div class="col-lg-4 mb-4">
-            <div class="card h-100">
+            <div class="card h-100 animate-fade-in-up">
               <div class="card-body d-flex flex-column">
                 <h2 class="card-title">Investments by Financial Year</h2>
                 <p class="text-muted">
@@ -102,27 +97,28 @@
 
           <!-- Chart & Summary Panel -->
           <div class="col-lg-8 mb-4">
-            <div class="card h-100">
+            <div class="card h-100 animate-fade-in-up delay-100">
               <div class="card-body d-flex flex-column">
                 <h2 class="card-title">Stock Value Over Time</h2>
-                  <div id="chart" style="width:100%;height:450px;"></div>
-                  <button id="downloadMainChart" class="btn btn-secondary mt-2 limited-btn">
-                    <i class="bi bi-download"></i> Download Chart
-                  </button>
-                  <p class="text-muted small mt-2">
-                    ROI lines are percentages plotted on the right-hand axis. ROI on your contributions reflects
-                    <em>(Employee Value − Cumulative Invested) ÷ Cumulative Invested</em>; ROI including the company
-                    match uses <em>(Total Value − Cumulative Invested) ÷ Cumulative Invested</em>.
-                  </p>
+                <div id="chart" style="width:100%;height:450px;"></div>
+                <button id="downloadMainChart" class="btn btn-secondary mt-2 limited-btn">
+                  <i class="bi bi-download"></i> Download Chart
+                </button>
+                <p class="text-muted small mt-2">
+                  ROI lines are percentages plotted on the right-hand axis. ROI on your contributions reflects
+                  <em>(Employee Value − Cumulative Invested) ÷ Cumulative Invested</em>; ROI including the company
+                  match uses <em>(Total Value − Cumulative Invested) ÷ Cumulative Invested</em>.
+                </p>
 
-                  <div id="summaryScrollContainer"
-                       class="table-responsive mt-3 flex-grow-1">
-                    <table id="summaryTable" class="table table-bordered mb-0">
+                <div id="summaryScrollContainer" class="table-responsive mt-3 flex-grow-1">
+                  <table id="summaryTable" class="table table-bordered mb-0">
                     <thead>
                       <tr>
-                        <th>Financial Year</th><th>Price</th>
+                        <th>Financial Year</th>
+                        <th>Price</th>
                         <th>Cumulative Invested</th>
-                        <th>Total Value</th><th>S&amp;P 500</th>
+                        <th>Total Value</th>
+                        <th>S&amp;P 500</th>
                       </tr>
                     </thead>
                     <tbody id="summaryBody"></tbody>
@@ -147,7 +143,8 @@
                   <table id="detailedTable" class="table table-bordered">
                     <thead>
                       <tr>
-                        <th>Financial Year</th><th>Stock Price</th>
+                        <th>Financial Year</th>
+                        <th>Stock Price</th>
                         <th>Invested This Year</th>
                         <th>Cumulative Invested</th>
                         <th>Employee Shares (Year)</th>
@@ -179,7 +176,8 @@
                     <li>ROI on your contributions = (Employee Value − Cumulative Invested) ÷ Cumulative Invested.</li>
                     <li>ROI including match = (Total Value − Cumulative Invested) ÷ Cumulative Invested.</li>
                     <li>Click “Snap Investments” to round to whole shares.</li>
-                    <li>Stock price for a given year is announced the following April (e.g., 2024 price set in April 2025).</li>
+                    <li>Stock price for a given year is announced the following April (e.g., 2024 price set in
+                      April 2025).</li>
                   </ul>
                 </div>
               </div>
@@ -195,41 +193,31 @@
         <div class="row g-3 align-items-start flex-lg-nowrap mt-4">
           <!-- Scenario Settings (shrink‑wrap column) -->
           <div class="col-12 col-lg-auto">
-            <div class="card scenario-card">
+            <div class="card scenario-card animate-fade-in-up">
               <div class="card-body">
                 <h2 class="card-title">Scenario Settings</h2>
 
                 <label class="form-label mt-2" for="projectionYears">Projection (years)</label>
-                <input id="projectionYears" type="number"
-                       class="form-control form-control-sm" value="7"/>
-                <input id="projectionYearsSlider" type="range" class="slider"
-                       min="0" max="50" value="7"/>
+                <input id="projectionYears" type="number" class="form-control form-control-sm" value="7" />
+                <input id="projectionYearsSlider" type="range" class="slider" min="0" max="50" value="7" />
 
                 <label class="form-label mt-3" for="annualPurchase">Annual Additional Purchase ($)</label>
-                <input id="annualPurchase" type="text"
-                       class="form-control form-control-sm currency-input" value="$0"/>
-                <input id="annualPurchaseSlider" type="range" class="slider"
-                       min="0" max="10000" value="0"/>
+                <input id="annualPurchase" type="text" class="form-control form-control-sm currency-input" value="$0" />
+                <input id="annualPurchaseSlider" type="range" class="slider" min="0" max="10000" value="0" />
 
                 <label class="form-label mt-3" for="conservativeRate">Conservative Growth (%)</label>
-                <input id="conservativeRate" type="number"
-                       class="form-control form-control-sm" value="6"/>
-                <input id="conservativeRateSlider" type="range" class="slider"
-                       min="0" max="30" value="6"/>
+                <input id="conservativeRate" type="number" class="form-control form-control-sm" value="6" />
+                <input id="conservativeRateSlider" type="range" class="slider" min="0" max="30" value="6" />
 
                 <label class="form-label mt-3" for="baseRate">Base Growth (%)</label>
-                <input id="baseRate" type="number"
-                       class="form-control form-control-sm" value="10"/>
-                <input id="baseRateSlider" type="range" class="slider"
-                       min="0" max="30" value="10"/>
+                <input id="baseRate" type="number" class="form-control form-control-sm" value="10" />
+                <input id="baseRateSlider" type="range" class="slider" min="0" max="30" value="10" />
 
                 <label class="form-label mt-3" for="aggressiveRate">Aggressive Growth (%)</label>
-                <input id="aggressiveRate" type="number"
-                       class="form-control form-control-sm" value="14"/>
-                <input id="aggressiveRateSlider" type="range" class="slider"
-                       min="0" max="30" value="14"/>
+                <input id="aggressiveRate" type="number" class="form-control form-control-sm" value="14" />
+                <input id="aggressiveRateSlider" type="range" class="slider" min="0" max="30" value="14" />
 
-                <hr class="my-3"/>
+                <hr class="my-3" />
 
                 <div class="form-check form-switch">
                   <input class="form-check-input" type="checkbox" id="inflationToggle">
@@ -238,14 +226,12 @@
 
                 <div id="inflationControls" class="mt-2" style="display:none;">
                   <label class="form-label" for="inflationRate">Inflation Rate (%)</label>
-                  <input id="inflationRate" type="number"
-                         class="form-control form-control-sm" value="2.5" step="0.1"/>
-                  <input id="inflationRateSlider" type="range" class="slider"
-                         min="0" max="10" step="0.1" value="2.5"/>
+                  <input id="inflationRate" type="number" class="form-control form-control-sm" value="2.5" step="0.1" />
+                  <input id="inflationRateSlider" type="range" class="slider" min="0" max="10" step="0.1" value="2.5" />
                 </div>
 
                 <p class="text-muted small mt-4 mb-0">
-                  Past performance is not a guarantee of future results.<br/>
+                  Past performance is not a guarantee of future results.<br />
                   Excludes tax implications on matching shares and capital gains.
                 </p>
               </div>
@@ -254,11 +240,10 @@
 
           <!-- Projected Growth chart & table -->
           <div class="col-12 col-lg projected-chart-col">
-            <div class="card h-100">
+            <div class="card h-100 animate-fade-in-up delay-100">
               <div class="card-body d-flex flex-column">
                 <h2 class="card-title">Projected Growth</h2>
-                <div id="scenarioChart"
-                     style="width:100%;height:450px;"></div>
+                <div id="scenarioChart" style="width:100%;height:450px;"></div>
                 <button id="downloadProjectionChart" class="btn btn-secondary mt-2 limited-btn">
                   <i class="bi bi-download"></i> Download Chart
                 </button>
@@ -298,12 +283,13 @@
   </div><!-- /container -->
 
   <footer class="text-muted small text-center mt-4">
-    This dashboard is for informational purposes only and does not constitute financial advice. Data is provided as-is without warranty.
+    This dashboard is for informational purposes only and does not constitute financial advice. Data is provided as-is
+    without warranty.
   </footer>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
-</html>
 
+</html>
