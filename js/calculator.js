@@ -7,6 +7,30 @@ const fmtNum = v => Number(v).toLocaleString(undefined, { maximumFractionDigits:
 export let investmentAmounts = [];
 let finalTotalValue = 0;
 
+function getEnteredYearRange(len) {
+  const enteredIndexes = [];
+  for (let idx = 0; idx < len; idx++) {
+    if ((Number(investmentAmounts[idx]) || 0) > 0) {
+      enteredIndexes.push(idx);
+    }
+  }
+
+  if (!enteredIndexes.length) {
+    return null;
+  }
+
+  const firstIndex = enteredIndexes[0];
+  const lastIndex = enteredIndexes[enteredIndexes.length - 1];
+  const firstYear = historicalData[firstIndex]?.year;
+  const lastYear = historicalData[lastIndex]?.year;
+
+  if (firstYear === undefined || lastYear === undefined) {
+    return null;
+  }
+
+  return [firstYear - 0.5, lastYear + 0.5];
+}
+
 export function resetInvestmentAmounts(len) {
   investmentAmounts.length = len;
   investmentAmounts.fill(0);
@@ -102,6 +126,8 @@ export function updateCalculation() {
     roiTick *= 2;
   }
 
+  const enteredYearRange = getEnteredYearRange(len);
+
   Plotly.newPlot('chart', [
     {
       x: yrs, y: invArr, name: 'Cumulative\u00A0Invested',
@@ -131,7 +157,7 @@ export function updateCalculation() {
       line: { color: 'rgba(255,69,0,1)', dash: 'dot' }, yaxis: 'y2'
     }
   ], {
-    xaxis: { dtick: 1, title: 'Financial\u00A0Year' },
+    xaxis: { dtick: 1, title: 'Financial\u00A0Year', range: enteredYearRange || undefined },
     yaxis: { title: 'Value\u00A0($)' },
     yaxis2: { title: 'ROI\u00A0(%)', overlaying: 'y', side: 'right', showgrid: false, tick0: 0, dtick: roiTick },
     legend: { orientation: 'h', x: 0, xanchor: 'left', y: -.25 },
