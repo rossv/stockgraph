@@ -6,6 +6,8 @@ const fmtNum = v => Number(v).toLocaleString(undefined, { maximumFractionDigits:
 
 export let investmentAmounts = [];
 let finalTotalValue = 0;
+let lastCalculatedYear = null;
+let lastCalculatedPrice = null;
 
 function getEnteredYearRange(len) {
   const enteredIndexes = [];
@@ -51,6 +53,10 @@ export function updateCalculation() {
     console.error(`Data length mismatch: historicalData has ${histLen} entries while sp500Close has ${spLen}.`);
     alert('Data files are inconsistent. Calculations use only overlapping records.');
   }
+
+  finalTotalValue = 0;
+  lastCalculatedYear = null;
+  lastCalculatedPrice = null;
 
   for (let idx = 0; idx < len; idx++) {
     const rec = historicalData[idx];
@@ -117,6 +123,8 @@ export function updateCalculation() {
     totArr.push(totalVal); spArr.push(spVal);
     roiEmpArr.push(roiEmpVal); roiInclArr.push(roiInclVal);
     finalTotalValue = totalVal;
+    lastCalculatedYear = rec.year;
+    lastCalculatedPrice = price;
   }
 
   const roiValues = roiEmpArr.concat(roiInclArr).map(v => Math.abs(v));
@@ -168,6 +176,10 @@ export function updateCalculation() {
 }
 
 export function updateScenarioComparison() {
+  if (lastCalculatedYear === null || lastCalculatedPrice === null) {
+    return;
+  }
+
   const yrsFwd = +document.getElementById('projectionYears').value;
   const annualInput = document.getElementById('annualPurchase');
   const annual = parseFloat(annualInput.value.replace(/[^0-9.]/g, '')) || 0;
@@ -178,8 +190,8 @@ export function updateScenarioComparison() {
   const useInflation = document.getElementById('inflationToggle').checked;
   const inflationRate = +document.getElementById('inflationRate').value / 100;
 
-  const startYear = historicalData.at(-1).year;
-  const startPrice = historicalData.at(-1).price;
+  const startYear = lastCalculatedYear;
+  const startPrice = lastCalculatedPrice;
   const startShares = finalTotalValue / startPrice;
 
   const yrs = [];
