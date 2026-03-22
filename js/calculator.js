@@ -95,7 +95,7 @@ export function updateCalculation() {
 
     summaryBody.insertAdjacentHTML('beforeend', `
       <tr>
-        <td>${rec.year}</td>
+        <td>FY${rec.year}<br><small class="text-muted">(Apr ${rec.year + 1})</small></td>
         <td>${fmtPrice(price)}</td>
         <td>${fmtCur(cumInvest)}</td>
         <td>${fmtCur(totalVal)}</td>
@@ -108,7 +108,7 @@ export function updateCalculation() {
     const roiIncl = roiInclVal.toFixed(2);
     detailedBody.insertAdjacentHTML('beforeend', `
       <tr>
-        <td>${rec.year}</td><td>${fmtPrice(price)}</td>
+        <td>FY${rec.year}<br><small class="text-muted">(Apr ${rec.year + 1})</small></td><td>${fmtPrice(price)}</td>
         <td>${fmtCur(invest)}</td><td>${fmtCur(cumInvest)}</td>
         <td>${fmtNum(empShares)}</td><td>${fmtNum(cumShares)}</td>
         <td>${fmtNum(matchThis)}</td><td>${fmtNum(cumMatchShares)}</td>
@@ -287,7 +287,7 @@ export function updateScenarioComparison() {
   for (let i = 0; i < yrs.length; i++) {
     tbody.insertAdjacentHTML('beforeend', `
       <tr>
-        <td>${yrs[i]}</td>
+        <td>FY${yrs[i]}</td>
         <td>${fmtCur(cons[i])}</td>
         <td>${fmtCur(base[i])}</td>
         <td>${fmtCur(aggr[i])}</td>

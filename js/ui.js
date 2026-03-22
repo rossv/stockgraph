@@ -316,7 +316,7 @@ export function buildUI() {
     const initVal = storedInvest[idx] || 0;
     investmentAmounts[idx] = initVal;
     tr.innerHTML = `
-      <td>${rec.year}</td>
+      <td>FY${rec.year}<br><small class="text-muted">(Apr ${rec.year + 1})</small></td>
       <td>${fmtPrice(rec.price)}</td>
       <td>
         <div class="slidecontainer">
