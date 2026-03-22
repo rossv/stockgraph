@@ -261,33 +261,24 @@ export function buildUI() {
   const base = document.getElementById('baseRate');
   const aggr = document.getElementById('aggressiveRate');
   const annual = document.getElementById('annualPurchase');
-  console.log('Defining sliders...');
   const projYearsSlider = document.getElementById('projectionYearsSlider');
-  console.log('Defined projYearsSlider', projYearsSlider);
   const consSlider = document.getElementById('conservativeRateSlider');
-  console.log('Defined consSlider', consSlider);
   const baseSlider = document.getElementById('baseRateSlider');
   const aggrSlider = document.getElementById('aggressiveRateSlider');
   const annualSlider = document.getElementById('annualPurchaseSlider');
 
   if (storedProj.projectionYears !== undefined) {
-    console.log('Setting projYears from storage');
     projYears.value = storedProj.projectionYears;
     projYearsSlider.value = storedProj.projectionYears;
   } else {
-    console.log('Setting projYears from default');
     projYearsSlider.value = projYears.value;
   }
-  console.log('Checking consSlider usage...');
   if (storedProj.conservativeRate !== undefined) {
-    console.log('Setting cons from storage');
     cons.value = storedProj.conservativeRate;
     consSlider.value = storedProj.conservativeRate;
   } else {
-    console.log('Setting cons from default');
     consSlider.value = cons.value;
   }
-  console.log('consSlider usage done');
   if (storedProj.baseRate !== undefined) {
     base.value = storedProj.baseRate;
     baseSlider.value = storedProj.baseRate;
@@ -425,7 +416,11 @@ projYearsSlider.addEventListener('input', () => {
   const input = document.getElementById(`${prefix}Rate`);
   const slider = document.getElementById(`${prefix}RateSlider`);
   input.addEventListener('input', () => {
-    slider.value = input.value;
+    const min = parseFloat(input.min) || 0;
+    const max = parseFloat(input.max) || 30;
+    const clamped = Math.min(max, Math.max(min, parseFloat(input.value) || 0));
+    input.value = clamped;
+    slider.value = clamped;
     updateScenarioComparison();
     saveProjectionParams();
   });
@@ -486,7 +481,7 @@ function exportTableToCSV(tableId, filename) {
   const rows = [...document.querySelectorAll(`#${tableId} tr`)];
   const csv = rows.map(r =>
     [...r.querySelectorAll('th,td')]
-      .map(c => `"${c.innerText.replace(/"/g, '""')}"`)
+      .map(c => `"${c.textContent.replace(/"/g, '""')}"`)
       .join(',')
   ).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
