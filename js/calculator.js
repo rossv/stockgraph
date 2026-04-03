@@ -5,8 +5,9 @@ export const fmtPrice = v => `$${Number(v).toFixed(3)}`;
 const fmtNum = v => Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 });
 
 export let investmentAmounts = [];
+export let advancedYearParams = []; // [{priceChange: number, purchase: number}, ...]
 let finalTotalValue = 0;
-let lastCalculatedYear = null;
+export let lastCalculatedYear = null;
 let lastCalculatedPrice = null;
 
 function getEnteredYearRange(len) {
@@ -257,9 +258,40 @@ export function updateScenarioComparison() {
 
   const cons = proj(rCons, yrs), base = proj(rBase, yrs), aggr = proj(rAggr, yrs);
 
+  // Custom scenario: uses per-year price change & purchase from advancedYearParams
+  const advancedPanelOpen = document.getElementById('advancedYearEditor')?.classList.contains('show');
+  let custom = null;
+  if (advancedPanelOpen && advancedYearParams.length > 0) {
+    let price = startPrice, totalShares = startShares;
+    const customVals = [];
+    const purchases = [];
+    for (let i = 0; i < yrs.length; i++) {
+      if (i > 0) {
+        const p = advancedYearParams[i - 1] || { priceChange: 0, purchase: 0 };
+        price *= (1 + (p.priceChange || 0) / 100);
+        const ann = p.purchase || 0;
+        if (ann > 0) {
+          const bought = ann / price;
+          totalShares += bought;
+          purchases.push(bought);
+        } else {
+          purchases.push(0);
+        }
+        const vestIdx = i - vestingPeriod - 1;
+        if (vestIdx >= 0 && purchases[vestIdx] > 0) {
+          totalShares += purchases[vestIdx] * matchRate;
+        }
+      }
+      let val = totalShares * price;
+      if (useInflation) val = val / Math.pow(1 + inflationRate, i);
+      customVals.push(val);
+    }
+    custom = customVals;
+  }
+
   const yAxisTitle = useInflation ? 'Projected Value (Today\'s Dollars)' : 'Projected Value ($)';
 
-  Plotly.newPlot('scenarioChart', [
+  const traces = [
     {
       x: yrs, y: aggr, name: 'Aggressive',
       fill: 'tozeroy', fillcolor: 'rgba(198,54,99,.5)',
@@ -275,7 +307,17 @@ export function updateScenarioComparison() {
       fill: 'tozeroy', fillcolor: 'rgba(67,176,42,.5)',
       line: { color: 'rgba(67,176,42,.8)' }
     }
-  ], {
+  ];
+
+  if (custom) {
+    traces.push({
+      x: yrs, y: custom, name: 'Custom',
+      mode: 'lines',
+      line: { color: 'rgba(255,165,0,1)', width: 2.5, dash: 'dash' }
+    });
+  }
+
+  Plotly.newPlot('scenarioChart', traces, {
     xaxis: { title: 'Financial\u00A0Year' },
     yaxis: { title: yAxisTitle },
     legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.3 },
@@ -283,14 +325,28 @@ export function updateScenarioComparison() {
   }, { responsive: true, staticPlot: true, displayModeBar: false, scrollZoom: false, doubleClick: false });
 
   const tbody = document.getElementById('projectionBody');
+  // Update header to add/remove Custom column
+  const projHead = document.querySelector('#projectionTable thead tr');
+  const hasCustomCol = projHead.querySelector('.custom-col');
+  if (custom && !hasCustomCol) {
+    const th = document.createElement('th');
+    th.className = 'custom-col';
+    th.textContent = 'Custom';
+    projHead.appendChild(th);
+  } else if (!custom && hasCustomCol) {
+    hasCustomCol.remove();
+  }
+
   tbody.innerHTML = '';
   for (let i = 0; i < yrs.length; i++) {
+    const customCell = custom ? `<td>${fmtCur(custom[i])}</td>` : '';
     tbody.insertAdjacentHTML('beforeend', `
       <tr>
         <td>FY${yrs[i]}</td>
         <td>${fmtCur(cons[i])}</td>
         <td>${fmtCur(base[i])}</td>
         <td>${fmtCur(aggr[i])}</td>
+        ${customCell}
       </tr>`);
   }
 }

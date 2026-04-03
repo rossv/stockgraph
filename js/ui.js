@@ -1,5 +1,5 @@
 import { historicalData } from './data.js';
-import { fmtCur, fmtPrice, updateCalculation, updateScenarioComparison, investmentAmounts, resetInvestmentAmounts } from './calculator.js';
+import { fmtCur, fmtPrice, updateCalculation, updateScenarioComparison, investmentAmounts, resetInvestmentAmounts, advancedYearParams, lastCalculatedYear } from './calculator.js';
 
 const sliderTable = document.getElementById('sliderTable');
 const STORAGE_INVEST = 'investmentAmounts';
@@ -110,7 +110,8 @@ function saveProjectionParams() {
     aggressiveRate: document.getElementById('aggressiveRate').value,
     annualPurchase: document.getElementById('annualPurchase').value.replace(/[^0-9.]/g, ''),
     inflationToggle: document.getElementById('inflationToggle').checked,
-    inflationRate: document.getElementById('inflationRate').value
+    inflationRate: document.getElementById('inflationRate').value,
+    advancedYearParams: advancedYearParams.slice()
   };
   try {
     localStorage.setItem(STORAGE_PROJ, JSON.stringify(params));
@@ -235,6 +236,67 @@ function generatePresets() {
   clr.addEventListener('click', clearAll);
 }
 
+function buildAdvancedYearTable() {
+  const yrsFwd = +document.getElementById('projectionYears').value;
+  const tbody = document.getElementById('advancedYearBody');
+  if (!tbody) return;
+
+  // Resize advancedYearParams to match yrsFwd (preserve existing values)
+  const defaultRate = parseFloat(document.getElementById('baseRate').value) || 10;
+  while (advancedYearParams.length < yrsFwd) {
+    advancedYearParams.push({ priceChange: defaultRate, purchase: 0 });
+  }
+  advancedYearParams.splice(yrsFwd);
+
+  tbody.innerHTML = '';
+  for (let i = 0; i < yrsFwd; i++) {
+    const p = advancedYearParams[i];
+    const displayYear = lastCalculatedYear ? `FY${lastCalculatedYear + i + 1}` : `Yr\u00A0${i + 1}`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="adv-year-label">${displayYear}</td>
+      <td><input type="number" class="form-control form-control-sm adv-price-input"
+                 data-adv-idx="${i}" data-adv-field="priceChange"
+                 value="${p.priceChange}" min="-50" max="200" step="0.1" /></td>
+      <td><input type="text" class="form-control form-control-sm adv-purchase-input currency-input"
+                 data-adv-idx="${i}" data-adv-field="purchase"
+                 value="${fmtCur(p.purchase)}" /></td>`;
+    tbody.appendChild(tr);
+  }
+
+  // Bind events for all adv-price-input fields
+  tbody.querySelectorAll('.adv-price-input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const idx = +inp.dataset.advIdx;
+      advancedYearParams[idx].priceChange = parseFloat(inp.value) || 0;
+      updateScenarioComparison();
+      saveProjectionParams();
+    });
+  });
+
+  // Bind events for all adv-purchase-input fields
+  tbody.querySelectorAll('.adv-purchase-input').forEach(inp => {
+    inp.addEventListener('focus', e => {
+      e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+    });
+    inp.addEventListener('blur', e => {
+      const v = parseFloat(e.target.value.replace(/[^0-9.]/g, '')) || 0;
+      const idx = +inp.dataset.advIdx;
+      advancedYearParams[idx].purchase = v;
+      e.target.value = fmtCur(v);
+      updateScenarioComparison();
+      saveProjectionParams();
+    });
+    inp.addEventListener('input', e => {
+      const v = parseFloat(e.target.value.replace(/[^0-9.]/g, '')) || 0;
+      const idx = +inp.dataset.advIdx;
+      advancedYearParams[idx].purchase = v;
+      updateScenarioComparison();
+      saveProjectionParams();
+    });
+  });
+}
+
 export function buildUI() {
   sliderTable.innerHTML = '';
   resetInvestmentAmounts(historicalData.length);
@@ -297,6 +359,10 @@ export function buildUI() {
     annualSlider.value = ap;
   } else {
     annualSlider.value = parseFloat(annual.value.replace(/[^0-9.]/g, '')) || 0;
+  }
+  if (Array.isArray(storedProj.advancedYearParams) && storedProj.advancedYearParams.length > 0) {
+    advancedYearParams.length = 0;
+    storedProj.advancedYearParams.forEach(p => advancedYearParams.push({ priceChange: p.priceChange || 0, purchase: p.purchase || 0 }));
   }
   if (storedProj.inflationToggle !== undefined) {
     inflToggle.checked = storedProj.inflationToggle;
@@ -368,6 +434,9 @@ export function buildUI() {
   generatePresets();
 
   updateCalculation();
+  // Build the advanced table now so it's ready when the user expands it.
+  // lastCalculatedYear is populated after updateCalculation().
+  buildAdvancedYearTable();
 }
 
 function applyToSubsequentYears(startIdx) {
@@ -403,11 +472,13 @@ const projYears = document.getElementById('projectionYears');
 const projYearsSlider = document.getElementById('projectionYearsSlider');
 projYears.addEventListener('input', () => {
   projYearsSlider.value = projYears.value;
+  buildAdvancedYearTable();
   updateScenarioComparison();
   saveProjectionParams();
 });
 projYearsSlider.addEventListener('input', () => {
   projYears.value = projYearsSlider.value;
+  buildAdvancedYearTable();
   updateScenarioComparison();
   saveProjectionParams();
 });
@@ -473,6 +544,46 @@ inflRate.addEventListener('input', () => {
 
 inflSlider.addEventListener('input', () => {
   inflRate.value = inflSlider.value;
+  updateScenarioComparison();
+  saveProjectionParams();
+});
+
+// ── Advanced Year-by-Year Editor ─────────────────────────────
+const advancedPanel = document.getElementById('advancedYearEditor');
+
+advancedPanel.addEventListener('show.bs.collapse', () => {
+  buildAdvancedYearTable();
+  // re-render after Bootstrap finishes expanding so Plotly gets the right size
+  advancedPanel.addEventListener('shown.bs.collapse', () => updateScenarioComparison(), { once: true });
+});
+advancedPanel.addEventListener('hide.bs.collapse', () => {
+  advancedPanel.addEventListener('hidden.bs.collapse', () => updateScenarioComparison(), { once: true });
+});
+
+document.getElementById('applyAllPriceChange').addEventListener('click', () => {
+  const rate = parseFloat(document.getElementById('fillAllPriceChange').value) || 0;
+  advancedYearParams.forEach(p => { p.priceChange = rate; });
+  // Reflect in DOM inputs
+  document.querySelectorAll('.adv-price-input').forEach(inp => { inp.value = rate; });
+  updateScenarioComparison();
+  saveProjectionParams();
+});
+
+const fillAllPurchaseEl = document.getElementById('fillAllPurchase');
+fillAllPurchaseEl.addEventListener('focus', e => {
+  e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+});
+fillAllPurchaseEl.addEventListener('blur', e => {
+  const v = parseFloat(e.target.value.replace(/[^0-9.]/g, '')) || 0;
+  e.target.value = fmtCur(v);
+});
+
+document.getElementById('applyAllPurchase').addEventListener('click', () => {
+  const raw = fillAllPurchaseEl.value.replace(/[^0-9.]/g, '');
+  const val = parseFloat(raw) || 0;
+  fillAllPurchaseEl.value = fmtCur(val);
+  advancedYearParams.forEach(p => { p.purchase = val; });
+  document.querySelectorAll('.adv-purchase-input').forEach(inp => { inp.value = fmtCur(val); });
   updateScenarioComparison();
   saveProjectionParams();
 });

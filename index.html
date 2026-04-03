@@ -231,6 +231,76 @@
                   <input id="inflationRateSlider" type="range" class="slider" min="0" max="10" step="0.1" value="2.5" />
                 </div>
 
+                <hr class="my-3" />
+
+                <!-- ── Advanced: Year-by-Year Overrides ───────────── -->
+                <button class="btn advanced-toggle-btn w-100 d-flex align-items-center justify-content-between"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#advancedYearEditor"
+                        aria-expanded="false"
+                        aria-controls="advancedYearEditor">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-sliders2"></i>
+                    <span>Year&#8209;by&#8209;Year Overrides</span>
+                  </span>
+                  <i class="bi bi-chevron-down advanced-chevron"></i>
+                </button>
+
+                <div class="collapse" id="advancedYearEditor">
+                  <div class="advanced-editor-body mt-3">
+
+                    <p class="text-muted small mb-2">
+                      Quick&#8209;fill all years, then tweak individually:
+                    </p>
+
+                    <!-- Fill-all: price change -->
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                      <label class="form-label mb-0 small adv-fill-label" for="fillAllPriceChange">
+                        Price&nbsp;chg
+                      </label>
+                      <input type="number" id="fillAllPriceChange"
+                             class="form-control form-control-sm adv-fill-input"
+                             value="10" min="-50" max="200" step="0.1" />
+                      <span class="small text-muted">%</span>
+                      <button type="button" id="applyAllPriceChange"
+                              class="btn btn-sm btn-outline-secondary ms-auto">
+                        Apply&nbsp;all
+                      </button>
+                    </div>
+
+                    <!-- Fill-all: annual purchase -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                      <label class="form-label mb-0 small adv-fill-label" for="fillAllPurchase">
+                        Purchase
+                      </label>
+                      <input type="text" id="fillAllPurchase"
+                             class="form-control form-control-sm adv-fill-input currency-input"
+                             value="$0" />
+                      <button type="button" id="applyAllPurchase"
+                              class="btn btn-sm btn-outline-secondary ms-auto">
+                        Apply&nbsp;all
+                      </button>
+                    </div>
+
+                    <!-- Per-year table -->
+                    <div class="table-responsive">
+                      <table class="table table-sm table-bordered mb-0">
+                        <thead>
+                          <tr>
+                            <th>Year</th>
+                            <th>Price&nbsp;Chg&nbsp;(%)</th>
+                            <th>Purchase&nbsp;($)</th>
+                          </tr>
+                        </thead>
+                        <tbody id="advancedYearBody"></tbody>
+                      </table>
+                    </div>
+
+                  </div>
+                </div>
+                <!-- /Advanced -->
+
                 <p class="text-muted small mt-4 mb-0">
                   Past performance is not a guarantee of future results.<br />
                   Excludes tax implications on matching shares and capital gains.
