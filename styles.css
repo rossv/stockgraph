@@ -286,3 +286,70 @@ footer {
   animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
 }
+
+/* ── Advanced Year-by-Year Editor ─────────────────────────── */
+.advanced-toggle-btn {
+  background: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  color: var(--main-gray);
+  font-size: 0.85rem;
+  padding: 0.45rem 0.65rem;
+  text-align: left;
+  line-height: 1.4;
+}
+.advanced-toggle-btn:hover {
+  background: #f8f9fa;
+  border-color: var(--main-green);
+  color: var(--main-green);
+}
+.advanced-toggle-btn[aria-expanded="true"] {
+  border-color: var(--main-green);
+  color: var(--main-green);
+  background: rgba(67, 176, 42, 0.05);
+}
+.advanced-chevron {
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+.advanced-toggle-btn[aria-expanded="true"] .advanced-chevron {
+  transform: rotate(180deg);
+}
+
+/* Fill-all row labels */
+.adv-fill-label {
+  min-width: 4.5rem;
+  flex-shrink: 0;
+}
+.adv-fill-input {
+  width: 5rem;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+/* Compact per-year table inside advanced editor */
+.advanced-editor-body .table thead th {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.4rem;
+  white-space: nowrap;
+}
+.advanced-editor-body .table td {
+  padding: 0.2rem 0.3rem;
+  vertical-align: middle;
+}
+.adv-year-label {
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.adv-price-input,
+.adv-purchase-input {
+  font-size: 0.8rem;
+  padding: 0.15rem 0.35rem;
+  width: 100%;
+  min-width: 3.5rem;
+}
+/* Custom column header styling */
+#projectionTable thead th.custom-col {
+  background: rgba(255, 165, 0, 0.15) !important;
+  color: #7a4f00;
+}
