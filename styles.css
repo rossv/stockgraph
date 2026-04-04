@@ -58,6 +58,27 @@ body {
   white-space: nowrap;
 }
 
+/* On small screens, wrap tab labels into multiple lines so all tabs fit */
+@media (max-width: 576px) {
+  #dashboardTabs {
+    overflow-x: visible;
+  }
+
+  #dashboardTabs .nav-item {
+    flex: 1 1 0;
+  }
+
+  #dashboardTabs .nav-link {
+    width: 100%;
+    white-space: normal;
+    line-height: 1.2;
+    text-align: center;
+    font-size: 0.875rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
 /* Cards & tables */
 .card {
   margin-bottom: 1rem;
