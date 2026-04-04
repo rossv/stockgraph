@@ -530,6 +530,10 @@ const inflControls = document.getElementById('inflationControls');
 const inflRate = document.getElementById('inflationRate');
 const inflSlider = document.getElementById('inflationRateSlider');
 
+document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+  new bootstrap.Tooltip(el);
+});
+
 inflToggle.addEventListener('change', () => {
   inflControls.style.display = inflToggle.checked ? 'block' : 'none';
   updateScenarioComparison();

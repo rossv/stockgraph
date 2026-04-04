@@ -222,7 +222,15 @@
 
                 <div class="form-check form-switch">
                   <input class="form-check-input" type="checkbox" id="inflationToggle">
-                  <label class="form-check-label" for="inflationToggle">Show in Today's Dollars</label>
+                  <label class="form-check-label d-inline-flex align-items-center gap-1" for="inflationToggle">
+                    Show in Today's Dollars
+                    <i class="bi bi-question-circle text-muted"
+                       tabindex="0"
+                       role="button"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="top"
+                       title="Converts projected values into inflation-adjusted dollars so each future year is shown in today's buying power."></i>
+                  </label>
                 </div>
 
                 <div id="inflationControls" class="mt-2" style="display:none;">
