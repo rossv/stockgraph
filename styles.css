@@ -127,6 +127,14 @@ body {
   overflow: hidden;
 }
 
+.projection-table-wrap {
+  overflow-x: auto;
+}
+
+#projectionTable {
+  min-width: 40rem;
+}
+
 /* Preset (blue) button styles */
 .preset-btn {
   background: var(--main-blue);
